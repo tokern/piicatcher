@@ -1,0 +1,15 @@
+sudo: false
+
+language: python
+python:
+  - "3.6"
+
+install:
+  - pip install -U coverage pytest pytest-cov codecov     
+  - pip install -e .
+
+script:
+  - pytest --cov=./
+
+after_success:
+  - codecov
