@@ -4,9 +4,11 @@ language: python
 python:
   - "3.6"
 
+cache: pip
+
 before_install:
   - pip install -U coverage pytest pytest-cov codecov pytest-pylint
-  - sudo apt-get install sqlite3=3.27.2~travis1
+  - sudo apt-get install sqlite3=3.27.2
   - sqlite3 -version
 
 install:
