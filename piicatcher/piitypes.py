@@ -8,3 +8,5 @@ class PiiTypes(Enum):
     EMAIL = auto()
     CREDIT_CARD = auto()
     ADDRESS = auto()
+    PERSON = auto()
+    LOCATION = auto()
