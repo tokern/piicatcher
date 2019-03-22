@@ -7,6 +7,7 @@ python:
 install:
   - pip install -U coverage pytest pytest-cov codecov pytest-pylint
   - pip install -e .
+  - python -m spacy download en_core_web_sm
 
 script:
   - pytest --pylint --cov=./
