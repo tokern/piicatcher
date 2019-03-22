@@ -9,6 +9,7 @@ class Explorer(ABC):
     def __init__(self, conn_string):
         self.conn_string = conn_string
         self.connection = self._open_connection()
+        self._schemas = None
 
     @abstractmethod
     def _open_connection(self):
@@ -25,6 +26,10 @@ class Explorer(ABC):
     @abstractmethod
     def get_columns(self, table):
         pass
+
+    def scan(self):
+        for schema in self.get_schemas():
+            schema.scan(self.connection)
 
 
 class SqliteExplorer(Explorer):
@@ -56,7 +61,11 @@ class SqliteExplorer(Explorer):
         return sqlite3.connect(self.conn_string)
 
     def get_schemas(self):
-        return ['main']
+        if self._schemas is None:
+            sch = Schema('main')
+            sch.tables.extend(self.get_tables('main'))
+            self._schemas = [sch]
+        return self._schemas
 
     def get_tables(self, schema):
         query = self.pragma_query.format(where_clause="")
@@ -85,7 +94,8 @@ class SqliteExplorer(Explorer):
             where_clause="WHERE m.name = ?"
         )
         logging.debug(query)
-        result_set = self.connection.execute(query, table)
+        logging.debug(table)
+        result_set = self.connection.execute(query, (table,))
         columns = []
         row = result_set.fetchone()
         while row is not None:
@@ -93,3 +103,4 @@ class SqliteExplorer(Explorer):
             row = result_set.fetchone()
 
         return columns
+
