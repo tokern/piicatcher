@@ -1,8 +1,8 @@
+[![Build Status](https://travis-ci.org/dblintio/piicatcher.svg?branch=master)](https://travis-ci.org/dblintio/piicatcher)
+[![codecov](https://codecov.io/gh/dblintio/piicatcher/branch/master/graph/badge.svg)](https://codecov.io/gh/dblintio/piicatcher)
+
 Pii Catcher for MySQL, PostgreSQL & Redshift
 ===============================
-
-version number: 0.0.1
-author: Rajat Venkatesh
 
 Overview
 --------
