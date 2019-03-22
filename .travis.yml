@@ -8,6 +8,7 @@ cache: pip
 
 before_install:
   - pip install -U coverage pytest pytest-cov codecov pytest-pylint
+  - sudo apt-get update
   - sudo apt-get upgrade sqlite3
   - sqlite3 -version
 
