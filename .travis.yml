@@ -1,11 +1,15 @@
-sudo: false
+sudo: true
 
 language: python
 python:
   - "3.6"
 
-install:
+before_install:
   - pip install -U coverage pytest pytest-cov codecov pytest-pylint
+  - sudo apt-get install sqlite3=3.27.2~travis1
+  - sqlite3 -version
+
+install:
   - pip install -e .
   - python -m spacy download en_core_web_sm
 

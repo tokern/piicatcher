@@ -59,7 +59,9 @@ class SqliteExplorer(Explorer):
         return ['main']
 
     def get_tables(self, schema):
-        result_set = self.connection.execute(self.pragma_query.format(where_clause=""))
+        query = self.pragma_query.format(where_clause="")
+        logging.debug(query)
+        result_set = self.connection.execute(query)
         tables = []
         row = result_set.fetchone()
         current_table = None
@@ -79,9 +81,11 @@ class SqliteExplorer(Explorer):
         return tables
 
     def get_columns(self, table):
-        result_set = self.connection.execute(self.pragma_query.format(
+        query = self.pragma_query.format(
             where_clause="WHERE m.name = ?"
-        ), table)
+        )
+        logging.debug(query)
+        result_set = self.connection.execute(query, table)
         columns = []
         row = result_set.fetchone()
         while row is not None:
