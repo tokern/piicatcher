@@ -1,9 +1,27 @@
-class NamedObject:
+from abc import ABC, abstractmethod
+import logging
+
+from piicatcher.scanner import RegexScanner, NERScanner
+
+
+class NamedObject(ABC):
     def __init__(self, name):
-        self.name = name
+        self._name = name
+        self._pii = set()
 
     def get_name(self):
-        return self.name
+        return self._name
+
+    def has_pii(self):
+        logging.debug("has_pii {} has {}".format(self, self._pii))
+        return bool(self._pii)
+
+    def get_pii_types(self):
+        return self._pii
+
+    @abstractmethod
+    def scan(self, context):
+        pass
 
 
 class Schema(NamedObject):
@@ -17,8 +35,18 @@ class Schema(NamedObject):
     def get_tables(self):
         return self.tables
 
+    def scan(self, context):
+        for table in self.tables:
+            table.scan(context)
+            logging.debug("{} has {}".format(table.get_name(), table.get_pii_types()))
+            [self._pii.add(p) for p in table.get_pii_types()]
+
+        logging.debug("{} has {}".format(self, self._pii))
+
 
 class Table(NamedObject):
+    query_template = "select {column_list} from {table_name}"
+
     def __init__(self, name):
         super(Table, self).__init__(name)
         self.columns = []
@@ -29,9 +57,29 @@ class Table(NamedObject):
     def get_columns(self):
         return self.columns
 
+    def scan(self, context):
+        query = self.query_template.format(
+            column_list=",".join([col.get_name() for col in self.columns]),
+            table_name=self.get_name()
+        )
+        logging.debug(query)
+        rows = context.execute(query)
+        for r in rows:
+            for col, val in zip(self.columns, r):
+                col.scan(val)
+
+        for col in self.columns:
+            [self._pii.add(p) for p in col.get_pii_types()]
+
+        logging.debug(self._pii)
+
 
 class Column(NamedObject):
     def __init__(self, name):
         super(Column, self).__init__(name)
 
+    def scan(self, context):
+        for scanner in [RegexScanner(), NERScanner()]:
+            [self._pii.add(pii) for pii in scanner.scan(context)]
 
+        logging.debug(self._pii)
