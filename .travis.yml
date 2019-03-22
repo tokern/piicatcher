@@ -10,7 +10,7 @@ install:
   - python -m spacy download en_core_web_sm
 
 script:
-  - pytest --pylint --cov=./
+  - pytest --cov=./
 
 after_success:
   - codecov
