@@ -8,12 +8,21 @@ from piicatcher.dbmetadata import Schema, Table, Column
 class Explorer(ABC):
     def __init__(self, conn_string):
         self.conn_string = conn_string
-        self.connection = self._open_connection()
+        self._connection = None
         self._schemas = None
 
     @abstractmethod
     def _open_connection(self):
         pass
+
+    def get_connection(self):
+        if self._connection is None:
+            self._connection = self._open_connection()
+        return self._connection
+
+    def close_connection(self):
+        if self._connection is not None:
+            self._connection.close()
 
     @abstractmethod
     def get_schemas(self):
@@ -29,7 +38,17 @@ class Explorer(ABC):
 
     def scan(self):
         for schema in self.get_schemas():
-            schema.scan(self.connection)
+            schema.scan(self.get_connection())
+
+    def get_tabular(self):
+        tabular = []
+        for schema in self._schemas:
+            for table in schema.get_tables():
+                for column in table.get_columns():
+                    tabular.append([schema.get_name(), table.get_name(),
+                                    column.get_name(), column.has_pii()])
+
+        return tabular
 
 
 class SqliteExplorer(Explorer):
@@ -54,7 +73,7 @@ class SqliteExplorer(Explorer):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.connection.close()
+        self.close_connection()
 
     def _open_connection(self):
         logging.debug("Sqlite connection string '{}'".format(self.conn_string))
@@ -70,7 +89,7 @@ class SqliteExplorer(Explorer):
     def get_tables(self, schema):
         query = self.pragma_query.format(where_clause="")
         logging.debug(query)
-        result_set = self.connection.execute(query)
+        result_set = self.get_connection().execute(query)
         tables = []
         row = result_set.fetchone()
         current_table = None
@@ -95,7 +114,7 @@ class SqliteExplorer(Explorer):
         )
         logging.debug(query)
         logging.debug(table)
-        result_set = self.connection.execute(query, (table,))
+        result_set = self.get_connection().execute(query, (table,))
         columns = []
         row = result_set.fetchone()
         while row is not None:

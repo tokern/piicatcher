@@ -20,7 +20,7 @@ dependency_links = [x.strip().replace('git+', '') for x in all_reqs if x.startsw
 setup(
     name='piicatcher',
     version=__version__,
-    description='A utility to find PII data in databases',
+    description='Find PII data in databases',
     long_description=long_description,
     url='https://github.com/vrajat/piicatcher',
     download_url='https://github.com/vrajat/piicatcher/tarball/' + __version__,
@@ -36,5 +36,8 @@ setup(
     author='Rajat Venkatesh',
     install_requires=install_requires,
     dependency_links=dependency_links,
-    author_email='vrajat@dblint.io'
+    author_email='vrajat@dblint.io',
+    entry_points={
+        'console_scripts': ['piicatcher=piicatcher.command_line:main'],
+    }
 )

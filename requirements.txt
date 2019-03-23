@@ -6,3 +6,4 @@ coverage
 pypi-publisher
 commonregex
 spacy
+tableprint
