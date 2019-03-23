@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, mock
 from shutil import rmtree
 
 import sqlite3
@@ -7,9 +7,33 @@ import pytest
 
 from piicatcher.dbexplorer import SqliteExplorer
 from piicatcher.dbmetadata import Schema, Table, Column
-from piicatcher.scanner import NERScanner
+from piicatcher.piitypes import PiiTypes
 
 logging.basicConfig(level=logging.DEBUG)
+
+
+class ExplorerTest(TestCase):
+    def setUp(self):
+        self.explorer = SqliteExplorer("mock_connection")
+
+        col1 = Column('c1')
+        col2 = Column('c2')
+        col2._pii = [PiiTypes.LOCATION]
+
+        table = Table('t1')
+        table.columns = [col1, col2]
+
+        schema = Schema('testSchema')
+        schema.tables = [table]
+
+        self.explorer._schemas = [schema]
+
+    def test_tabular(self):
+        self.assertEqual([
+            ['testSchema', 't1', 'c1', False],
+            ['testSchema', 't1', 'c2', True]
+        ], self.explorer.get_tabular())
+
 
 pii_data_script = """
 create table no_pii(a text, b text);
@@ -50,7 +74,7 @@ class SqliteTest(TestCase):
         self.explorer = SqliteExplorer(str(self.sqlite_conn))
 
     def tearDown(self):
-        self.explorer.connection.close()
+        self.explorer.get_connection().close()
 
     def test_columns(self):
         names = [col.get_name() for col in self.explorer.get_columns("no_pii")]
@@ -79,7 +103,7 @@ class SqliteTest(TestCase):
         table.add(Column('a'))
         table.add(Column('b'))
 
-        table.scan(self.explorer.connection)
+        table.scan(self.explorer.get_connection())
         self.assertFalse(table.has_pii())
 
     def test_partial_pii_table(self):
@@ -87,7 +111,7 @@ class SqliteTest(TestCase):
         table.add(Column('a'))
         table.add(Column('b'))
 
-        table.scan(self.explorer.connection)
+        table.scan(self.explorer.get_connection())
         self.assertTrue(table.has_pii())
         cols = table.get_columns()
         self.assertTrue(cols[0].has_pii())
@@ -98,7 +122,7 @@ class SqliteTest(TestCase):
         table.add(Column('name'))
         table.add(Column('location'))
 
-        table.scan(self.explorer.connection)
+        table.scan(self.explorer.get_connection())
         self.assertTrue(table.has_pii())
         cols = table.get_columns()
         self.assertTrue(cols[0].has_pii())

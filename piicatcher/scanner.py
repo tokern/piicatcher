@@ -1,6 +1,7 @@
 """Different types of scanners for PII data"""
 from abc import ABC, abstractmethod
 from commonregex import CommonRegex
+import logging
 import spacy
 
 from piicatcher.piitypes import PiiTypes
@@ -43,12 +44,14 @@ class NERScanner(Scanner):
         """Scan the text and return an array of PiiTypes that are found"""
         doc = self.nlp(text)
         types = set()
+        logging.debug("Processing '{}'".format(text))
         for ent in doc.ents:
-            print(ent.label_)
+            logging.debug("Found {}".format(ent.label_))
             if ent.label_ == 'PERSON':
                 types.add(PiiTypes.PERSON)
 
             if ent.label_ == 'GPE':
                 types.add(PiiTypes.LOCATION)
 
+        logging.debug("PiiTypes are {}".format(list(types)))
         return list(types)
