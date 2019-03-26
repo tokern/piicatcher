@@ -1,14 +1,19 @@
 import argparse
 import tableprint
 
-from piicatcher.dbexplorer import SqliteExplorer
+from piicatcher.dbexplorer import SqliteExplorer, MySQLExplorer
 
 
 def get_parser(parser_cls=argparse.ArgumentParser):
     parser = parser_cls()
-    parser.add_argument("-c", "--connection", required=True,
-                        help="DB API 2.0 compatible database connection string")
-    parser.add_argument("-t", "--conncetion-type", default="sqlite",
+    parser.add_argument("-s", "--host", required=True,
+                        help="Hostname of the database. File path if it is SQLite")
+    parser.add_argument("-u", "--user",
+                        help="Username to connect database")
+    parser.add_argument("-p", "--password",
+                        help="Password of the user")
+
+    parser.add_argument("-t", "--connection-type", default="sqlite",
                         choices=["sqlite", "mysql"],
                         help="Type of database")
 
@@ -23,8 +28,16 @@ def get_parser(parser_cls=argparse.ArgumentParser):
 
 
 def dispatch(ns):
-    explorer = SqliteExplorer(ns.connection)
+    explorer = None
+    if ns.connection_type == "sqlite":
+        explorer = SqliteExplorer(ns.host)
+    elif ns.connection_type == "mysql":
+        explorer = MySQLExplorer(ns.host, ns.user, ns.password)
+
+    assert(explorer is not None)
+
     explorer.scan()
+
     if ns.output_format == "ascii_table":
         headers = ["schema", "table", "column", "has_pii"]
         tableprint.table(explorer.get_tabular(), headers)

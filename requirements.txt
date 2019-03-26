@@ -7,3 +7,4 @@ pypi-publisher
 commonregex
 spacy
 tableprint
+pymysql

@@ -45,10 +45,11 @@ class Schema(NamedObject):
 
 
 class Table(NamedObject):
-    query_template = "select {column_list} from {table_name}"
+    query_template = "select {column_list} from `{schema_name}`.`{table_name}`"
 
-    def __init__(self, name):
+    def __init__(self, schema, name):
         super(Table, self).__init__(name)
+        self._schema = schema
         self.columns = []
 
     def add(self, col):
@@ -60,13 +61,16 @@ class Table(NamedObject):
     def scan(self, context):
         query = self.query_template.format(
             column_list=",".join([col.get_name() for col in self.columns]),
+            schema_name=self._schema.get_name(),
             table_name=self.get_name()
         )
         logging.debug(query)
-        rows = context.execute(query)
-        for r in rows:
-            for col, val in zip(self.columns, r):
+        context.execute(query)
+        row = context.fetchone()
+        while row is not None:
+            for col, val in zip(self.columns, row):
                 col.scan(val)
+            row = context.fetchone()
 
         for col in self.columns:
             [self._pii.add(p) for p in col.get_pii_types()]

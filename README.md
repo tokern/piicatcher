@@ -54,14 +54,16 @@ Usage
 -----
     # Print usage
     $ piicatcher -h
-    usage: piicatcher [-h] -c CONNECTION [-t {sqlite,mysql}] [-o OUTPUT]
-                  [-f {ascii_table}]
+    usage: piicatcher [-h] -s HOST [-u USER] [-p PASSWORD] [-t {sqlite,mysql}]
+                      [-o OUTPUT] [-f {ascii_table}]
 
     optional arguments:
       -h, --help            show this help message and exit
-      -c CONNECTION, --connection CONNECTION
-                            DB API 2.0 compatible database connection string
-      -t {sqlite,mysql}, --conncetion-type {sqlite,mysql}
+      -s HOST, --host HOST  Hostname of the database. File path if it is SQLite
+      -u USER, --user USER  Username to connect database
+      -p PASSWORD, --password PASSWORD
+                            Password of the user
+      -t {sqlite,mysql}, --connection-type {sqlite,mysql}
                             Type of database
       -o OUTPUT, --output OUTPUT
                             File path for report. If not specified, then report is
