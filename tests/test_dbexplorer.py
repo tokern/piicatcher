@@ -1,11 +1,12 @@
-from unittest import TestCase, mock
+from unittest import TestCase
 from shutil import rmtree
 
 import sqlite3
+import pymysql
 import logging
 import pytest
 
-from piicatcher.dbexplorer import SqliteExplorer
+from piicatcher.dbexplorer import SqliteExplorer, MySQLExplorer
 from piicatcher.dbmetadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
 
@@ -20,7 +21,8 @@ class ExplorerTest(TestCase):
         col2 = Column('c2')
         col2._pii = [PiiTypes.LOCATION]
 
-        table = Table('t1')
+        schema = Schema('s1')
+        table = Table(schema, 't1')
         table.columns = [col1, col2]
 
         schema = Schema('testSchema')
@@ -50,6 +52,65 @@ insert into full_pii values ('Chase Ryan', 'Chennai');
 """
 
 
+class CommonExplorerTestCases:
+    class CommonExplorerTests(TestCase):
+        def test_columns(self):
+            names = [col.get_name() for col in self.explorer.get_columns("pii_db", "no_pii")]
+            self.assertEqual(['a', 'b'], names)
+
+        def test_tables(self):
+            names = [tbl.get_name() for tbl in self.explorer.get_tables('pii_db')]
+            self.assertEqual(sorted(['no_pii', 'partial_pii', 'full_pii']), sorted(names))
+
+        def test_negative_scan_column(self):
+            col = Column('col')
+            col.scan('abc')
+            self.assertFalse(col.has_pii())
+
+        def test_positive_scan_column(self):
+            col = Column('col')
+            col.scan('Jonathan Smith')
+            self.assertTrue(col.has_pii())
+
+        def test_no_pii_table(self):
+            schema = Schema('pii_db')
+            table = Table(schema, 'no_pii')
+            table.add(Column('a'))
+            table.add(Column('b'))
+
+            table.scan(self.explorer.get_connection().cursor())
+            self.assertFalse(table.has_pii())
+
+        def test_partial_pii_table(self):
+            schema = Schema('pii_db')
+            table = Table(schema, 'partial_pii')
+            table.add(Column('a'))
+            table.add(Column('b'))
+
+            table.scan(self.explorer.get_connection().cursor())
+            self.assertTrue(table.has_pii())
+            cols = table.get_columns()
+            self.assertTrue(cols[0].has_pii())
+            self.assertFalse(cols[1].has_pii())
+
+        def test_full_pii_table(self):
+            schema = Schema('pii_db')
+            table = Table(schema, 'full_pii')
+            table.add(Column('name'))
+            table.add(Column('location'))
+
+            table.scan(self.explorer.get_connection().cursor())
+            self.assertTrue(table.has_pii())
+            cols = table.get_columns()
+            self.assertTrue(cols[0].has_pii())
+            self.assertTrue(cols[1].has_pii())
+
+        def test_scan_dbexplorer(self):
+            self.explorer.scan()
+            schema = self.explorer.get_schemas()[0]
+            self.assertTrue(schema.has_pii())
+
+
 @pytest.mark.usefixtures("temp_sqlite")
 @pytest.mark.skip(reason="Old version of sqlite in Travis")
 class SqliteTest(TestCase):
@@ -66,7 +127,7 @@ class SqliteTest(TestCase):
 
         def finalizer():
             rmtree(self.temp_dir)
-            print("Deleted {}".format(str(self.temp_dir)))
+            logging.info("Deleted {}".format(str(self.temp_dir)))
 
         request.addfinalizer(finalizer)
 
@@ -76,59 +137,59 @@ class SqliteTest(TestCase):
     def tearDown(self):
         self.explorer.get_connection().close()
 
-    def test_columns(self):
-        names = [col.get_name() for col in self.explorer.get_columns("no_pii")]
-        self.assertEqual(['a', 'b'], names)
-
-    def test_tables(self):
-        names = [tbl.get_name() for tbl in self.explorer.get_tables('')]
-        self.assertEqual(sorted(['no_pii', 'partial_pii', 'full_pii']), sorted(names))
-
     def test_schema(self):
         names = [sch.get_name() for sch in self.explorer.get_schemas()]
         self.assertEqual(['main'], names)
 
-    def test_negative_scan_column(self):
-        col = Column('col')
-        col.scan('abc')
-        self.assertFalse(col.has_pii())
 
-    def test_positive_scan_column(self):
-        col = Column('col')
-        col.scan('Jonathan Smith')
-        self.assertTrue(col.has_pii())
+@pytest.mark.usefixtures("create_tables")
+@pytest.mark.skip(reason="TODO Setup MySQL through docker for testing")
+class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
+    pii_db_query = """
+        CREATE DATABASE IF NOT EXISTS pii_db;
+        use pii_db;
+    """
 
-    def test_no_pii_table(self):
-        table = Table('no_pii')
-        table.add(Column('a'))
-        table.add(Column('b'))
+    pii_db_drop = """
+        DROP DATABASE IF EXISTS pii_db
+    """
 
-        table.scan(self.explorer.get_connection())
-        self.assertFalse(table.has_pii())
+    @staticmethod
+    def execute_script(cursor, script):
+        for query in script.split(';'):
+            if len(query.strip()) > 0:
+                cursor.execute(query)
 
-    def test_partial_pii_table(self):
-        table = Table('partial_pii')
-        table.add(Column('a'))
-        table.add(Column('b'))
+    @pytest.fixture(scope="class")
+    def create_tables(self, request):
+        self.conn = pymysql.connect(host="127.0.0.1",
+                                    user="pii_tester",
+                                    password="pii_secret")
 
-        table.scan(self.explorer.get_connection())
-        self.assertTrue(table.has_pii())
-        cols = table.get_columns()
-        self.assertTrue(cols[0].has_pii())
-        self.assertFalse(cols[1].has_pii())
+        with self.conn.cursor() as cursor:
+            self.execute_script(cursor, self.pii_db_query)
+            self.execute_script(cursor, pii_data_script)
+            cursor.execute("commit")
+            cursor.close()
 
-    def test_full_pii_table(self):
-        table = Table('full_pii')
-        table.add(Column('name'))
-        table.add(Column('location'))
+        def drop_tables():
+            with self.conn.cursor() as cursor:
+                cursor.execute(self.pii_db_drop)
+                logging.info("Executed drop script")
+                cursor.close()
+            self.conn.close()
 
-        table.scan(self.explorer.get_connection())
-        self.assertTrue(table.has_pii())
-        cols = table.get_columns()
-        self.assertTrue(cols[0].has_pii())
-        self.assertTrue(cols[1].has_pii())
+        request.addfinalizer(drop_tables)
 
-    def test_scan_dbexplorer(self):
-        self.explorer.scan()
-        schema = self.explorer.get_schemas()[0]
-        self.assertTrue(schema.has_pii())
+    def setUp(self):
+        self.explorer = MySQLExplorer(host="127.0.0.1",
+                                      user="pii_tester",
+                                      password="pii_secret")
+
+    def tearDown(self):
+        self.explorer.get_connection().close()
+
+    def test_schema(self):
+        names = [sch.get_name() for sch in self.explorer.get_schemas()]
+        self.assertEqual(['pii_db'], names)
+
