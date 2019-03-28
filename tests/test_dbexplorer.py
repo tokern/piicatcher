@@ -1,12 +1,14 @@
+from abc import ABC, abstractmethod
 from unittest import TestCase
 from shutil import rmtree
 
 import sqlite3
 import pymysql
+import psycopg2
 import logging
 import pytest
 
-from piicatcher.dbexplorer import SqliteExplorer, MySQLExplorer
+from piicatcher.dbexplorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer
 from piicatcher.dbmetadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
 
@@ -53,13 +55,17 @@ insert into full_pii values ('Chase Ryan', 'Chennai');
 
 
 class CommonExplorerTestCases:
-    class CommonExplorerTests(TestCase):
+    class CommonExplorerTests(TestCase, ABC):
+        @abstractmethod
+        def get_test_schema(self):
+            pass
+
         def test_columns(self):
-            names = [col.get_name() for col in self.explorer.get_columns("pii_db", "no_pii")]
+            names = [col.get_name() for col in self.explorer.get_columns(self.get_test_schema(), "no_pii")]
             self.assertEqual(['a', 'b'], names)
 
         def test_tables(self):
-            names = [tbl.get_name() for tbl in self.explorer.get_tables('pii_db')]
+            names = [tbl.get_name() for tbl in self.explorer.get_tables(self.get_test_schema())]
             self.assertEqual(sorted(['no_pii', 'partial_pii', 'full_pii']), sorted(names))
 
         def test_negative_scan_column(self):
@@ -73,7 +79,7 @@ class CommonExplorerTestCases:
             self.assertTrue(col.has_pii())
 
         def test_no_pii_table(self):
-            schema = Schema('pii_db')
+            schema = Schema(self.get_test_schema())
             table = Table(schema, 'no_pii')
             table.add(Column('a'))
             table.add(Column('b'))
@@ -82,7 +88,7 @@ class CommonExplorerTestCases:
             self.assertFalse(table.has_pii())
 
         def test_partial_pii_table(self):
-            schema = Schema('pii_db')
+            schema = Schema(self.get_test_schema())
             table = Table(schema, 'partial_pii')
             table.add(Column('a'))
             table.add(Column('b'))
@@ -94,7 +100,7 @@ class CommonExplorerTestCases:
             self.assertFalse(cols[1].has_pii())
 
         def test_full_pii_table(self):
-            schema = Schema('pii_db')
+            schema = Schema(self.get_test_schema())
             table = Table(schema, 'full_pii')
             table.add(Column('name'))
             table.add(Column('location'))
@@ -193,3 +199,58 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
         names = [sch.get_name() for sch in self.explorer.get_schemas()]
         self.assertEqual(['pii_db'], names)
 
+    def get_test_schema(self):
+        return "pii_db"
+
+
+@pytest.mark.usefixtures("create_tables")
+@pytest.mark.skip(reason="TODO Setup Postgres through docker for testing")
+class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
+    pii_db_drop = """
+        DROP TABLE full_pii;
+        DROP TABLE partial_pii;
+        DROP TABLE no_pii;
+    """
+
+    @staticmethod
+    def execute_script(cursor, script):
+        for query in script.split(';'):
+            if len(query.strip()) > 0:
+                cursor.execute(query)
+
+    @pytest.fixture(scope="class")
+    def create_tables(self, request):
+        self.conn = psycopg2.connect(host="127.0.0.1",
+                                     user="postgres",
+                                     password="pii_secret")
+
+        self.conn.autocommit = True
+
+        with self.conn.cursor() as cursor:
+            self.execute_script(cursor, pii_data_script)
+            cursor.close()
+
+        def drop_tables():
+            with self.conn.cursor() as d_cursor:
+                d_cursor.execute(self.pii_db_drop)
+                logging.info("Executed drop script")
+                d_cursor.close()
+            self.conn.close()
+
+        request.addfinalizer(drop_tables)
+
+    def setUp(self):
+        self.explorer = PostgreSQLExplorer(host="127.0.0.1",
+                                           user="postgres",
+                                           password="pii_secret",
+                                           database="postgres")
+
+    def tearDown(self):
+        self.explorer.get_connection().close()
+
+    def test_schema(self):
+        names = [sch.get_name() for sch in self.explorer.get_schemas()]
+        self.assertEqual(['public'], names)
+
+    def get_test_schema(self):
+        return "public"

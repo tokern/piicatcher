@@ -8,3 +8,5 @@ commonregex
 spacy
 tableprint
 pymysql
+psycopg2-binary
+cryptography

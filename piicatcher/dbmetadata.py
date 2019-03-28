@@ -45,7 +45,7 @@ class Schema(NamedObject):
 
 
 class Table(NamedObject):
-    query_template = "select {column_list} from `{schema_name}`.`{table_name}`"
+    query_template = "select {column_list} from {schema_name}.{table_name}"
 
     def __init__(self, schema, name):
         super(Table, self).__init__(name)
