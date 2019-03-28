@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 import sqlite3
 import pymysql
+import psycopg2
 import logging
 
 from piicatcher.dbmetadata import Schema, Table, Column
@@ -126,26 +127,11 @@ class SqliteExplorer(Explorer):
         return columns
 
 
-class MySQLExplorer(Explorer):
-    _catalog_query = """
-        SELECT 
-            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
-        FROM 
-            INFORMATION_SCHEMA.COLUMNS 
-        WHERE TABLE_SCHEMA NOT IN ('information_schema', 'performance_schema', 'sys', 'mysql')
-    """
+class CachedExplorer(Explorer):
 
-    def __init__(self, host, user, password):
-        super(MySQLExplorer,self).__init__("")
-        self.host = host
-        self.user = user
-        self.password = password
-        self._cache_ts=None
-
-    def _open_connection(self):
-        return pymysql.connect(host=self.host,
-                               user=self.user,
-                               password=self.password)
+    def __init__(self):
+        super(CachedExplorer, self).__init__("")
+        self._cache_ts = None
 
     def _load_catalog(self):
         if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(minutes=10):
@@ -200,3 +186,48 @@ class MySQLExplorer(Explorer):
                 return t.columns
 
         raise ValueError("{} table not found".format(table_name))
+
+
+class MySQLExplorer(CachedExplorer):
+    _catalog_query = """
+        SELECT 
+            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
+        FROM 
+            INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_SCHEMA NOT IN ('information_schema', 'performance_schema', 'sys', 'mysql')
+    """
+
+    def __init__(self, host, user, password):
+        super(MySQLExplorer, self).__init__()
+        self.host = host
+        self.user = user
+        self.password = password
+
+    def _open_connection(self):
+        return pymysql.connect(host=self.host,
+                               user=self.user,
+                               password=self.password)
+
+
+class PostgreSQLExplorer(CachedExplorer):
+    _catalog_query = """
+        SELECT 
+            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
+        FROM 
+            INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_SCHEMA NOT IN ('information_schema', 'pg_catalog')
+    """
+
+    def __init__(self, host, user, password, database):
+        super(PostgreSQLExplorer, self).__init__()
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
+
+    def _open_connection(self):
+        return psycopg2.connect(host=self.host,
+                                user=self.user,
+                                password=self.password,
+                                database=self.database)
+
