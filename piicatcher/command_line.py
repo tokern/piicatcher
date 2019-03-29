@@ -1,7 +1,7 @@
 import argparse
 import tableprint
 
-from piicatcher.dbexplorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer
+from piicatcher.db.explorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer
 
 
 def get_parser(parser_cls=argparse.ArgumentParser):
