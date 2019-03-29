@@ -1,7 +1,7 @@
 import argparse
 import tableprint
 
-from piicatcher.dbexplorer import SqliteExplorer, MySQLExplorer
+from piicatcher.dbexplorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer
 
 
 def get_parser(parser_cls=argparse.ArgumentParser):
@@ -14,7 +14,7 @@ def get_parser(parser_cls=argparse.ArgumentParser):
                         help="Password of the user")
 
     parser.add_argument("-t", "--connection-type", default="sqlite",
-                        choices=["sqlite", "mysql"],
+                        choices=["sqlite", "mysql", "postgres"],
                         help="Type of database")
 
     parser.add_argument("-o", "--output", default=None,
@@ -33,6 +33,8 @@ def dispatch(ns):
         explorer = SqliteExplorer(ns.host)
     elif ns.connection_type == "mysql":
         explorer = MySQLExplorer(ns.host, ns.user, ns.password)
+    elif ns.connection_type == "postgres":
+        explorer = PostgreSQLExplorer(ns.host, ns.user, ns.password)
 
     assert(explorer is not None)
 

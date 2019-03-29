@@ -53,3 +53,16 @@ class TestDispatcher(TestCase):
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
+
+    def test_postgres_dispatch(self):
+        with mock.patch('piicatcher.command_line.PostgreSQLExplorer.scan', autospec=True) as mock_scan_method:
+            with mock.patch('piicatcher.command_line.PostgreSQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.command_line.tableprint', autospec=True) as MockTablePrint:
+                    dispatch(Namespace(host='connection',
+                                       output_format='ascii_table',
+                                       connection_type='postgres',
+                                       user='user',
+                                       password='pass'))
+                    mock_scan_method.assert_called_once()
+                    mock_tabular_method.assert_called_once()
+                    MockTablePrint.table.assert_called_once()

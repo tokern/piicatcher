@@ -218,7 +218,7 @@ class PostgreSQLExplorer(CachedExplorer):
         WHERE TABLE_SCHEMA NOT IN ('information_schema', 'pg_catalog')
     """
 
-    def __init__(self, host, user, password, database):
+    def __init__(self, host, user, password, database='public'):
         super(PostgreSQLExplorer, self).__init__()
         self.host = host
         self.user = user
