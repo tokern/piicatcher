@@ -143,16 +143,20 @@ class SqliteExplorer(Explorer):
         return columns
 
 
-class CachedExplorer(Explorer):
+class CachedExplorer(Explorer, ABC):
 
     def __init__(self):
         super(CachedExplorer, self).__init__("")
         self._cache_ts = None
 
+    @abstractmethod
+    def _get_catalog_query(self):
+        pass
+
     def _load_catalog(self):
         if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(minutes=10):
             with self.get_connection().cursor() as cursor:
-                cursor.execute(self._catalog_query)
+                cursor.execute(self._get_catalog_query())
                 self._schemas = []
 
                 row = cursor.fetchone()
@@ -224,6 +228,9 @@ class MySQLExplorer(CachedExplorer):
                                user=self.user,
                                password=self.password)
 
+    def _get_catalog_query(self):
+        return self._catalog_query
+
 
 class PostgreSQLExplorer(CachedExplorer):
     _catalog_query = """
@@ -247,3 +254,5 @@ class PostgreSQLExplorer(CachedExplorer):
                                 password=self.password,
                                 database=self.database)
 
+    def _get_catalog_query(self):
+        return self._catalog_query
