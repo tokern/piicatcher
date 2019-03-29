@@ -9,6 +9,8 @@ from piicatcher.dbmetadata import Schema, Table, Column
 
 
 class Explorer(ABC):
+    query_template = "select {column_list} from {schema_name}.{table_name}"
+
     def __init__(self, conn_string):
         self.conn_string = conn_string
         self._connection = None
@@ -47,7 +49,7 @@ class Explorer(ABC):
 
     def scan(self):
         for schema in self.get_schemas():
-            schema.scan(self.get_connection().cursor())
+            schema.scan(self._generate_rows)
 
     def get_tabular(self):
         tabular = []
@@ -58,6 +60,20 @@ class Explorer(ABC):
                                     column.get_name(), column.has_pii()])
 
         return tabular
+
+    def _generate_rows(self, schema_name, table_name, column_list):
+        query = self.query_template.format(
+            column_list=",".join([col.get_name() for col in column_list]),
+            schema_name=schema_name.get_name(),
+            table_name=table_name.get_name()
+        )
+        logging.debug(query)
+        with self.get_connection().cursor() as cursor:
+            cursor.execute(query)
+            row = cursor.fetchone()
+            while row is not None:
+                yield row
+                row = cursor.fetchone()
 
 
 class SqliteExplorer(Explorer):
@@ -157,7 +173,7 @@ class CachedExplorer(Explorer):
                     elif current_table.get_name() != row[1]:
                         current_schema.tables.append(current_table)
                         current_table = Table(current_schema, row[1])
-                    current_table.columns.append(Column(row[2]))
+                    current_table._columns.append(Column(row[2]))
 
                     row = cursor.fetchone()
 
@@ -183,7 +199,7 @@ class CachedExplorer(Explorer):
         tables = self.get_tables(schema_name)
         for t in tables:
             if t.get_name() == table_name:
-                return t.columns
+                return t.get_columns()
 
         raise ValueError("{} table not found".format(table_name))
 
