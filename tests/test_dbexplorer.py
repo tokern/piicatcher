@@ -8,8 +8,8 @@ import psycopg2
 import logging
 import pytest
 
-from piicatcher.dbexplorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer
-from piicatcher.dbmetadata import Schema, Table, Column
+from piicatcher.db.explorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer
+from piicatcher.db.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
 
 logging.basicConfig(level=logging.DEBUG)

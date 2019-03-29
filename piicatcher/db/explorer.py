@@ -5,7 +5,7 @@ import pymysql
 import psycopg2
 import logging
 
-from piicatcher.dbmetadata import Schema, Table, Column
+from piicatcher.db.metadata import Schema, Table, Column
 
 
 class Explorer(ABC):
