@@ -1,4 +1,5 @@
 import argparse
+import json
 import tableprint
 
 from piicatcher.db.explorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer
@@ -26,7 +27,7 @@ def get_parser(parser_cls=argparse.ArgumentParser):
     parser.add_argument("-o", "--output", default=None,
                         help="File path for report. If not specified, "
                              "then report is printed to sys.stdout")
-    parser.add_argument("-f", "--output-format", choices=["ascii_table"],
+    parser.add_argument("-f", "--output-format", choices=["ascii_table", "json"],
                         default="ascii_table",
                         help="Choose output format type")
 
@@ -52,6 +53,8 @@ def dispatch(ns):
     if ns.output_format == "ascii_table":
         headers = ["schema", "table", "column", "has_pii"]
         tableprint.table(explorer.get_tabular(), headers)
+    elif ns.output_format == "json":
+        print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2))
 
 
 def main():

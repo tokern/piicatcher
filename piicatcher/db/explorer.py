@@ -53,6 +53,14 @@ class Explorer(ABC):
 
         return tabular
 
+    def get_dict(self):
+        schemas = []
+        for schema in self._schemas:
+            schemas.append(schema.get_dict())
+
+        print(schemas)
+        return schemas
+
     def _get_select_query(self, schema_name, table_name, column_list):
         return self.query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),

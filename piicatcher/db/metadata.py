@@ -50,6 +50,18 @@ class Schema(NamedObject):
 
         logging.debug("{} has {}".format(self, self._pii))
 
+    def get_dict(self):
+        dict = {
+            'has_pii': self.has_pii(),
+            'name': self._name,
+            'tables': []
+        }
+
+        for table in self.tables:
+            dict['tables'].append(table.get_dict())
+
+        return dict
+
 
 class Table(NamedObject):
     def __init__(self, schema, name):
@@ -82,6 +94,17 @@ class Table(NamedObject):
             col.shallow_scan()
             [self._pii.add(p) for p in col.get_pii_types()]
 
+    def get_dict(self):
+        dict = {
+            'has_pii': self.has_pii(),
+            'name': self.get_name(),
+            'columns': []
+        }
+
+        for col in self._columns:
+            dict['columns'].append(col.get_dict())
+        return dict
+
 
 class Column(NamedObject):
     def __init__(self, name):
@@ -97,3 +120,8 @@ class Column(NamedObject):
     def shallow_scan(self):
         [self._pii.add(pii) for pii in self.column_scanner.scan(self._name)]
 
+    def get_dict(self):
+        return {
+            'has_pii': self.has_pii(),
+            'name': self.get_name()
+        }
