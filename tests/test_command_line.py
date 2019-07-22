@@ -29,6 +29,18 @@ class TestParser(TestCase):
         self.assertIsNone(ns.output)
         self.assertEqual("ascii_table", ns.output_format)
 
+    def test_default_scan_type(self):
+        ns = get_parser().parse_args(["-s", "connection_string"])
+        self.assertIsNone(ns.scan_type)
+
+    def test_deep_scan_type(self):
+        ns = get_parser().parse_args(["-s", "connection_string", "-c", "deep"])
+        self.assertEqual("deep", ns.scan_type)
+
+    def test_default_scan_type(self):
+        ns = get_parser().parse_args(["-s", "connection_string", "-c", "shallow"])
+        self.assertEqual("shallow", ns.scan_type)
+
 
 class TestDispatcher(TestCase):
 
@@ -36,7 +48,8 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.command_line.SqliteExplorer.scan', autospec=True) as mock_scan_method:
             with mock.patch('piicatcher.command_line.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.command_line.tableprint', autospec=True) as MockTablePrint:
-                    dispatch(Namespace(host='connection', output_format='ascii_table', connection_type='sqlite'))
+                    dispatch(Namespace(host='connection', output_format='ascii_table', connection_type='sqlite',
+                                       scan_type=None))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
@@ -48,6 +61,7 @@ class TestDispatcher(TestCase):
                     dispatch(Namespace(host='connection',
                                        output_format='ascii_table',
                                        connection_type='mysql',
+                                       scan_type='deep',
                                        user='user',
                                        password='pass'))
                     mock_scan_method.assert_called_once()
@@ -61,6 +75,7 @@ class TestDispatcher(TestCase):
                     dispatch(Namespace(host='connection',
                                        output_format='ascii_table',
                                        connection_type='postgres',
+                                       scan_type=None,
                                        user='user',
                                        password='pass'))
                     mock_scan_method.assert_called_once()

@@ -42,7 +42,7 @@ def dispatch(ns):
 
     assert(explorer is not None)
 
-    if ns.scan_type == "deep":
+    if ns.scan_type is None or ns.scan_type == "deep":
         explorer.scan()
     else:
         explorer.shallow_scan()
