@@ -67,3 +67,40 @@ class DbMetadataTests(TestCase):
         cols = table.get_columns()
         self.assertTrue(cols[0].has_pii())
         self.assertTrue(cols[1].has_pii())
+
+
+class ShallowScan(TestCase):
+    def test_no_pii_table(self):
+        schema = Schema('public')
+        table = Table(schema, 'no_pii')
+        table.add(Column('a'))
+        table.add(Column('b'))
+
+        table.shallow_scan()
+        self.assertFalse(table.has_pii())
+
+    def test_partial_pii_table(self):
+        schema = Schema('public')
+        table = Table(schema, 'partial_pii')
+        table.add(Column('fname'))
+        table.add(Column('b'))
+
+        table.shallow_scan()
+        self.assertTrue(table.has_pii())
+        cols = table.get_columns()
+        self.assertTrue(cols[0].has_pii())
+        self.assertFalse(cols[1].has_pii())
+
+    def test_full_pii_table(self):
+        schema = Schema('public')
+        table = Table(schema, 'full_pii')
+        table.add(Column('name'))
+        table.add(Column('dob'))
+
+        table.shallow_scan()
+        self.assertTrue(table.has_pii())
+
+        cols = table.get_columns()
+        self.assertTrue(cols[0].has_pii())
+        self.assertTrue(cols[1].has_pii())
+

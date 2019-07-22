@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import logging
 
-from piicatcher.scanner import RegexScanner, NERScanner
+from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
 
 
 class NamedObject(ABC):
@@ -43,6 +43,13 @@ class Schema(NamedObject):
 
         logging.debug("{} has {}".format(self, self._pii))
 
+    def shallow_scan(self):
+        for table in self.tables:
+            table.shallow_scan()
+            [self._pii.add(p) for p in table.get_pii_types()]
+
+        logging.debug("{} has {}".format(self, self._pii))
+
 
 class Table(NamedObject):
     def __init__(self, schema, name):
@@ -70,13 +77,23 @@ class Table(NamedObject):
 
         logging.debug(self._pii)
 
+    def shallow_scan(self):
+        for col in self._columns:
+            col.shallow_scan()
+            [self._pii.add(p) for p in col.get_pii_types()]
+
 
 class Column(NamedObject):
     def __init__(self, name):
         super(Column, self).__init__(name)
+        self.column_scanner = ColumnNameScanner()
 
     def scan(self, data):
         for scanner in [RegexScanner(), NERScanner()]:
             [self._pii.add(pii) for pii in scanner.scan(data)]
 
         logging.debug(self._pii)
+
+    def shallow_scan(self):
+        [self._pii.add(pii) for pii in self.column_scanner.scan(self._name)]
+

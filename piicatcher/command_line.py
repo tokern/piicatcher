@@ -17,6 +17,10 @@ def get_parser(parser_cls=argparse.ArgumentParser):
                         choices=["sqlite", "mysql", "postgres"],
                         help="Type of database")
 
+    parser.add_argument("-c", "--scan-type", default='deep',
+                        choices=["deep", "shallow"],
+                        help="Choose deep(scan data) or shallow(scan column names only)")
+
     parser.add_argument("-o", "--output", default=None,
                         help="File path for report. If not specified, "
                              "then report is printed to sys.stdout")
@@ -38,7 +42,10 @@ def dispatch(ns):
 
     assert(explorer is not None)
 
-    explorer.scan()
+    if ns.scan_type == "deep":
+        explorer.scan()
+    else:
+        explorer.shallow_scan()
 
     if ns.output_format == "ascii_table":
         headers = ["schema", "table", "column", "has_pii"]

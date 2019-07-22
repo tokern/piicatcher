@@ -39,6 +39,10 @@ class Explorer(ABC):
         for schema in self.get_schemas():
             schema.scan(self._generate_rows)
 
+    def shallow_scan(self):
+        for schema in self.get_schemas():
+            schema.shallow_scan()
+
     def get_tabular(self):
         tabular = []
         for schema in self._schemas:

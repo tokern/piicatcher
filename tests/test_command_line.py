@@ -66,3 +66,18 @@ class TestDispatcher(TestCase):
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
+
+    def test_mysql_shallow_scan(self):
+        with mock.patch('piicatcher.command_line.MySQLExplorer.shallow_scan', autospec=True) as mock_shallow_scan_method:
+            with mock.patch('piicatcher.command_line.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.command_line.tableprint', autospec=True) as MockTablePrint:
+                    dispatch(Namespace(host='connection',
+                                       output_format='ascii_table',
+                                       connection_type='mysql',
+                                       user='user',
+                                       password='pass',
+                                       scan_type="shallow"))
+                    mock_shallow_scan_method.assert_called_once()
+                    mock_tabular_method.assert_called_once()
+                    MockTablePrint.table.assert_called_once()
+
