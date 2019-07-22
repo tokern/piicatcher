@@ -19,7 +19,7 @@ class TestParser(TestCase):
         self.assertEqual("connection_string", ns.host)
 
     def test_port(self):
-        ns = get_parser().parse_args(["-s", "connection_string", "-P", "6032"])
+        ns = get_parser().parse_args(["-s", "connection_string", "-R", "6032"])
         self.assertEqual("connection_string", ns.host)
         self.assertEqual("6032", ns.port)
 
