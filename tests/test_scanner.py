@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from piicatcher.scanner import RegexScanner, NERScanner
+from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
 from piicatcher.piitypes import PiiTypes
 
 
@@ -53,3 +53,46 @@ class NERTests(TestCase):
     def test_location(self):
         types = self.parser.scan("Jonathan is in Bangalore")
         self.assertTrue(PiiTypes.LOCATION in types)
+
+
+class ColumnNameScannerTests(TestCase):
+    def setUp(self):
+        self.parser = ColumnNameScanner()
+
+    def test_person(self):
+        self.assertTrue(PiiTypes.PERSON in self.parser.scan("fname"))
+        self.assertTrue(PiiTypes.PERSON in self.parser.scan("full_name"))
+        self.assertTrue(PiiTypes.PERSON in self.parser.scan("name"))
+
+    def test_email(self):
+        self.assertTrue(PiiTypes.EMAIL in self.parser.scan("email"))
+
+    def test_birth_date(self):
+        self.assertTrue(PiiTypes.BIRTH_DATE in self.parser.scan("dob"))
+        self.assertTrue(PiiTypes.BIRTH_DATE in self.parser.scan("birthday"))
+
+    def test_gender(self):
+        self.assertTrue(PiiTypes.GENDER in self.parser.scan("gender"))
+
+    def test_nationality(self):
+        self.assertTrue(PiiTypes.NATIONALITY in self.parser.scan("nationality"))
+
+    def test_address(self):
+        self.assertTrue(PiiTypes.ADDRESS in self.parser.scan("address"))
+        self.assertTrue(PiiTypes.ADDRESS in self.parser.scan("city"))
+        self.assertTrue(PiiTypes.ADDRESS in self.parser.scan("state"))
+        self.assertTrue(PiiTypes.ADDRESS in self.parser.scan("country"))
+        self.assertTrue(PiiTypes.ADDRESS in self.parser.scan("zipcode"))
+        self.assertTrue(PiiTypes.ADDRESS in self.parser.scan("postal"))
+
+    def test_user_name(self):
+        self.assertTrue(PiiTypes.USER_NAME in self.parser.scan("user"))
+        self.assertTrue(PiiTypes.USER_NAME in self.parser.scan("userid"))
+        self.assertTrue(PiiTypes.USER_NAME in self.parser.scan("username"))
+
+    def test_password(self):
+        self.assertTrue(PiiTypes.PASSWORD in self.parser.scan("pass"))
+        self.assertTrue(PiiTypes.PASSWORD in self.parser.scan("password"))
+
+    def test_ssn(self):
+        self.assertTrue(PiiTypes.SSN in self.parser.scan("ssn"))

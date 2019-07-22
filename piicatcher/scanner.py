@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from commonregex import CommonRegex
 import logging
+import re
 import spacy
 
 from piicatcher.piitypes import PiiTypes
@@ -52,6 +53,33 @@ class NERScanner(Scanner):
 
             if ent.label_ == 'GPE':
                 types.add(PiiTypes.LOCATION)
+
+        logging.debug("PiiTypes are {}".format(list(types)))
+        return list(types)
+
+
+class ColumnNameScanner(Scanner):
+    regex = {
+        PiiTypes.PERSON: re.compile("^.*(firstname|fname|lastname|lname|"
+                                    "fullname|fname|maidenname|_name|"
+                                    "nickname|name_suffix|name).*$"),
+        PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$"),
+        PiiTypes.BIRTH_DATE: re.compile("^.*(date_of_birth|dateofbirth|dob|"
+                                        "birthday|date_of_death|dateofdeath).*$"),
+        PiiTypes.GENDER: re.compile("^.*(gender).*$"),
+        PiiTypes.NATIONALITY: re.compile("^.*(nationality).*$"),
+        PiiTypes.ADDRESS: re.compile("^.*(address|city|state|county|country|"
+                                     "zipcode|postal).*$"),
+        PiiTypes.USER_NAME: re.compile("^.*user(id|name|).*$"),
+        PiiTypes.PASSWORD: re.compile("^.*pass.*$"),
+        PiiTypes.SSN: re.compile("^.*(ssn|social).*$")
+    }
+
+    def scan(self, text):
+        types = set()
+        for pii_type in self.regex.keys():
+            if self.regex[pii_type].match(text) is not None:
+                types.add(pii_type)
 
         logging.debug("PiiTypes are {}".format(list(types)))
         return list(types)

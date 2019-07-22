@@ -224,6 +224,7 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
     def get_test_schema(self):
         return "pii_db"
 
+
 @pytest.mark.usefixtures("create_tables")
 @pytest.mark.dbtest
 class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
