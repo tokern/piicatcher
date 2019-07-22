@@ -198,14 +198,18 @@ class MySQLExplorer(Explorer):
         ORDER BY table_schema, table_name, column_name 
     """
 
-    def __init__(self, host, user, password):
+    default_port = 3036
+
+    def __init__(self, host, port, user, password):
         super(MySQLExplorer, self).__init__()
         self.host = host
         self.user = user
         self.password = password
+        self.port = self.default_port if port is None else int(port)
 
     def _open_connection(self):
         return pymysql.connect(host=self.host,
+                               port=self.port,
                                user=self.user,
                                password=self.password)
 
@@ -225,15 +229,19 @@ class PostgreSQLExplorer(Explorer):
         ORDER BY table_schema, table_name, column_name 
     """
 
-    def __init__(self, host, user, password, database='public'):
+    default_port = 5432
+
+    def __init__(self, host, port, user, password, database='public'):
         super(PostgreSQLExplorer, self).__init__()
         self.host = host
+        self.port = self.default_port if port is None else int(port)
         self.user = user
         self.password = password
         self.database = database
 
     def _open_connection(self):
         return psycopg2.connect(host=self.host,
+                                port=self.port,
                                 user=self.user,
                                 password=self.password,
                                 database=self.database)

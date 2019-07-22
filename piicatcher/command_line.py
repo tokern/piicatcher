@@ -8,6 +8,8 @@ def get_parser(parser_cls=argparse.ArgumentParser):
     parser = parser_cls()
     parser.add_argument("-s", "--host", required=True,
                         help="Hostname of the database. File path if it is SQLite")
+    parser.add_argument("-R", "--port",
+                        help="Port of database.")
     parser.add_argument("-u", "--user",
                         help="Username to connect database")
     parser.add_argument("-p", "--password",
@@ -36,9 +38,9 @@ def dispatch(ns):
     if ns.connection_type == "sqlite":
         explorer = SqliteExplorer(ns.host)
     elif ns.connection_type == "mysql":
-        explorer = MySQLExplorer(ns.host, ns.user, ns.password)
+        explorer = MySQLExplorer(ns.host, ns.port, ns.user, ns.password)
     elif ns.connection_type == "postgres":
-        explorer = PostgreSQLExplorer(ns.host, ns.user, ns.password)
+        explorer = PostgreSQLExplorer(ns.host, ns.port, ns.user, ns.password)
 
     assert(explorer is not None)
 
