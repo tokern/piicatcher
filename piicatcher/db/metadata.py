@@ -111,6 +111,12 @@ class Column(NamedObject):
         super(Column, self).__init__(name)
         self.column_scanner = ColumnNameScanner()
 
+    def add_pii_type(self, pii):
+        self._pii.add(pii)
+
+    def get_pii_types(self):
+        return self._pii
+
     def scan(self, data):
         for scanner in [RegexScanner(), NERScanner()]:
             [self._pii.add(pii) for pii in scanner.scan(data)]
