@@ -13,18 +13,9 @@ from piicatcher.orm.models import Store
 logging.basicConfig(level=logging.DEBUG)
 
 
-@pytest.mark.usefixtures("temp_sqlite")
+@pytest.mark.skip
 class TestCreateTables(TestCase):
-    @pytest.fixture(scope="class")
-    def temp_sqlite(self, request, tmpdir_factory):
-        request.cls.temp_dir = tmpdir_factory.mktemp("model_test")
-        request.cls.sqlite_conn = request.cls.temp_dir.join("create_table_tests")
-
-        def finalizer():
-            rmtree(self.temp_dir)
-            logging.info("Deleted {}".format(str(self.temp_dir)))
-
-        request.addfinalizer(finalizer)
+    sqlite_conn = 'file::memory:?cache=shared'
 
     def setUp(self):
         init_test(str(self.sqlite_conn))
