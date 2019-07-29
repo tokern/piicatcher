@@ -6,7 +6,7 @@ from piicatcher.orm.models import *
 from piicatcher.db.explorer import Explorer, SqliteExplorer
 from piicatcher.db.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
-from piicatcher.orm.orm import Store
+from piicatcher.orm.models import Store
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -49,8 +49,9 @@ class MockExplorer(Explorer):
 class TestStore(TestCase):
     sqlite_path = 'file::memory:?cache=shared'
 
-    def setUp(self):
-        init_test(self.sqlite_path)
+    @classmethod
+    def setUpClass(cls):
+        init_test(cls.sqlite_path)
         schema = Schema("test_store")
 
         no_pii_table = Table("test_store", "no_pii")
@@ -84,12 +85,13 @@ class TestStore(TestCase):
 
         schema.add(full_pii_table)
 
-        self._explorer = MockExplorer()
-        self._explorer.set_schema(schema)
+        explorer = MockExplorer()
+        explorer.set_schema(schema)
 
-        Store.save_schemas(self._explorer)
+        Store.save_schemas(explorer)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         model_db_close()
 
     def test_schema(self):
@@ -110,16 +112,11 @@ class TestStore(TestCase):
     def test_columns(self):
         conn = sqlite3.connect(self.sqlite_path)
         c = conn.cursor()
-        c.execute('select * from columns order by id')
+        c.execute('select * from columns where table_id in (1,2) order by id')
         self.assertEqual(
             [(1, 'a', '[]', 1),
              (2, 'b', '[]', 1),
              (3, 'a', '[{"__enum__": "PiiTypes.PHONE"}]', 2),
-             (4, 'b', '[]', 2),
-             (5, 'a', '[{"__enum__": "PiiTypes.PHONE"}]', 3),
-             (6,
-              'b',
-              '[{"__enum__": "PiiTypes.LOCATION"}, {"__enum__": "PiiTypes.ADDRESS"}]',
-              3)], list(c.fetchall()))
+             (4, 'b', '[]', 2)], list(c.fetchall()))
         c.close()
 

@@ -104,3 +104,34 @@ class TestDispatcher(TestCase):
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
 
+
+class TestOrmDispatch(TestCase):
+    def test_all_missing_parameters(self):
+        with mock.patch('piicatcher.command_line.MySQLExplorer.shallow_scan', autospec=True) as mock_shallow_scan_method:
+            self.assertRaises(RuntimeError, lambda: dispatch(Namespace(host='connection',
+                                                                       port=None,
+                                                                       output_format='orm',
+                                                                       connection_type='mysql',
+                                                                       user='user',
+                                                                       password='pass',
+                                                                       scan_type='shallow_scan')))
+
+    def test_positive_dispatch(self):
+        with mock.patch('piicatcher.command_line.MySQLExplorer.shallow_scan', autospec=True) as mock_shallow_scan_method:
+            with mock.patch('piicatcher.command_line.init', autospec=True) as mock_init_method:
+                with mock.patch('piicatcher.command_line.Store', autospec=True) as MockStore:
+                    dispatch(Namespace(host='connection',
+                                       port=None,
+                                       output_format='orm',
+                                       connection_type='mysql',
+                                       user='user',
+                                       password='pass',
+                                       scan_type="shallow",
+                                       orm_host='orm_host',
+                                       orm_port='orm_port',
+                                       orm_user='orm_user',
+                                       orm_pass='orm_pass'))
+                    mock_shallow_scan_method.assert_called_once()
+                    mock_init_method.assert_called_once()
+                    MockStore.save_schemas.assert_called_once()
+
