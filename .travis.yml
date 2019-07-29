@@ -2,7 +2,7 @@ sudo: true
 dist: xenial
 language: python
 python:
-- '3.6'
+- '3.7'
 cache: pip
 before_install:
 - pip install -U coverage pytest pytest-cov codecov pytest-pylint
@@ -23,4 +23,4 @@ deploy:
     tags: true
     branch: master
     distributions: "sdist bdist_wheel"
-    python: '3.6'
+    python: '3.7'
