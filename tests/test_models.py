@@ -1,6 +1,8 @@
 from unittest import TestCase
+from shutil import rmtree
 import logging
 import sqlite3
+import pytest
 
 from piicatcher.orm.models import *
 from piicatcher.db.explorer import Explorer, SqliteExplorer
@@ -11,12 +13,22 @@ from piicatcher.orm.models import Store
 logging.basicConfig(level=logging.DEBUG)
 
 
+@pytest.mark.usefixtures("temp_sqlite")
 class TestCreateTables(TestCase):
-    sqlite_path = 'file::memory:?cache=shared'
+    @pytest.fixture(scope="class")
+    def temp_sqlite(self, request, tmpdir_factory):
+        request.cls.temp_dir = tmpdir_factory.mktemp("model_test")
+        request.cls.sqlite_conn = request.cls.temp_dir.join("create_table_tests")
+
+        def finalizer():
+            rmtree(self.temp_dir)
+            logging.info("Deleted {}".format(str(self.temp_dir)))
+
+        request.addfinalizer(finalizer)
 
     def setUp(self):
-        init_test(self.sqlite_path)
-        self.explorer = SqliteExplorer(self.sqlite_path)
+        init_test(self.sqlite_conn)
+        self.explorer = SqliteExplorer(self.sqlite_conn)
 
     def tearDown(self):
         self.explorer.close_connection()
