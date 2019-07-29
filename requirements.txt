@@ -10,3 +10,6 @@ tableprint
 pymysql
 psycopg2-binary
 cryptography
+peewee
+
+pytest
