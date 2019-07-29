@@ -42,3 +42,7 @@ def init_test(path):
     database_proxy.initialize(database)
     database_proxy.connect()
     database_proxy.create_tables([Schemas, Tables, Columns])
+
+
+def model_db_close():
+    database_proxy.close()

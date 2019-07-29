@@ -26,6 +26,10 @@ class Explorer(ABC):
     def _open_connection(self):
         pass
 
+    @abstractmethod
+    def _get_catalog_query(self):
+        pass
+
     def get_connection(self):
         if self._connection is None:
             self._connection = self._open_connection()
@@ -34,6 +38,7 @@ class Explorer(ABC):
     def close_connection(self):
         if self._connection is not None:
             self._connection.close()
+            self._connection = None
 
     def scan(self):
         for schema in self.get_schemas():
@@ -77,10 +82,6 @@ class Explorer(ABC):
             while row is not None:
                 yield row
                 row = cursor.fetchone()
-
-    @abstractmethod
-    def _get_catalog_query(self):
-        pass
 
     def _get_context_manager(self):
         return self.get_connection().cursor()
