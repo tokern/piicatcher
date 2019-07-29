@@ -27,8 +27,8 @@ class TestCreateTables(TestCase):
         request.addfinalizer(finalizer)
 
     def setUp(self):
-        init_test(self.sqlite_conn)
-        self.explorer = SqliteExplorer(self.sqlite_conn)
+        init_test(str(self.sqlite_conn))
+        self.explorer = SqliteExplorer(str(self.sqlite_conn))
 
     def tearDown(self):
         self.explorer.close_connection()
