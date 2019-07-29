@@ -28,7 +28,7 @@ class TestCreateTables(TestCase):
     def test_tables_exist(self):
         schema = self.explorer.get_schemas()[0]
 
-        self.assertEqual(["columns", "schemas", "tables"],
+        self.assertEqual(["dbcolumns", "dbschemas", "dbtables"],
                          [t.get_name() for t in schema.get_tables()])
 
 
@@ -97,14 +97,14 @@ class TestStore(TestCase):
     def test_schema(self):
         conn = sqlite3.connect(self.sqlite_path)
         c = conn.cursor()
-        c.execute('select * from schemas')
+        c.execute('select * from dbschemas')
         self.assertEqual([(1, 'test_store')], list(c.fetchall()))
         c.close()
 
     def test_tables(self):
         conn = sqlite3.connect(self.sqlite_path)
         c = conn.cursor()
-        c.execute('select * from tables order by id')
+        c.execute('select * from dbtables order by id')
         self.assertEqual([(1, 'no_pii', 1), (2, 'partial_pii', 1), (3, 'full_pii', 1)],
                          list(c.fetchall()))
         c.close()
@@ -112,7 +112,7 @@ class TestStore(TestCase):
     def test_columns(self):
         conn = sqlite3.connect(self.sqlite_path)
         c = conn.cursor()
-        c.execute('select * from columns where table_id in (1,2) order by id')
+        c.execute('select * from dbcolumns where table_id in (1,2) order by id')
         self.assertEqual(
             [(1, 'a', '[]', 1),
              (2, 'b', '[]', 1),
