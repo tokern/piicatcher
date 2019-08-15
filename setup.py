@@ -22,6 +22,7 @@ setup(
     version=__version__,
     description='Find PII data in databases',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url='https://github.com/vrajat/piicatcher',
     download_url='https://github.com/vrajat/piicatcher/tarball/' + __version__,
     license='Apache 2.0',
