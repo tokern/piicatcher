@@ -63,26 +63,26 @@ class File(NamedObject):
 
 class FileExplorer:
     def __init__(self, path):
-        self.path = path
-        self.files = []
+        self._path = path
+        self._files = []
 
     def scan(self):
-        logging.debug("Scanning %s" % self.path)
-        for root, subdirs, files in os.walk(self.path):
+        logging.debug("Scanning %s" % self._path)
+        for root, subdirs, files in os.walk(self._path):
             for filename in files:
                 file_path = os.path.join(root, filename)
                 mime_type = magic.from_file(file_path, mime=True)
 
                 logging.debug('\t- full path: %s, mime_type: %s' % (file_path, mime_type))
-                self.files.append(File(file_path, mime_type))
+                self._files.append(File(file_path, mime_type))
 
         t = Tokenizer()
-        for f in self.files:
+        for f in self._files:
             f.scan(t)
 
     def get_tabular(self):
         tabular = []
-        for f in self.files:
+        for f in self._files:
             tabular.append([f.get_name(), f.get_mime_type(), json.dumps(list(f.get_pii_types()),
                                                                         cls=PiiTypeEncoder)])
 
