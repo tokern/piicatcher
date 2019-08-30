@@ -47,18 +47,20 @@ class File(NamedObject):
         return self._mime_type
 
     def scan(self, context):
-        tokenizer = context
+        tokenizer = context['tokenizer']
+        regex = context['regex']
+        ner = context['ner']
 
         if not self._mime_type.startswith('text/'):
             self._pii.add(PiiTypes.UNSUPPORTED)
         else:
             with open(self.get_name(), 'r') as f:
                 data = f.read()
+                [self._pii.add(pii) for pii in ner.scan(data)]
                 tokens = tokenizer.tokenize(data)
                 for t in tokens:
                     if not t.is_stop:
-                        for scanner in [RegexScanner(), NERScanner()]:
-                            [self._pii.add(pii) for pii in scanner.scan(t.text)]
+                        [self._pii.add(pii) for pii in regex.scan(t.text)]
 
 
 class FileExplorer:
@@ -76,9 +78,9 @@ class FileExplorer:
                 logging.debug('\t- full path: %s, mime_type: %s' % (file_path, mime_type))
                 self._files.append(File(file_path, mime_type))
 
-        t = Tokenizer()
+        context = {'tokenizer': Tokenizer(), 'regex': RegexScanner(), 'ner': NERScanner()}
         for f in self._files:
-            f.scan(t)
+            f.scan(context)
 
     def get_tabular(self):
         tabular = []
