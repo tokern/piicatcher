@@ -54,6 +54,9 @@ class NERScanner(Scanner):
             if ent.label_ == 'GPE':
                 types.add(PiiTypes.LOCATION)
 
+            if ent.label_ == 'DATE':
+                types.add(PiiTypes.BIRTH_DATE)
+
         logging.debug("PiiTypes are {}".format(list(types)))
         return list(types)
 

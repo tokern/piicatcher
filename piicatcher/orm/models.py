@@ -2,7 +2,7 @@ import json
 
 from peewee import *
 
-from piicatcher.piitypes import PiiTypeEncoder
+from piicatcher.orm.PiiTypeField import PiiTypeField
 from piicatcher.config import config
 
 database_proxy = DatabaseProxy()
@@ -27,8 +27,15 @@ class DbTables(BaseModel):
 class DbColumns(BaseModel):
     id = AutoField()
     name = CharField()
-    pii_type = CharField()
+    pii_type = PiiTypeField()
     table_id = ForeignKeyField(DbTables, 'id')
+
+
+class DbFile(BaseModel):
+    id = AutoField()
+    full_path = CharField()
+    mime_type = CharField()
+    pii_types = PiiTypeField()
 
 
 def init():
@@ -41,7 +48,7 @@ def init():
                                  password=orm['password'])
         database_proxy.initialize(database)
         database_proxy.connect()
-        database_proxy.create_tables([DbSchemas, DbTables, DbColumns])
+        database_proxy.create_tables([DbSchemas, DbTables, DbColumns, DbFile])
 
 
 def init_test(path):
@@ -68,5 +75,4 @@ class Store:
 
                     for c in t.get_columns():
                         col_model = DbColumns.create(table_id=tbl_model, name=c.get_name(),
-                                                     pii_type=json.dumps(list(c.get_pii_types()),
-                                                                       cls=PiiTypeEncoder))
+                                                     pii_type=c.get_pii_types())
