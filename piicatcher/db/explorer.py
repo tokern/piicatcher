@@ -12,6 +12,7 @@ from piicatcher.orm.models import Store
 
 
 def dispatch(ns):
+    logging.debug("Db Dispatch entered")
     explorer = None
     if ns.connection_type == "sqlite":
         explorer = SqliteExplorer(ns.host)

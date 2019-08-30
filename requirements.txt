@@ -12,5 +12,6 @@ psycopg2-binary
 cryptography
 peewee
 pyyaml
+python-magic
 
 pytest
