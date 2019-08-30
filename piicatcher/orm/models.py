@@ -3,6 +3,7 @@ import json
 from peewee import *
 
 from piicatcher.piitypes import PiiTypeEncoder
+from piicatcher.config import config
 
 database_proxy = DatabaseProxy()
 
@@ -30,15 +31,17 @@ class DbColumns(BaseModel):
     table_id = ForeignKeyField(DbTables, 'id')
 
 
-def init(host, port, user, password):
-    database = MySQLDatabase('tokern',
-                             host=host,
-                             port=int(port),
-                             user=user,
-                             password=password)
-    database_proxy.initialize(database)
-    database_proxy.connect()
-    database_proxy.create_tables([DbSchemas, DbTables, DbColumns])
+def init():
+    if 'orm' in config:
+        orm = config['orm']
+        database = MySQLDatabase('tokern',
+                                 host=orm['host'],
+                                 port=int(orm['port']),
+                                 user=orm['user'],
+                                 password=orm['password'])
+        database_proxy.initialize(database)
+        database_proxy.connect()
+        database_proxy.create_tables([DbSchemas, DbTables, DbColumns])
 
 
 def init_test(path):
