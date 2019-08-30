@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
 from piicatcher.piitypes import PiiTypes
+from piicatcher.tokenizer import Tokenizer
 
 
 class RegexTestCase(TestCase):
@@ -54,6 +55,10 @@ class NERTests(TestCase):
         types = self.parser.scan("Jonathan is in Bangalore")
         self.assertTrue(PiiTypes.LOCATION in types)
 
+    def test_date(self):
+        types = self.parser.scan("Jan 1 2016 is a new year")
+        self.assertTrue(PiiTypes.BIRTH_DATE in types)
+
 
 class ColumnNameScannerTests(TestCase):
     def setUp(self):
@@ -96,3 +101,10 @@ class ColumnNameScannerTests(TestCase):
 
     def test_ssn(self):
         self.assertTrue(PiiTypes.SSN in self.parser.scan("ssn"))
+
+
+class TestTokenizer(TestCase):
+    def testTokenization(self):
+        tok = Tokenizer()
+        tokens = tok.tokenize("Jonathan is in Bangalore")
+        self.assertEqual(4, len(tokens))
