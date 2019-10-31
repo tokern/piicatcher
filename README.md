@@ -42,6 +42,8 @@ PiiCatcher supports the following databases:
 2. **MySQL** 5.6 or greater
 3. **PostgreSQL** 9.4 or greater
 4. **AWS Redshift**
+5. **SQL Server**
+6. **Oracle**
 
 Installation
 ------------
@@ -65,6 +67,11 @@ Install Spacy Language Model
 
     python -m spacy download en_core_web_sm 
 
+Install Oracle Client
+
+PiiCatcher on Oracle, requires a working client. Please refer to [cx_Oracle documentation](https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html#oracle-client-and-oracle-database-interoperability)
+for more information.
+ 
 Usage
 -----
     # Print usage to scan databases

@@ -1,8 +1,12 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+
 import sqlite3
 import pymysql
 import psycopg2
+import pymssql
+import cx_Oracle
+
 import logging
 import json
 import tableprint
@@ -18,8 +22,12 @@ def dispatch(ns):
         explorer = SqliteExplorer(ns.host)
     elif ns.connection_type == "mysql":
         explorer = MySQLExplorer(ns.host, ns.port, ns.user, ns.password)
-    elif ns.connection_type == "postgres":
+    elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
         explorer = PostgreSQLExplorer(ns.host, ns.port, ns.user, ns.password)
+    elif ns.connection_type == "sqlserver":
+        explorer = MSSQLExplorer(ns.host, ns.port, ns.user, ns.password)
+    elif ns.connection_type == "oracle":
+        explorer = OracleExplorer(ns.host, ns.port, ns.user, ns.password)
 
     assert (explorer is not None)
 
@@ -50,7 +58,7 @@ def parser(sub_parsers):
                             help="Password of the user")
 
     sub_parser.add_argument("-t", "--connection-type", default="sqlite",
-                            choices=["sqlite", "mysql", "postgres"],
+                            choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
                             help="Type of database")
 
     sub_parser.add_argument("-c", "--scan-type", default='deep',
@@ -312,6 +320,71 @@ class PostgreSQLExplorer(Explorer):
                                 user=self.user,
                                 password=self.password,
                                 database=self.database)
+
+    def _get_catalog_query(self):
+        return self._catalog_query
+
+
+class MSSQLExplorer(Explorer):
+    _catalog_query = """
+        SELECT 
+            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
+        FROM 
+            INFORMATION_SCHEMA.COLUMNS 
+        WHERE 
+            TABLE_SCHEMA NOT IN ('information_schema', 'pg_catalog')
+            AND DATA_TYPE SIMILAR TO '%char%|%text%'
+        ORDER BY table_schema, table_name, ordinal_position 
+    """
+
+    default_port = 1433
+
+    def __init__(self, host, port, user, password, database='public'):
+        super(MSSQLExplorer, self).__init__()
+        self.host = host
+        self.port = self.default_port if port is None else int(port)
+        self.user = user
+        self.password = password
+        self.database = database
+
+    def _open_connection(self):
+        return pymssql.connect(host=self.host,
+                               port=self.port,
+                               user=self.user,
+                               password=self.password,
+                               database=self.database)
+
+    def _get_catalog_query(self):
+        return self._catalog_query
+
+
+class OracleExplorer(Explorer):
+    _catalog_query = """
+        SELECT 
+            TABLE_NAME, COLUMN_NAME, DATA_TYPE 
+        FROM 
+            DBA_TAB_COLUMNS 
+        WHERE 
+            AND DATA_TYPE SIMILAR TO '%char%|%text%'
+        ORDER BY TABLE_NAME, COLUMN_ID 
+    """
+
+    default_port = 1521
+
+    def __init__(self, host, port, user, password, database='public'):
+        super(OracleExplorer, self).__init__()
+        self.host = host
+        self.port = self.default_port if port is None else int(port)
+        self.user = user
+        self.password = password
+        self.database = database
+
+    def _open_connection(self):
+        return cx_Oracle.connect(host=self.host,
+                                 port=self.port,
+                                 user=self.user,
+                                 password=self.password,
+                                 database=self.database)
 
     def _get_catalog_query(self):
         return self._catalog_query
