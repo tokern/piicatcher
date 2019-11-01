@@ -414,6 +414,7 @@ class TestDispatcher(TestCase):
                                        port=None,
                                        output_format='ascii_table',
                                        connection_type='postgres',
+                                       database='public',
                                        scan_type=None,
                                        user='user',
                                        password='pass'))
