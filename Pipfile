@@ -13,6 +13,10 @@ pytest-pylint = "*"
 [requires]
 python_version = "3.7"
 
+[dev-packages.e1839a8]
+path = "."
+editable = true
+
 [packages.piicatcher]
 editable = true
 path = "."
