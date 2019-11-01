@@ -23,11 +23,11 @@ def dispatch(ns):
     elif ns.connection_type == "mysql":
         explorer = MySQLExplorer(ns.host, ns.port, ns.user, ns.password)
     elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
-        explorer = PostgreSQLExplorer(ns.host, ns.port, ns.user, ns.password)
+        explorer = PostgreSQLExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
     elif ns.connection_type == "sqlserver":
-        explorer = MSSQLExplorer(ns.host, ns.port, ns.user, ns.password)
+        explorer = MSSQLExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
     elif ns.connection_type == "oracle":
-        explorer = OracleExplorer(ns.host, ns.port, ns.user, ns.password)
+        explorer = OracleExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
 
     assert (explorer is not None)
 
@@ -56,12 +56,14 @@ def parser(sub_parsers):
                             help="Username to connect database")
     sub_parser.add_argument("-p", "--password",
                             help="Password of the user")
+    sub_parser.add_argument("-d", "--database", default='',
+                            help="Name of the database")
 
     sub_parser.add_argument("-t", "--connection-type", default="sqlite",
                             choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
                             help="Type of database")
 
-    sub_parser.add_argument("-c", "--scan-type", default='deep',
+    sub_parser.add_argument("-c", "--scan-type", default='shallow',
                             choices=["deep", "shallow"],
                             help="Choose deep(scan data) or shallow(scan column names only)")
 
@@ -371,7 +373,7 @@ class OracleExplorer(Explorer):
 
     default_port = 1521
 
-    def __init__(self, host, port, user, password, database='public'):
+    def __init__(self, host, port, user, password, database):
         super(OracleExplorer, self).__init__()
         self.host = host
         self.port = self.default_port if port is None else int(port)
@@ -380,11 +382,9 @@ class OracleExplorer(Explorer):
         self.database = database
 
     def _open_connection(self):
-        return cx_Oracle.connect(host=self.host,
-                                 port=self.port,
-                                 user=self.user,
-                                 password=self.password,
-                                 database=self.database)
+        return cx_Oracle.connect(self.user,
+                                 self.password,
+                                 "%s:%d/%s" % (self.host, self.port, self.database))
 
     def _get_catalog_query(self):
         return self._catalog_query
