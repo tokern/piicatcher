@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+pytest = "*"
+coverage = "*"
+pytest-cov = "*"
+codecov = "*"
+pytest-pylint = "*"
+
+[requires]
+python_version = "3.7"
+
+[packages.piicatcher]
+editable = true
+path = "."
+
+[packages.e1839a8]
+path = "."
+editable = true

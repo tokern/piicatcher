@@ -1,8 +1,4 @@
 # Dev/Deployment
-sphinx
-sphinx_rtd_theme
-nose
-coverage
 pypi-publisher
 commonregex
 spacy
@@ -15,5 +11,3 @@ cryptography
 peewee
 pyyaml
 python-magic
-
-pytest
