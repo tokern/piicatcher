@@ -1,5 +1,8 @@
-[![Build Status](https://travis-ci.org/dblintio/piicatcher.svg?branch=master)](https://travis-ci.org/dblintio/piicatcher)
-[![codecov](https://codecov.io/gh/dblintio/piicatcher/branch/master/graph/badge.svg)](https://codecov.io/gh/dblintio/piicatcher)
+[![CircleCI](https://circleci.com/gh/tokern/piicatcher.svg?style=svg)](https://circleci.com/gh/tokern/piicatcher)
+[![codecov](https://codecov.io/gh/tokern/piicatcher/branch/master/graph/badge.svg)](https://codecov.io/gh/tokern/piicatcher)
+[![PyPI](https://img.shields.io/pypi/v/piicatcher.svg)](https://pypi.python.org/pypi/piicatcher)
+[![image](https://img.shields.io/pypi/l/piicatcher.svg)](https://pypi.org/project/piicatcher/)
+[![image](https://img.shields.io/pypi/pyversions/piicatcher.svg)](https://pypi.org/project/piicatcher/)
 
 Pii Catcher for Files and Databases
 ===================================
