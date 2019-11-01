@@ -4,6 +4,8 @@ commonregex
 spacy
 tableprint
 pymysql
+pymssql
+cx_Oracle
 psycopg2-binary
 cryptography
 peewee
