@@ -9,7 +9,8 @@ import psycopg2
 import logging
 import pytest
 
-from piicatcher.db.explorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer, dispatch
+from piicatcher.db.explorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer, dispatch, OracleExplorer, \
+    MSSQLExplorer
 from piicatcher.db.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
 
@@ -377,6 +378,50 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
 
     def get_test_schema(self):
         return "public"
+
+
+class SelectQueryTest:
+    def setUp(self):
+        col1 = Column('c1')
+        col2 = Column('c2')
+        col2._pii = [PiiTypes.LOCATION]
+
+        self.schema = Schema('testSchema')
+
+        table = Table(self.schema, 't1')
+        table._columns = [col1, col2]
+
+        self.schema.tables = [table]
+
+    def test_oracle(self):
+        self.assertEqual("select c1, c2 from t1 sample(5)",
+                         OracleExplorer._get_select_query(self.schema,
+                                                          self.schema.get_tables()[0],
+                                                          self.schema.get_tables()[0].get_columns()))
+
+    def test_sqlite(self):
+        self.assertEqual("select c1, c2 from t1",
+                         SqliteExplorer._get_select_query(self.schema,
+                                                          self.schema.get_tables()[0],
+                                                          self.schema.get_tables()[0].get_columns()))
+
+    def test_postgres(self):
+        self.assertEqual("select c1, c2 from testSchema.t1",
+                        PostgreSQLExplorer._get_select_query(self.schema,
+                                                             self.schema.get_tables()[0],
+                                                             self.schema.get_tables()[0].get_columns()))
+
+    def test_mysql(self):
+        self.assertEqual("select c1, c2 from testSchema.t1",
+                         MySQLExplorer._get_select_query(self.schema,
+                                                         self.schema.get_tables()[0],
+                                                         self.schema.get_tables()[0].get_columns()))
+
+    def test_mssql(self):
+        self.assertEqual("select c1, c2 from testSchema.t1",
+                         MSSQLExplorer._get_select_query(self.schema,
+                                                         self.schema.get_tables()[0],
+                                                         self.schema.get_tables()[0].get_columns()))
 
 
 class TestDispatcher(TestCase):
