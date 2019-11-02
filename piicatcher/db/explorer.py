@@ -134,8 +134,9 @@ class Explorer(ABC):
         print(schemas)
         return schemas
 
-    def _get_select_query(self, schema_name, table_name, column_list):
-        return self.query_template.format(
+    @classmethod
+    def _get_select_query(cls, schema_name, table_name, column_list):
+        return cls.query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
             schema_name=schema_name.get_name(),
             table_name=table_name.get_name()
@@ -256,7 +257,8 @@ class SqliteExplorer(Explorer):
     def _get_context_manager(self):
         return SqliteExplorer.CursorContextManager(self.get_connection())
 
-    def _get_select_query(self, schema_name, table_name, column_list):
+    @classmethod
+    def _get_select_query(cls, schema_name, table_name, column_list):
         return self._query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
             table_name=table_name.get_name()
@@ -365,11 +367,12 @@ class OracleExplorer(Explorer):
         SELECT 
             TABLE_NAME, COLUMN_NAME, DATA_TYPE 
         FROM 
-            DBA_TAB_COLUMNS 
-        WHERE 
-            AND DATA_TYPE SIMILAR TO '%char%|%text%'
+            ALL_TAB_COLUMNS 
+        WHERE UPPER(DATA_TYPE) LIKE '%char%'
         ORDER BY TABLE_NAME, COLUMN_ID 
     """
+
+    query_template = "select {column_list} from {table_name} sample(5)"
 
     default_port = 1521
 
@@ -388,3 +391,10 @@ class OracleExplorer(Explorer):
 
     def _get_catalog_query(self):
         return self._catalog_query
+
+    @classmethod
+    def _get_select_query(cls, schema_name, table_name, column_list):
+        return cls._query_template.format(
+            column_list=",".join([col.get_name() for col in column_list]),
+            table_name=table_name.get_name()
+        )
