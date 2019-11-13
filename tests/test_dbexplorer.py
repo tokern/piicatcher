@@ -34,9 +34,14 @@ class ExplorerTest(TestCase):
 
         self.explorer._schemas = [schema]
 
-    def test_tabular(self):
+    def test_tabular_all(self):
         self.assertEqual([
             ['testSchema', 't1', 'c1', False],
+            ['testSchema', 't1', 'c2', True]
+        ], self.explorer.get_tabular(True))
+
+    def test_tabular_pii(self):
+        self.assertEqual([
             ['testSchema', 't1', 'c2', True]
         ], self.explorer.get_tabular(False))
 
