@@ -80,6 +80,7 @@ def parser(sub_parsers):
 
 class Explorer(ABC):
     query_template = "select {column_list} from {schema_name}.{table_name}"
+    _count_query = "select count(*) from {schema_name}.{table_name }"
 
     def __init__(self):
         self._connection = None
@@ -137,6 +138,13 @@ class Explorer(ABC):
         return schemas
 
     @classmethod
+    def _get_count_query(cls, schema_name, table_name):
+        return cls._count_query.format(
+            schema_name=schema_name.get_name(),
+            table_name=table_name.get_name()
+        )
+
+    @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
         return cls.query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
@@ -144,8 +152,35 @@ class Explorer(ABC):
             table_name=table_name.get_name()
         )
 
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return NotImplementedError
+
+    def _get_table_count(self, schema_name, table_name, column_list):
+        count = self._get_count_query(schema_name, table_name)
+        logging.debug("Count Query: %s" % count)
+
+        with self._get_context_manager() as cursor:
+            cursor.execute(count)
+            row = cursor.fetchone()
+
+            return int(row[0])
+
+    def _get_query(self, schema_name, table_name, column_list):
+        count = self._get_table_count(schema_name, table_name, column_list)
+        query = None
+        if count < 100:
+            query = self._get_select_query(schema_name, table_name, column_list)
+        else:
+            try:
+                query = self._get_sample_query(schema_name, table_name, column_list)
+            except NotImplementedError:
+                query = self._get_select_query(schema_name, table_name, column_list)
+
+        return query
+
     def _generate_rows(self, schema_name, table_name, column_list):
-        query = self._get_select_query(schema_name, table_name, column_list)
+        query = self._get_query(schema_name, table_name, column_list)
         logging.debug(query)
         with self._get_context_manager() as cursor:
             cursor.execute(query)
@@ -375,7 +410,9 @@ class OracleExplorer(Explorer):
         ORDER BY TABLE_NAME, COLUMN_ID 
     """
 
-    _query_template = "select {column_list} from {table_name} sample(5)"
+    _sample_query_template = "select {column_list} from {table_name} sample(5)"
+    _select_query_template = "select {column_list} from {table_name}"
+    _count_query = "select count(*) from {table_name}"
 
     default_port = 1521
 
@@ -397,7 +434,20 @@ class OracleExplorer(Explorer):
 
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
-        return cls._query_template.format(
+        return cls._select_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
+            table_name=table_name.get_name()
+        )
+
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return cls._sample_query_template.format(
+            column_list=",".join([col.get_name() for col in column_list]),
+            table_name=table_name.get_name()
+        )
+
+    @classmethod
+    def _get_count_query(cls, schema_name, table_name):
+        return cls._count_query.format(
             table_name=table_name.get_name()
         )
