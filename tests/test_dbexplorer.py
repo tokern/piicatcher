@@ -34,11 +34,16 @@ class ExplorerTest(TestCase):
 
         self.explorer._schemas = [schema]
 
-    def test_tabular(self):
+    def test_tabular_all(self):
         self.assertEqual([
             ['testSchema', 't1', 'c1', False],
             ['testSchema', 't1', 'c2', True]
-        ], self.explorer.get_tabular())
+        ], self.explorer.get_tabular(True))
+
+    def test_tabular_pii(self):
+        self.assertEqual([
+            ['testSchema', 't1', 'c2', True]
+        ], self.explorer.get_tabular(False))
 
 
 pii_data_script = """
@@ -430,7 +435,7 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.db.explorer.SqliteExplorer.scan', autospec=True) as mock_scan_method:
             with mock.patch('piicatcher.db.explorer.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    dispatch(Namespace(host='connection', output_format='ascii_table', connection_type='sqlite',
+                    dispatch(Namespace(host='connection', list_all=None, output_format='ascii_table', connection_type='sqlite',
                                        scan_type=None, port=None))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
@@ -442,6 +447,7 @@ class TestDispatcher(TestCase):
                 with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
                     dispatch(Namespace(host='connection',
                                        port=None,
+                                       list_all=None,
                                        output_format='ascii_table',
                                        connection_type='mysql',
                                        scan_type='deep',
@@ -457,6 +463,7 @@ class TestDispatcher(TestCase):
                 with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
                     dispatch(Namespace(host='connection',
                                        port=None,
+                                       list_all=None,
                                        output_format='ascii_table',
                                        connection_type='postgres',
                                        database='public',
@@ -473,6 +480,7 @@ class TestDispatcher(TestCase):
                 with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
                     dispatch(Namespace(host='connection',
                                        port=None,
+                                       list_all=None,
                                        output_format='ascii_table',
                                        connection_type='mysql',
                                        user='user',

@@ -38,7 +38,7 @@ def dispatch(ns):
 
     if ns.output_format == "ascii_table":
         headers = ["schema", "table", "column", "has_pii"]
-        tableprint.table(explorer.get_tabular(), headers)
+        tableprint.table(explorer.get_tabular(ns.list_all), headers)
     elif ns.output_format == "json":
         print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2))
     elif ns.output_format == "orm":
@@ -73,11 +73,14 @@ def parser(sub_parsers):
     sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "orm"],
                             default="ascii_table",
                             help="Choose output format type")
+    sub_parser.add_argument("--list-all", action="store_true", default=False,
+                            help="List all columns. By default only columns with PII information is listed")
     sub_parser.set_defaults(func=dispatch)
 
 
 class Explorer(ABC):
     query_template = "select {column_list} from {schema_name}.{table_name}"
+    _count_query = "select count(*) from {schema_name}.{table_name }"
 
     def __init__(self):
         self._connection = None
@@ -116,13 +119,14 @@ class Explorer(ABC):
         for schema in self.get_schemas():
             schema.shallow_scan()
 
-    def get_tabular(self):
+    def get_tabular(self, list_all):
         tabular = []
         for schema in self._schemas:
             for table in schema.get_tables():
                 for column in table.get_columns():
-                    tabular.append([schema.get_name(), table.get_name(),
-                                    column.get_name(), column.has_pii()])
+                    if list_all or column.has_pii():
+                        tabular.append([schema.get_name(), table.get_name(),
+                                       column.get_name(), column.has_pii()])
 
         return tabular
 
@@ -131,8 +135,14 @@ class Explorer(ABC):
         for schema in self._schemas:
             schemas.append(schema.get_dict())
 
-        print(schemas)
         return schemas
+
+    @classmethod
+    def _get_count_query(cls, schema_name, table_name):
+        return cls._count_query.format(
+            schema_name=schema_name.get_name(),
+            table_name=table_name.get_name()
+        )
 
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
@@ -142,8 +152,35 @@ class Explorer(ABC):
             table_name=table_name.get_name()
         )
 
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return NotImplementedError
+
+    def _get_table_count(self, schema_name, table_name, column_list):
+        count = self._get_count_query(schema_name, table_name)
+        logging.debug("Count Query: %s" % count)
+
+        with self._get_context_manager() as cursor:
+            cursor.execute(count)
+            row = cursor.fetchone()
+
+            return int(row[0])
+
+    def _get_query(self, schema_name, table_name, column_list):
+        count = self._get_table_count(schema_name, table_name, column_list)
+        query = None
+        if count < 100:
+            query = self._get_select_query(schema_name, table_name, column_list)
+        else:
+            try:
+                query = self._get_sample_query(schema_name, table_name, column_list)
+            except NotImplementedError:
+                query = self._get_select_query(schema_name, table_name, column_list)
+
+        return query
+
     def _generate_rows(self, schema_name, table_name, column_list):
-        query = self._get_select_query(schema_name, table_name, column_list)
+        query = self._get_query(schema_name, table_name, column_list)
         logging.debug(query)
         with self._get_context_manager() as cursor:
             cursor.execute(query)
@@ -158,6 +195,7 @@ class Explorer(ABC):
     def _load_catalog(self):
         if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(minutes=10):
             with self._get_context_manager() as cursor:
+                logging.debug("Catalog Query: %s", self._get_catalog_query())
                 cursor.execute(self._get_catalog_query())
                 self._schemas = []
 
@@ -365,14 +403,16 @@ class MSSQLExplorer(Explorer):
 class OracleExplorer(Explorer):
     _catalog_query = """
         SELECT 
-            TABLE_NAME, COLUMN_NAME, DATA_TYPE 
+            '{db}', TABLE_NAME, COLUMN_NAME 
         FROM 
-            ALL_TAB_COLUMNS 
-        WHERE UPPER(DATA_TYPE) LIKE '%char%'
+            USER_TAB_COLUMNS 
+        WHERE UPPER(DATA_TYPE) LIKE '%CHAR%'
         ORDER BY TABLE_NAME, COLUMN_ID 
     """
 
-    query_template = "select {column_list} from {table_name} sample(5)"
+    _sample_query_template = "select {column_list} from {table_name} sample(5)"
+    _select_query_template = "select {column_list} from {table_name}"
+    _count_query = "select count(*) from {table_name}"
 
     default_port = 1521
 
@@ -390,11 +430,24 @@ class OracleExplorer(Explorer):
                                  "%s:%d/%s" % (self.host, self.port, self.database))
 
     def _get_catalog_query(self):
-        return self._catalog_query
+        return self._catalog_query.format(db=self.database)
 
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
-        return cls._query_template.format(
+        return cls._select_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
+            table_name=table_name.get_name()
+        )
+
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return cls._sample_query_template.format(
+            column_list=",".join([col.get_name() for col in column_list]),
+            table_name=table_name.get_name()
+        )
+
+    @classmethod
+    def _get_count_query(cls, schema_name, table_name):
+        return cls._count_query.format(
             table_name=table_name.get_name()
         )
