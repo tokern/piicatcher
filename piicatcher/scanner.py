@@ -65,17 +65,17 @@ class ColumnNameScanner(Scanner):
     regex = {
         PiiTypes.PERSON: re.compile("^.*(firstname|fname|lastname|lname|"
                                     "fullname|fname|maidenname|_name|"
-                                    "nickname|name_suffix|name).*$"),
-        PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$"),
+                                    "nickname|name_suffix|name).*$", re.IGNORECASE),
+        PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
         PiiTypes.BIRTH_DATE: re.compile("^.*(date_of_birth|dateofbirth|dob|"
-                                        "birthday|date_of_death|dateofdeath).*$"),
-        PiiTypes.GENDER: re.compile("^.*(gender).*$"),
-        PiiTypes.NATIONALITY: re.compile("^.*(nationality).*$"),
+                                        "birthday|date_of_death|dateofdeath).*$", re.IGNORECASE),
+        PiiTypes.GENDER: re.compile("^.*(gender).*$", re.IGNORECASE),
+        PiiTypes.NATIONALITY: re.compile("^.*(nationality).*$", re.IGNORECASE),
         PiiTypes.ADDRESS: re.compile("^.*(address|city|state|county|country|"
-                                     "zipcode|postal).*$"),
-        PiiTypes.USER_NAME: re.compile("^.*user(id|name|).*$"),
-        PiiTypes.PASSWORD: re.compile("^.*pass.*$"),
-        PiiTypes.SSN: re.compile("^.*(ssn|social).*$")
+                                     "zipcode|postal).*$", re.IGNORECASE),
+        PiiTypes.USER_NAME: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
+        PiiTypes.PASSWORD: re.compile("^.*pass.*$", re.IGNORECASE),
+        PiiTypes.SSN: re.compile("^.*(ssn|social).*$", re.IGNORECASE)
     }
 
     def scan(self, text):

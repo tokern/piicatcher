@@ -71,6 +71,7 @@ class ColumnNameScannerTests(TestCase):
 
     def test_email(self):
         self.assertTrue(PiiTypes.EMAIL in self.parser.scan("email"))
+        self.assertTrue(PiiTypes.EMAIL in self.parser.scan("EMAIL"))
 
     def test_birth_date(self):
         self.assertTrue(PiiTypes.BIRTH_DATE in self.parser.scan("dob"))

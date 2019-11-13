@@ -38,7 +38,7 @@ def dispatch(ns):
 
     if ns.output_format == "ascii_table":
         headers = ["schema", "table", "column", "has_pii"]
-        tableprint.table(explorer.get_tabular(), headers)
+        tableprint.table(explorer.get_tabular(ns.list_all), headers)
     elif ns.output_format == "json":
         print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2))
     elif ns.output_format == "orm":
@@ -73,6 +73,8 @@ def parser(sub_parsers):
     sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "orm"],
                             default="ascii_table",
                             help="Choose output format type")
+    sub_parser.add_argument("--list-all", action="store_true", default=False,
+                            help="List all columns. By default only columns with PII information is listed")
     sub_parser.set_defaults(func=dispatch)
 
 
@@ -116,13 +118,14 @@ class Explorer(ABC):
         for schema in self.get_schemas():
             schema.shallow_scan()
 
-    def get_tabular(self):
+    def get_tabular(self, list_all):
         tabular = []
         for schema in self._schemas:
             for table in schema.get_tables():
                 for column in table.get_columns():
-                    tabular.append([schema.get_name(), table.get_name(),
-                                    column.get_name(), column.has_pii()])
+                    if list_all or column.has_pii():
+                        tabular.append([schema.get_name(), table.get_name(),
+                                       column.get_name(), column.has_pii()])
 
         return tabular
 
@@ -131,7 +134,6 @@ class Explorer(ABC):
         for schema in self._schemas:
             schemas.append(schema.get_dict())
 
-        print(schemas)
         return schemas
 
     @classmethod
@@ -158,6 +160,7 @@ class Explorer(ABC):
     def _load_catalog(self):
         if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(minutes=10):
             with self._get_context_manager() as cursor:
+                logging.debug("Catalog Query: %s", self._get_catalog_query())
                 cursor.execute(self._get_catalog_query())
                 self._schemas = []
 
@@ -365,14 +368,14 @@ class MSSQLExplorer(Explorer):
 class OracleExplorer(Explorer):
     _catalog_query = """
         SELECT 
-            TABLE_NAME, COLUMN_NAME, DATA_TYPE 
+            '{db}', TABLE_NAME, COLUMN_NAME 
         FROM 
-            ALL_TAB_COLUMNS 
-        WHERE UPPER(DATA_TYPE) LIKE '%char%'
+            USER_TAB_COLUMNS 
+        WHERE UPPER(DATA_TYPE) LIKE '%CHAR%'
         ORDER BY TABLE_NAME, COLUMN_ID 
     """
 
-    query_template = "select {column_list} from {table_name} sample(5)"
+    _query_template = "select {column_list} from {table_name} sample(5)"
 
     default_port = 1521
 
@@ -390,7 +393,7 @@ class OracleExplorer(Explorer):
                                  "%s:%d/%s" % (self.host, self.port, self.database))
 
     def _get_catalog_query(self):
-        return self._catalog_query
+        return self._catalog_query.format(db=self.database)
 
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
