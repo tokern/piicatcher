@@ -43,9 +43,9 @@ class NERScanner(Scanner):
 
     def scan(self, text):
         """Scan the text and return an array of PiiTypes that are found"""
+        logging.debug("Processing '{}'".format(text))
         doc = self.nlp(text)
         types = set()
-        logging.debug("Processing '{}'".format(text))
         for ent in doc.ents:
             logging.debug("Found {}".format(ent.label_))
             if ent.label_ == 'PERSON':

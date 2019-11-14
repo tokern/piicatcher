@@ -2,6 +2,8 @@ import json
 import logging
 import tableprint
 
+import pyathena
+
 from piicatcher.db.explorer import Explorer
 
 
@@ -63,9 +65,9 @@ class AthenaExplorer(Explorer):
             ORDER BY table_schema, table_name, ordinal_position 
         """
 
-    _sample_query_template = "select {column_list} from '{database_name}'.'{table_name}' TABLESAMPLE BERNOULLI(5)"
-    _select_query_template = "select {column_list} from '{database_name}'.'{table_name}'"
-    _count_query = "select count(*) from {table_name}"
+    _sample_query_template = "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI(5)"
+    _select_query_template = "select {column_list} from {schema_name}.{table_name}"
+    _count_query = "select count(*) from {schema_name}.{table_name}"
 
     def __init__(self, access_key, secret_key, staging_dir, region_name):
         super(AthenaExplorer, self).__init__()
@@ -78,7 +80,7 @@ class AthenaExplorer(Explorer):
         return pyathena.connect(aws_access_key_id=self._access_key,
                                 aws_secret_access_key=self._secret_key,
                                 s3_staging_dir=self._staging_dir,
-                                region_name=self._region_name).cursor()
+                                region_name=self._region_name)
 
     def _get_catalog_query(self):
         return self._catalog_query
@@ -87,18 +89,21 @@ class AthenaExplorer(Explorer):
     def _get_select_query(cls, schema_name, table_name, column_list):
         return cls._select_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
-            table_name=table_name.get_name()
+            table_name=table_name.get_name(),
+            schema_name=schema_name.get_name()
         )
 
     @classmethod
     def _get_sample_query(cls, schema_name, table_name, column_list):
         return cls._sample_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
-            table_name=table_name.get_name()
+            table_name=table_name.get_name(),
+            schema_name=schema_name.get_name()
         )
 
     @classmethod
     def _get_count_query(cls, schema_name, table_name):
         return cls._count_query.format(
-            table_name=table_name.get_name()
+            table_name=table_name.get_name(),
+            schema_name=schema_name.get_name()
         )
