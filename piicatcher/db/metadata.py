@@ -118,10 +118,11 @@ class Column(NamedObject):
         return self._pii
 
     def scan(self, data):
-        for scanner in [RegexScanner(), NERScanner()]:
-            [self._pii.add(pii) for pii in scanner.scan(data)]
+        if data is not None:
+            for scanner in [RegexScanner(), NERScanner()]:
+                [self._pii.add(pii) for pii in scanner.scan(data)]
 
-        logging.debug(self._pii)
+            logging.debug(self._pii)
 
     def shallow_scan(self):
         logging.debug("Scanning column name %s" % self._name)
