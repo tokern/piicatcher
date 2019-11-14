@@ -65,8 +65,8 @@ class AthenaExplorer(Explorer):
             ORDER BY table_schema, table_name, ordinal_position 
         """
 
-    _sample_query_template = "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI(5)"
-    _select_query_template = "select {column_list} from {schema_name}.{table_name}"
+    _sample_query_template = "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI(5) limit 10"
+    _select_query_template = "select {column_list} from {schema_name}.{table_name} limit 10"
     _count_query = "select count(*) from {schema_name}.{table_name}"
 
     def __init__(self, access_key, secret_key, staging_dir, region_name):
