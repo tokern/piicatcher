@@ -5,6 +5,22 @@
 version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.5
+workflows:
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
+
 jobs:
   build:
     docker:
@@ -48,3 +64,42 @@ jobs:
 
       - codecov/upload:
           file: coverage.xml
+
+  deploy:
+    docker:
+      - image: circleci/python:3.7.3
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - run:
+          name: install dependencies
+          command: |
+            sudo pip install pipenv
+            pipenv install --dev
+            pipenv run python -m spacy download en_core_web_sm
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ".venv"
+
+      - run:
+          name: verify git tag vs. version
+          command: |
+            pipenv run python setup.py verify
+
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: create packages
+          command: |
+            pipenv run python setup.py sdist bdist_wheel
+
+      - run:
+          name: upload to pypi
+          command: |
+            pipenv run twine upload dist/*
