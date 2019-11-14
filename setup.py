@@ -1,8 +1,26 @@
 from setuptools import setup, find_packages
+from setuptools.command.install import install
 from codecs import open
-from os import path
+from os import path, getenv
+
+import sys
 
 __version__ = '0.5.3'
+
+
+class VerifyVersionCommand(install):
+    """Custom command to verify that the git tag matches our version"""
+    description = 'verify that the git tag matches our version'
+
+    def run(self):
+        tag = getenv('CIRCLE_TAG')
+
+        if tag != __version__:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, __version__
+            )
+            sys.exit(info)
+
 
 here = path.abspath(path.dirname(__file__))
 
@@ -48,5 +66,8 @@ setup(
     author_email='piicatcher@tokern.io',
     entry_points={
         'console_scripts': ['piicatcher=piicatcher.command_line:main'],
+    },
+    cmdclass={
+        'verify': VerifyVersionCommand,
     }
 )
