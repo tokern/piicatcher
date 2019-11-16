@@ -36,7 +36,7 @@ Supported Technologies
 ----------------------
 PiiCatcher supports the following filesystems:
 * POSIX
-* AWS S3 _(Coming soon)_
+* AWS S3 (for files that are part of tables in AWS Glue and AWS Athena)
 * Google Cloud Storage _(Coming Soon)_
 * ADLS _(Coming Soon)_
 
@@ -47,6 +47,7 @@ PiiCatcher supports the following databases:
 4. **AWS Redshift**
 5. **SQL Server**
 6. **Oracle**
+7. **AWS Glue/AWS Athena**
 
 Installation
 ------------
@@ -77,6 +78,8 @@ for more information.
  
 Usage
 -----
+Relational Databases:
+
     # Print usage to scan databases
     piicatcher db -h
     usage: piicatcher db [-h] -s HOST [-R PORT] [-u USER] [-p PASSWORD]
@@ -104,9 +107,40 @@ Usage
     usage: piicatcher files [-h] [--path PATH] [--output OUTPUT]
                         [--output-format {ascii_table,json,orm}]
 
+AWS S3 files backed by tables in AWS Glue & AWS Athena
+
+    piicatcher aws -h
+    usage: piicatcher aws [-h] -a ACCESS_KEY -s SECRET_KEY -d STAGING_DIR -r
+                      REGION
+                      [-t {sqlite,mysql,postgres,redshift,oracle,sqlserver}]
+                      [-c {deep,shallow}] [-o OUTPUT]
+                      [-f {ascii_table,json,orm}] [--list-all]
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -a ACCESS_KEY, --access-key ACCESS_KEY
+                            AWS Access Key
+      -s SECRET_KEY, --secret-key SECRET_KEY
+                            AWS Secret Key
+      -d STAGING_DIR, --staging-dir STAGING_DIR
+                            S3 Staging Directory for Athena results
+      -r REGION, --region REGION
+                            AWS Region
+      -c {deep,shallow}, --scan-type {deep,shallow}
+                            Choose deep(scan data) or shallow(scan column names
+                            only)
+      -o OUTPUT, --output OUTPUT
+                            File path for report. If not specified, then report is
+                            printed to sys.stdout
+      -f {ascii_table,json,orm}, --output-format {ascii_table,json,orm}
+                            Choose output format type
+      --list-all            List all columns. By default only columns with PII
+                            information is listed
+
+Files in a POSIX Filesystem
 
     piicatcher files -h
-    # Print usage to scan databases
+    # Print usage to scan files
     optional arguments:
       -h, --help            show this help message and exit
       --path PATH           Path to file or directory
