@@ -15,69 +15,6 @@ from piicatcher.db.metadata import Schema, Table, Column
 from piicatcher.orm.models import Store
 
 
-def dispatch(ns):
-    logging.debug("Db Dispatch entered")
-    explorer = None
-    if ns.connection_type == "sqlite":
-        explorer = SqliteExplorer(ns.host)
-    elif ns.connection_type == "mysql":
-        explorer = MySQLExplorer(ns.host, ns.port, ns.user, ns.password)
-    elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
-        explorer = PostgreSQLExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
-    elif ns.connection_type == "sqlserver":
-        explorer = MSSQLExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
-    elif ns.connection_type == "oracle":
-        explorer = OracleExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
-
-    assert (explorer is not None)
-
-    if ns.scan_type is None or ns.scan_type == "deep":
-        explorer.scan()
-    else:
-        explorer.shallow_scan()
-
-    if ns.output_format == "ascii_table":
-        headers = ["schema", "table", "column", "has_pii"]
-        tableprint.table(explorer.get_tabular(ns.list_all), headers)
-    elif ns.output_format == "json":
-        print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2))
-    elif ns.output_format == "orm":
-        Store.save_schemas(explorer)
-
-
-def parser(sub_parsers):
-    sub_parser = sub_parsers.add_parser("db")
-
-    sub_parser.add_argument("-s", "--host", required=True,
-                            help="Hostname of the database. File path if it is SQLite")
-    sub_parser.add_argument("-R", "--port",
-                            help="Port of database.")
-    sub_parser.add_argument("-u", "--user",
-                            help="Username to connect database")
-    sub_parser.add_argument("-p", "--password",
-                            help="Password of the user")
-    sub_parser.add_argument("-d", "--database", default='',
-                            help="Name of the database")
-
-    sub_parser.add_argument("-t", "--connection-type", default="sqlite",
-                            choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
-                            help="Type of database")
-
-    sub_parser.add_argument("-c", "--scan-type", default='shallow',
-                            choices=["deep", "shallow"],
-                            help="Choose deep(scan data) or shallow(scan column names only)")
-
-    sub_parser.add_argument("-o", "--output", default=None,
-                            help="File path for report. If not specified, "
-                                 "then report is printed to sys.stdout")
-    sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "orm"],
-                            default="ascii_table",
-                            help="Choose output format type")
-    sub_parser.add_argument("--list-all", action="store_true", default=False,
-                            help="List all columns. By default only columns with PII information is listed")
-    sub_parser.set_defaults(func=dispatch)
-
-
 class Explorer(ABC):
     query_template = "select {column_list} from {schema_name}.{table_name}"
     _count_query = "select count(*) from {schema_name}.{table_name }"
@@ -100,6 +37,77 @@ class Explorer(ABC):
     @abstractmethod
     def _get_catalog_query(self):
         pass
+
+    @classmethod
+    def factory(cls, ns):
+        logging.debug("Db Dispatch entered")
+        explorer = None
+        if ns.connection_type == "sqlite":
+            explorer = SqliteExplorer(ns.host)
+        elif ns.connection_type == "mysql":
+            explorer = MySQLExplorer(ns.host, ns.port, ns.user, ns.password)
+        elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
+            explorer = PostgreSQLExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
+        elif ns.connection_type == "sqlserver":
+            explorer = MSSQLExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
+        elif ns.connection_type == "oracle":
+            explorer = OracleExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
+        assert (explorer is not None)
+
+        return explorer
+
+    @classmethod
+    def parser(cls, sub_parsers):
+        sub_parser = sub_parsers.add_parser("db")
+
+        sub_parser.add_argument("-s", "--host", required=True,
+                                help="Hostname of the database. File path if it is SQLite")
+        sub_parser.add_argument("-R", "--port",
+                                help="Port of database.")
+        sub_parser.add_argument("-u", "--user",
+                                help="Username to connect database")
+        sub_parser.add_argument("-p", "--password",
+                                help="Password of the user")
+        sub_parser.add_argument("-d", "--database", default='',
+                                help="Name of the database")
+
+        cls.scan_options(sub_parser)
+
+    @classmethod
+    def scan_options(cls, sub_parser):
+        sub_parser.add_argument("-t", "--connection-type", default="sqlite",
+                                choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
+                                help="Type of database")
+
+        sub_parser.add_argument("-c", "--scan-type", default='shallow',
+                                choices=["deep", "shallow"],
+                                help="Choose deep(scan data) or shallow(scan column names only)")
+
+        sub_parser.add_argument("-o", "--output", default=None,
+                                help="File path for report. If not specified, "
+                                     "then report is printed to sys.stdout")
+        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "orm"],
+                                default="ascii_table",
+                                help="Choose output format type")
+        sub_parser.add_argument("--list-all", action="store_true", default=False,
+                                help="List all columns. By default only columns with PII information is listed")
+        sub_parser.set_defaults(func=Explorer.dispatch)
+
+    @classmethod
+    def dispatch(cls, ns):
+        explorer = cls.factory(ns)
+        if ns.scan_type is None or ns.scan_type == "deep":
+            explorer.scan()
+        else:
+            explorer.shallow_scan()
+
+        if ns.output_format == "ascii_table":
+            headers = ["schema", "table", "column", "has_pii"]
+            tableprint.table(explorer.get_tabular(ns.list_all), headers)
+        elif ns.output_format == "json":
+            print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2))
+        elif ns.output_format == "orm":
+            Store.save_schemas(explorer)
 
     def get_connection(self):
         if self._connection is None:
@@ -451,3 +459,6 @@ class OracleExplorer(Explorer):
         return cls._count_query.format(
             table_name=table_name.get_name()
         )
+
+
+

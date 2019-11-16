@@ -9,7 +9,7 @@ import psycopg2
 import logging
 import pytest
 
-from piicatcher.db.explorer import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer, dispatch, OracleExplorer, \
+from piicatcher.db.explorer import Explorer, SqliteExplorer, MySQLExplorer, PostgreSQLExplorer, OracleExplorer, \
     MSSQLExplorer
 from piicatcher.db.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
@@ -435,8 +435,8 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.db.explorer.SqliteExplorer.scan', autospec=True) as mock_scan_method:
             with mock.patch('piicatcher.db.explorer.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    dispatch(Namespace(host='connection', list_all=None, output_format='ascii_table', connection_type='sqlite',
-                                       scan_type=None, port=None))
+                    Explorer.dispatch(Namespace(host='connection', list_all=None, output_format='ascii_table',
+                                                connection_type='sqlite', scan_type=None, port=None))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
@@ -445,14 +445,14 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.db.explorer.MySQLExplorer.scan', autospec=True) as mock_scan_method:
             with mock.patch('piicatcher.db.explorer.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    dispatch(Namespace(host='connection',
-                                       port=None,
-                                       list_all=None,
-                                       output_format='ascii_table',
-                                       connection_type='mysql',
-                                       scan_type='deep',
-                                       user='user',
-                                       password='pass'))
+                    Explorer.dispatch(Namespace(host='connection',
+                                                port=None,
+                                                list_all=None,
+                                                output_format='ascii_table',
+                                                connection_type='mysql',
+                                                scan_type='deep',
+                                                user='user',
+                                                password='pass'))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
@@ -461,15 +461,15 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.db.explorer.PostgreSQLExplorer.scan', autospec=True) as mock_scan_method:
             with mock.patch('piicatcher.db.explorer.PostgreSQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    dispatch(Namespace(host='connection',
-                                       port=None,
-                                       list_all=None,
-                                       output_format='ascii_table',
-                                       connection_type='postgres',
-                                       database='public',
-                                       scan_type=None,
-                                       user='user',
-                                       password='pass'))
+                    Explorer.dispatch(Namespace(host='connection',
+                                                port=None,
+                                                list_all=None,
+                                                output_format='ascii_table',
+                                                connection_type='postgres',
+                                                database='public',
+                                                scan_type=None,
+                                                user='user',
+                                                password='pass'))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
@@ -478,14 +478,14 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.db.explorer.MySQLExplorer.shallow_scan', autospec=True) as mock_shallow_scan_method:
             with mock.patch('piicatcher.db.explorer.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    dispatch(Namespace(host='connection',
-                                       port=None,
-                                       list_all=None,
-                                       output_format='ascii_table',
-                                       connection_type='mysql',
-                                       user='user',
-                                       password='pass',
-                                       scan_type="shallow"))
+                    Explorer.dispatch(Namespace(host='connection',
+                                                port=None,
+                                                list_all=None,
+                                                output_format='ascii_table',
+                                                connection_type='mysql',
+                                                user='user',
+                                                password='pass',
+                                                scan_type="shallow"))
                     mock_shallow_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()

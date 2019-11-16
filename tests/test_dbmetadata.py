@@ -34,6 +34,11 @@ class DbMetadataTests(TestCase):
         col.scan('Jonathan Smith')
         self.assertTrue(col.has_pii())
 
+    def test_null_scan_column(self):
+        col = Column('col')
+        col.scan(None)
+        self.assertFalse(col.has_pii())
+
     def test_no_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'no_pii')

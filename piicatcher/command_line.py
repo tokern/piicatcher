@@ -2,8 +2,10 @@ import argparse
 import yaml
 import logging
 
-from piicatcher.db.explorer import parser as db_parser
+from piicatcher.db.aws import AthenaExplorer
+from piicatcher.db.explorer import Explorer
 from piicatcher.files.explorer import parser as files_parser
+
 from piicatcher.config import set_global_config
 from piicatcher.orm.models import init
 
@@ -14,7 +16,8 @@ def get_parser(parser_cls=argparse.ArgumentParser):
     parser.add_argument("-l", "--log-level", help="Logging Level", default="WARNING")
 
     sub_parsers = parser.add_subparsers()
-    db_parser(sub_parsers)
+    AthenaExplorer.parser(sub_parsers)
+    Explorer.parser(sub_parsers)
     files_parser(sub_parsers)
 
     return parser

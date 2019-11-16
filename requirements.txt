@@ -11,3 +11,4 @@ cryptography
 peewee
 pyyaml
 python-magic
+pyathena[sqlalchemy]

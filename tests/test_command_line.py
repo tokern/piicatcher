@@ -9,7 +9,7 @@ class ErrorRaisingArgumentParser(ArgumentParser):
         raise ValueError(message)  # reraise an error
 
 
-class TestParser(TestCase):
+class TestDbParser(TestCase):
     def test_host_required(self):
         with self.assertRaises(ValueError):
             get_parser(ErrorRaisingArgumentParser).parse_args(["db"])
@@ -45,4 +45,29 @@ class TestParser(TestCase):
     def test_default_scan_type(self):
         ns = get_parser().parse_args(["db", "-s", "connection_string", "-c", "shallow"])
         self.assertEqual("shallow", ns.scan_type)
+
+
+class TestAWSParser(TestCase):
+    def test_access_key_required(self):
+        with self.assertRaises(ValueError):
+            get_parser(ErrorRaisingArgumentParser).parse_args(["aws", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east"])
+
+    def test_secret_key_required(self):
+        with self.assertRaises(ValueError):
+            get_parser(ErrorRaisingArgumentParser).parse_args(["aws", "-a", "AAAA", "-d", "s3://dir", "-r", "us-east"])
+
+    def test_staging_dir_required(self):
+        with self.assertRaises(ValueError):
+            get_parser(ErrorRaisingArgumentParser).parse_args(["aws", "-a", "AAAA", "-s", "SSSS", "-r", "us-east"])
+
+    def test_region_required(self):
+        with self.assertRaises(ValueError):
+            get_parser(ErrorRaisingArgumentParser).parse_args(["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir"])
+
+    def test_host_user_password(self):
+        ns = get_parser().parse_args(["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east"])
+        self.assertEqual("AAAA", ns.access_key)
+        self.assertEqual("SSSS", ns.secret_key)
+        self.assertEqual("s3://dir", ns.staging_dir)
+        self.assertEqual("us-east", ns.region)
 
