@@ -70,15 +70,14 @@ class Explorer(ABC):
                                 help="Password of the user")
         sub_parser.add_argument("-d", "--database", default='',
                                 help="Name of the database")
+        sub_parser.add_argument("-t", "--connection-type", default="sqlite",
+                                choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
+                                help="Type of database")
 
         cls.scan_options(sub_parser)
 
     @classmethod
     def scan_options(cls, sub_parser):
-        sub_parser.add_argument("-t", "--connection-type", default="sqlite",
-                                choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
-                                help="Type of database")
-
         sub_parser.add_argument("-c", "--scan-type", default='shallow',
                                 choices=["deep", "shallow"],
                                 help="Choose deep(scan data) or shallow(scan column names only)")
@@ -459,6 +458,3 @@ class OracleExplorer(Explorer):
         return cls._count_query.format(
             table_name=table_name.get_name()
         )
-
-
-
