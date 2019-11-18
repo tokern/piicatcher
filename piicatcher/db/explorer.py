@@ -17,7 +17,7 @@ from piicatcher.orm.models import Store
 
 class Explorer(ABC):
     query_template = "select {column_list} from {schema_name}.{table_name}"
-    _count_query = "select count(*) from {schema_name}.{table_name }"
+    _count_query = "select count(*) from {schema_name}.{table_name}"
 
     def __init__(self):
         self._connection = None
@@ -381,11 +381,11 @@ class MSSQLExplorer(Explorer):
         FROM 
             INFORMATION_SCHEMA.COLUMNS 
         WHERE 
-            TABLE_SCHEMA NOT IN ('information_schema', 'pg_catalog')
-            AND DATA_TYPE SIMILAR TO '%char%|%text%'
-        ORDER BY table_schema, table_name, ordinal_position 
+            DATA_TYPE LIKE '%char%'
+        ORDER BY TABLE_SCHEMA, table_name, ordinal_position 
     """
 
+    _sample_query_template = "SELECT TOP 10 * FROM {schema_name}.{table_name} TABLESAMPLE (1000 ROWS)"
     default_port = 1433
 
     def __init__(self, host, port, user, password, database='public'):
@@ -405,6 +405,14 @@ class MSSQLExplorer(Explorer):
 
     def _get_catalog_query(self):
         return self._catalog_query
+
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return cls._sample_query_template.format(
+            column_list=",".join([col.get_name() for col in column_list]),
+            schema_name=schema_name.get_name(),
+            table_name=table_name.get_name()
+        )
 
 
 class OracleExplorer(Explorer):
