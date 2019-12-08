@@ -5,7 +5,6 @@ import pyathena
 from piicatcher.db.explorer import Explorer
 
 
-
 class AthenaExplorer(Explorer):
     _catalog_query = """
             SELECT 
@@ -33,6 +32,7 @@ class AthenaExplorer(Explorer):
         logging.debug("AWS Dispatch entered")
         explorer = AthenaExplorer(ns.access_key, ns.secret_key,
                                   ns.staging_dir, ns.region)
+        return explorer
 
     @classmethod
     def parser(cls, sub_parsers):
@@ -48,6 +48,7 @@ class AthenaExplorer(Explorer):
                                 help="AWS Region")
 
         cls.scan_options(sub_parser)
+        sub_parser.set_defaults(func=AthenaExplorer.dispatch)
 
     def _open_connection(self):
         return pyathena.connect(aws_access_key_id=self._access_key,

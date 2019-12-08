@@ -75,6 +75,7 @@ class Explorer(ABC):
                                 help="Type of database")
 
         cls.scan_options(sub_parser)
+        sub_parser.set_defaults(func=Explorer.dispatch)
 
     @classmethod
     def scan_options(cls, sub_parser):
@@ -90,10 +91,10 @@ class Explorer(ABC):
                                 help="Choose output format type")
         sub_parser.add_argument("--list-all", action="store_true", default=False,
                                 help="List all columns. By default only columns with PII information is listed")
-        sub_parser.set_defaults(func=Explorer.dispatch)
 
     @classmethod
     def dispatch(cls, ns):
+        logging.debug("Dispatch of %s" % cls.__name__)
         explorer = cls.factory(ns)
         if ns.scan_type is None or ns.scan_type == "deep":
             explorer.scan()
