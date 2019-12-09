@@ -46,6 +46,9 @@ class AthenaExplorer(Explorer):
                                 help="S3 Staging Directory for Athena results")
         sub_parser.add_argument("-r", "--region", required=True,
                                 help="AWS Region")
+        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "db", "glue"],
+                                default="ascii_table",
+                                help="Choose output format type")
 
         cls.scan_options(sub_parser)
         sub_parser.set_defaults(func=AthenaExplorer.dispatch)

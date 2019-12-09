@@ -73,6 +73,9 @@ class Explorer(ABC):
         sub_parser.add_argument("-t", "--connection-type", default="sqlite",
                                 choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
                                 help="Type of database")
+        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "db"],
+                                default="ascii_table",
+                                help="Choose output format type")
 
         cls.scan_options(sub_parser)
         sub_parser.set_defaults(func=Explorer.dispatch)
@@ -86,9 +89,6 @@ class Explorer(ABC):
         sub_parser.add_argument("-o", "--output", default=None,
                                 help="File path for report. If not specified, "
                                      "then report is printed to sys.stdout")
-        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "orm"],
-                                default="ascii_table",
-                                help="Choose output format type")
         sub_parser.add_argument("--list-all", action="store_true", default=False,
                                 help="List all columns. By default only columns with PII information is listed")
 
@@ -101,12 +101,16 @@ class Explorer(ABC):
         else:
             explorer.shallow_scan()
 
+        cls.output(ns, explorer)
+
+    @classmethod
+    def output(cls, ns, explorer):
         if ns.output_format == "ascii_table":
             headers = ["schema", "table", "column", "has_pii"]
             tableprint.table(explorer.get_tabular(ns.list_all), headers)
         elif ns.output_format == "json":
             print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2))
-        elif ns.output_format == "orm":
+        elif ns.output_format == "db":
             Store.save_schemas(explorer)
 
     def get_connection(self):

@@ -1,5 +1,3 @@
-import json
-
 from peewee import *
 
 from piicatcher.orm.PiiTypeField import PiiTypeField
