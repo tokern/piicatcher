@@ -1,6 +1,6 @@
 from peewee import *
 
-from piicatcher.orm.PiiTypeField import PiiTypeField
+from piicatcher.store.PiiTypeField import PiiTypeField
 from piicatcher.config import config
 
 database_proxy = DatabaseProxy()
@@ -38,7 +38,7 @@ class DbFile(BaseModel):
 
 def init():
     if 'orm' in config:
-        orm = config['orm']
+        orm = config['store']
         database = MySQLDatabase('tokern',
                                  host=orm['host'],
                                  port=int(orm['port']),

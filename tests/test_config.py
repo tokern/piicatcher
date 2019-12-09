@@ -2,7 +2,7 @@ from unittest import TestCase
 import yaml
 
 config_file = """
-orm:
+store:
   host: a_host
   port: 3306
   user: a_user
@@ -12,7 +12,7 @@ orm:
 
 class TestConfigFile(TestCase):
     def testOrmConfig(self):
-        orm = yaml.load(config_file)['orm']
+        orm = yaml.load(config_file)['store']
         self.assertEqual("a_host", orm['host'])
         self.assertEqual(3306, orm["port"])
         self.assertEqual("a_user", orm['user'])

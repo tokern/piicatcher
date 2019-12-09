@@ -7,7 +7,7 @@ from piicatcher.db.explorer import Explorer
 from piicatcher.files.explorer import parser as files_parser
 
 from piicatcher.config import set_global_config
-from piicatcher.orm.models import init
+from piicatcher.store.models import init
 
 
 def get_parser(parser_cls=argparse.ArgumentParser):

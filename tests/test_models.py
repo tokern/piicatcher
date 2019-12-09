@@ -4,11 +4,11 @@ import logging
 import sqlite3
 import pytest
 
-from piicatcher.orm.models import *
+from piicatcher.store.models import *
 from piicatcher.db.explorer import Explorer, SqliteExplorer
 from piicatcher.db.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
-from piicatcher.orm.models import Store
+from piicatcher.store.models import Store
 
 logging.basicConfig(level=logging.DEBUG)
 
