@@ -12,7 +12,7 @@ store:
 
 class TestConfigFile(TestCase):
     def testOrmConfig(self):
-        orm = yaml.load(config_file)['store']
+        orm = yaml.full_load(config_file)['store']
         self.assertEqual("a_host", orm['host'])
         self.assertEqual(3306, orm["port"])
         self.assertEqual("a_user", orm['user'])

@@ -12,7 +12,7 @@ import json
 import tableprint
 
 from piicatcher.db.metadata import Schema, Table, Column
-from piicatcher.store.models import Store
+from piicatcher.store.db import Store
 
 
 class Explorer(ABC):
