@@ -20,7 +20,7 @@ class Explorer(ABC):
         self._cache_ts = None
         self.config = None
 
-        if ns.configfile is not None:
+        if ns.config_file is not None:
             self.config = yaml.full_load(ns.configfile)
 
     def __enter__(self):

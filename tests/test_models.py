@@ -89,7 +89,7 @@ class TestStore(TestCase):
 
         schema.add(full_pii_table)
 
-        explorer = MockExplorer(Namespace(configfile=None))
+        explorer = MockExplorer(Namespace(config_file=None))
         explorer.set_schema(schema)
 
         DbStore.save_schemas(explorer)

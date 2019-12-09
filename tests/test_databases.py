@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 class ExplorerTest(TestCase):
     def setUp(self):
-        self.explorer = SqliteExplorer(Namespace(host="mock_connection", configfile=None))
+        self.explorer = SqliteExplorer(Namespace(host="mock_connection", config_file=None))
 
         col1 = Column('c1')
         col2 = Column('c2')
@@ -441,7 +441,7 @@ class TestDispatcher(TestCase):
             with mock.patch('piicatcher.explorer.databases.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
                     SqliteExplorer.dispatch(Namespace(host='connection', list_all=None, output_format='ascii_table',
-                                                      connection_type='sqlite', scan_type=None, configfile=None,
+                                                      connection_type='sqlite', scan_type=None, config_file=None,
                                                       port=None))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
@@ -457,7 +457,7 @@ class TestDispatcher(TestCase):
                                                      output_format='ascii_table',
                                                      connection_type='mysql',
                                                      scan_type='deep',
-                                                     configfile=None,
+                                                     config_file=None,
                                                      user='user',
                                                      password='pass'))
                     mock_scan_method.assert_called_once()
@@ -475,7 +475,7 @@ class TestDispatcher(TestCase):
                                                           connection_type='postgres',
                                                           database='public',
                                                           scan_type=None,
-                                                          configfile=None,
+                                                          config_file=None,
                                                           user='user',
                                                           password='pass'))
                     mock_scan_method.assert_called_once()
@@ -491,7 +491,7 @@ class TestDispatcher(TestCase):
                                                      list_all=None,
                                                      output_format='ascii_table',
                                                      connection_type='mysql',
-                                                     configfile=None,
+                                                     config_file=None,
                                                      user='user',
                                                      password='pass',
                                                      scan_type="shallow"))
