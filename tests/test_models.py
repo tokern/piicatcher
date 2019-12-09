@@ -1,14 +1,15 @@
+from argparse import Namespace
 from unittest import TestCase
-from shutil import rmtree
 import logging
 import sqlite3
 import pytest
 
 from piicatcher.store.db import *
-from piicatcher.db.explorer import Explorer, SqliteExplorer
-from piicatcher.db.metadata import Schema, Table, Column
+from piicatcher.explorer.databases import SqliteExplorer
+from piicatcher.explorer.explorer import Explorer
+from piicatcher.explorer.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
-from piicatcher.store.db import Store
+from piicatcher.store.db import DbStore
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -88,10 +89,10 @@ class TestStore(TestCase):
 
         schema.add(full_pii_table)
 
-        explorer = MockExplorer()
+        explorer = MockExplorer(Namespace(configfile=None))
         explorer.set_schema(schema)
 
-        Store.save_schemas(explorer)
+        DbStore.save_schemas(explorer)
 
     @classmethod
     def tearDownClass(cls):

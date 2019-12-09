@@ -2,12 +2,11 @@ import argparse
 import yaml
 import logging
 
-from piicatcher.db.aws import AthenaExplorer
-from piicatcher.db.explorer import Explorer
-from piicatcher.files.explorer import parser as files_parser
+from piicatcher.explorer.aws import AthenaExplorer
+from piicatcher.explorer.explorer import Explorer
+from piicatcher.explorer.files import parser as files_parser
 
 from piicatcher.config import set_global_config
-from piicatcher.store.db import init
 
 
 def get_parser(parser_cls=argparse.ArgumentParser):
@@ -28,7 +27,6 @@ def dispatch(ns):
     if ns.config_file is not None:
         with open(ns.config_file, 'r') as stream:
             set_global_config(yaml.load(stream))
-            init()
 
     ns.func(ns)
 

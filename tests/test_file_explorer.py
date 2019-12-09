@@ -1,15 +1,15 @@
 from unittest import TestCase, mock
 from argparse import Namespace
 
-from piicatcher.files.explorer import File, FileExplorer, dispatch
+from piicatcher.explorer.files import File, FileExplorer, dispatch
 from piicatcher.piitypes import PiiTypes
 
 
 class TestDispatcher(TestCase):
     def test_file_dispatch(self):
-        with mock.patch('piicatcher.files.explorer.FileExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.files.explorer.FileExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.files.explorer.tableprint', autospec=True) as MockTablePrint:
+        with mock.patch('piicatcher.explorer.files.FileExplorer.scan', autospec=True) as mock_scan_method:
+            with mock.patch('piicatcher.explorer.files.FileExplorer.get_tabular', autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.files.tableprint', autospec=True) as MockTablePrint:
                     dispatch(Namespace(path='/a/b/c', output_format='ascii_table'))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()

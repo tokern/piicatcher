@@ -1,7 +1,7 @@
 from peewee import *
 
+from piicatcher.store import Store
 from piicatcher.store.PiiTypeField import PiiTypeField
-from piicatcher.config import config
 
 database_proxy = DatabaseProxy()
 
@@ -36,19 +36,6 @@ class DbFile(BaseModel):
     pii_types = PiiTypeField()
 
 
-def init():
-    if 'orm' in config:
-        orm = config['store']
-        database = MySQLDatabase('tokern',
-                                 host=orm['host'],
-                                 port=int(orm['port']),
-                                 user=orm['user'],
-                                 password=orm['password'])
-        database_proxy.initialize(database)
-        database_proxy.connect()
-        database_proxy.create_tables([DbSchemas, DbTables, DbColumns, DbFile])
-
-
 def init_test(path):
     database = SqliteDatabase(path)
     database_proxy.initialize(database)
@@ -60,9 +47,23 @@ def model_db_close():
     database_proxy.close()
 
 
-class Store:
+class DbStore(Store):
+    @classmethod
+    def setup_database(cls, config):
+        if config is not None and 'orm' in config:
+            orm = config['store']
+            database = MySQLDatabase('tokern',
+                                     host=orm['host'],
+                                     port=int(orm['port']),
+                                     user=orm['user'],
+                                     password=orm['password'])
+            database_proxy.initialize(database)
+            database_proxy.connect()
+            database_proxy.create_tables([DbSchemas, DbTables, DbColumns, DbFile])
+
     @classmethod
     def save_schemas(cls, explorer):
+        cls.setup_database(explorer.config)
         with database_proxy.atomic():
             schemas = explorer.get_schemas()
             for s in schemas:

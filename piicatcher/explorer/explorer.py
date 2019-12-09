@@ -1,28 +1,27 @@
+import json
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
-import sqlite3
-import pymysql
-import psycopg2
-import pymssql
-import cx_Oracle
-
-import logging
-import json
+import yaml
 import tableprint
 
-from piicatcher.db.metadata import Schema, Table, Column
-from piicatcher.store.db import Store
+from piicatcher.explorer.metadata import Schema, Table, Column
+from piicatcher.store.db import DbStore
 
 
 class Explorer(ABC):
     query_template = "select {column_list} from {schema_name}.{table_name}"
     _count_query = "select count(*) from {schema_name}.{table_name}"
 
-    def __init__(self):
+    def __init__(self, ns):
         self._connection = None
         self._schemas = None
         self._cache_ts = None
+        self.config = None
+
+        if ns.configfile is not None:
+            self.config = yaml.full_load(ns.configfile)
 
     def __enter__(self):
         return self
@@ -40,21 +39,7 @@ class Explorer(ABC):
 
     @classmethod
     def factory(cls, ns):
-        logging.debug("Db Dispatch entered")
-        explorer = None
-        if ns.connection_type == "sqlite":
-            explorer = SqliteExplorer(ns.host)
-        elif ns.connection_type == "mysql":
-            explorer = MySQLExplorer(ns.host, ns.port, ns.user, ns.password)
-        elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
-            explorer = PostgreSQLExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
-        elif ns.connection_type == "sqlserver":
-            explorer = MSSQLExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
-        elif ns.connection_type == "oracle":
-            explorer = OracleExplorer(ns.host, ns.port, ns.user, ns.password, ns.database)
-        assert (explorer is not None)
-
-        return explorer
+        pass
 
     @classmethod
     def parser(cls, sub_parsers):
@@ -111,7 +96,7 @@ class Explorer(ABC):
         elif ns.output_format == "json":
             print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2))
         elif ns.output_format == "db":
-            Store.save_schemas(explorer)
+            DbStore.save_schemas(explorer)
 
     def get_connection(self):
         if self._connection is None:
@@ -260,214 +245,3 @@ class Explorer(ABC):
                 return t.get_columns()
 
         raise ValueError("{} table not found".format(table_name))
-
-
-class SqliteExplorer(Explorer):
-    _catalog_query = """
-            SELECT 
-                "" as schema_name,
-                m.name as table_name, 
-                p.name as column_name,
-                p.type as data_type
-            FROM 
-                sqlite_master AS m
-            JOIN 
-                pragma_table_info(m.name) AS p
-            WHERE
-                p.type like 'text' or p.type like 'varchar%' or p.type like 'char%'
-            ORDER BY 
-                m.name, 
-                p.name
-    """
-
-    _query_template = "select {column_list} from {table_name}"
-
-    class CursorContextManager():
-        def __init__(self, connection):
-            self.connection = connection
-
-        def __enter__(self):
-            self.cursor = self.connection.cursor()
-            return self.cursor
-
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            pass
-
-    def __init__(self, conn_string):
-        super(SqliteExplorer, self).__init__()
-        self.conn_string = conn_string
-
-    def _open_connection(self):
-        logging.debug("Sqlite connection string '{}'".format(self.conn_string))
-        return sqlite3.connect(self.conn_string)
-
-    def _get_catalog_query(self):
-        return self._catalog_query
-
-    def _get_context_manager(self):
-        return SqliteExplorer.CursorContextManager(self.get_connection())
-
-    @classmethod
-    def _get_select_query(cls, schema_name, table_name, column_list):
-        return self._query_template.format(
-            column_list=",".join([col.get_name() for col in column_list]),
-            table_name=table_name.get_name()
-        )
-
-
-class MySQLExplorer(Explorer):
-    _catalog_query = """
-        SELECT 
-            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
-        FROM 
-            INFORMATION_SCHEMA.COLUMNS 
-        WHERE 
-            TABLE_SCHEMA NOT IN ('information_schema', 'performance_schema', 'sys', 'mysql')
-            AND DATA_TYPE RLIKE 'char.*|varchar.*|text'
-        ORDER BY table_schema, table_name, column_name 
-    """
-
-    default_port = 3036
-
-    def __init__(self, host, port, user, password):
-        super(MySQLExplorer, self).__init__()
-        self.host = host
-        self.user = user
-        self.password = password
-        self.port = self.default_port if port is None else int(port)
-
-    def _open_connection(self):
-        return pymysql.connect(host=self.host,
-                               port=self.port,
-                               user=self.user,
-                               password=self.password)
-
-    def _get_catalog_query(self):
-        return self._catalog_query
-
-
-class PostgreSQLExplorer(Explorer):
-    _catalog_query = """
-        SELECT 
-            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
-        FROM 
-            INFORMATION_SCHEMA.COLUMNS 
-        WHERE 
-            TABLE_SCHEMA NOT IN ('information_schema', 'pg_catalog')
-            AND DATA_TYPE SIMILAR TO '%char%|%text%'
-        ORDER BY table_schema, table_name, column_name 
-    """
-
-    default_port = 5432
-
-    def __init__(self, host, port, user, password, database='public'):
-        super(PostgreSQLExplorer, self).__init__()
-        self.host = host
-        self.port = self.default_port if port is None else int(port)
-        self.user = user
-        self.password = password
-        self.database = database
-
-    def _open_connection(self):
-        return psycopg2.connect(host=self.host,
-                                port=self.port,
-                                user=self.user,
-                                password=self.password,
-                                database=self.database)
-
-    def _get_catalog_query(self):
-        return self._catalog_query
-
-
-class MSSQLExplorer(Explorer):
-    _catalog_query = """
-        SELECT 
-            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE 
-        FROM 
-            INFORMATION_SCHEMA.COLUMNS 
-        WHERE 
-            DATA_TYPE LIKE '%char%'
-        ORDER BY TABLE_SCHEMA, table_name, ordinal_position 
-    """
-
-    _sample_query_template = "SELECT TOP 10 * FROM {schema_name}.{table_name} TABLESAMPLE (1000 ROWS)"
-    default_port = 1433
-
-    def __init__(self, host, port, user, password, database='public'):
-        super(MSSQLExplorer, self).__init__()
-        self.host = host
-        self.port = self.default_port if port is None else int(port)
-        self.user = user
-        self.password = password
-        self.database = database
-
-    def _open_connection(self):
-        return pymssql.connect(host=self.host,
-                               port=self.port,
-                               user=self.user,
-                               password=self.password,
-                               database=self.database)
-
-    def _get_catalog_query(self):
-        return self._catalog_query
-
-    @classmethod
-    def _get_sample_query(cls, schema_name, table_name, column_list):
-        return cls._sample_query_template.format(
-            column_list=",".join([col.get_name() for col in column_list]),
-            schema_name=schema_name.get_name(),
-            table_name=table_name.get_name()
-        )
-
-
-class OracleExplorer(Explorer):
-    _catalog_query = """
-        SELECT 
-            '{db}', TABLE_NAME, COLUMN_NAME 
-        FROM 
-            USER_TAB_COLUMNS 
-        WHERE UPPER(DATA_TYPE) LIKE '%CHAR%'
-        ORDER BY TABLE_NAME, COLUMN_ID 
-    """
-
-    _sample_query_template = "select {column_list} from {table_name} sample(5)"
-    _select_query_template = "select {column_list} from {table_name}"
-    _count_query = "select count(*) from {table_name}"
-
-    default_port = 1521
-
-    def __init__(self, host, port, user, password, database):
-        super(OracleExplorer, self).__init__()
-        self.host = host
-        self.port = self.default_port if port is None else int(port)
-        self.user = user
-        self.password = password
-        self.database = database
-
-    def _open_connection(self):
-        return cx_Oracle.connect(self.user,
-                                 self.password,
-                                 "%s:%d/%s" % (self.host, self.port, self.database))
-
-    def _get_catalog_query(self):
-        return self._catalog_query.format(db=self.database)
-
-    @classmethod
-    def _get_select_query(cls, schema_name, table_name, column_list):
-        return cls._select_query_template.format(
-            column_list=",".join([col.get_name() for col in column_list]),
-            table_name=table_name.get_name()
-        )
-
-    @classmethod
-    def _get_sample_query(cls, schema_name, table_name, column_list):
-        return cls._sample_query_template.format(
-            column_list=",".join([col.get_name() for col in column_list]),
-            table_name=table_name.get_name()
-        )
-
-    @classmethod
-    def _get_count_query(cls, schema_name, table_name):
-        return cls._count_query.format(
-            table_name=table_name.get_name()
-        )

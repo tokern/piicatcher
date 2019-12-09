@@ -9,9 +9,9 @@ import psycopg2
 import logging
 import pytest
 
-from piicatcher.db.explorer import Explorer, SqliteExplorer, MySQLExplorer, PostgreSQLExplorer, OracleExplorer, \
+from piicatcher.explorer.databases import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer, OracleExplorer, \
     MSSQLExplorer
-from piicatcher.db.metadata import Schema, Table, Column
+from piicatcher.explorer.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
 
 logging.basicConfig(level=logging.DEBUG)
@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 class ExplorerTest(TestCase):
     def setUp(self):
-        self.explorer = SqliteExplorer("mock_connection")
+        self.explorer = SqliteExplorer(Namespace(host="mock_connection", configfile=None))
 
         col1 = Column('c1')
         col2 = Column('c2')
@@ -217,9 +217,10 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
         request.addfinalizer(drop_tables)
 
     def setUp(self):
-        self.explorer = MySQLExplorer(host="127.0.0.1",
-                                      user="pii_tester",
-                                      password="pii_secret")
+        self.explorer = MySQLExplorer(Namespace(
+            host="127.0.0.1",
+            user="pii_tester",
+            password="pii_secret"))
 
     def tearDown(self):
         self.explorer.get_connection().close()
@@ -252,9 +253,10 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
 
     @pytest.fixture(scope="class")
     def create_tables(self, request):
-        self.conn = pymysql.connect(host="127.0.0.1",
-                                    user="pii_tester",
-                                    password="pii_secret")
+        self.conn = pymysql.connect(Namespace(
+            host="127.0.0.1",
+            user="pii_tester",
+            password="pii_secret"))
 
         with self.conn.cursor() as cursor:
             self.execute_script(cursor, self.char_db_query)
@@ -272,9 +274,10 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
         request.addfinalizer(drop_tables)
 
     def setUp(self):
-        self.explorer = MySQLExplorer(host="127.0.0.1",
-                                      user="pii_tester",
-                                      password="pii_secret")
+        self.explorer = MySQLExplorer(Namespace(
+            host="127.0.0.1",
+            user="pii_tester",
+            password="pii_secret"))
 
     def tearDown(self):
         self.explorer.get_connection().close()
@@ -320,10 +323,11 @@ class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
         request.addfinalizer(drop_tables)
 
     def setUp(self):
-        self.explorer = PostgreSQLExplorer(host="127.0.0.1",
-                                           user="postgres",
-                                           password="pii_secret",
-                                           database="postgres")
+        self.explorer = PostgreSQLExplorer(Namespace(
+            host="127.0.0.1",
+            user="postgres",
+            password="pii_secret",
+            database="postgres"))
 
     def tearDown(self):
         self.explorer.get_connection().close()
@@ -369,10 +373,11 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
         request.addfinalizer(drop_tables)
 
     def setUp(self):
-        self.explorer = PostgreSQLExplorer(host="127.0.0.1",
-                                           user="postgres",
-                                           password="pii_secret",
-                                           database="postgres")
+        self.explorer = PostgreSQLExplorer(Namespace(
+            host="127.0.0.1",
+            user="postgres",
+            password="pii_secret",
+            database="postgres"))
 
     def tearDown(self):
         self.explorer.get_connection().close()
@@ -412,9 +417,9 @@ class SelectQueryTest:
 
     def test_postgres(self):
         self.assertEqual("select c1, c2 from testSchema.t1",
-                        PostgreSQLExplorer._get_select_query(self.schema,
-                                                             self.schema.get_tables()[0],
-                                                             self.schema.get_tables()[0].get_columns()))
+                         PostgreSQLExplorer._get_select_query(self.schema,
+                                                              self.schema.get_tables()[0],
+                                                              self.schema.get_tables()[0].get_columns()))
 
     def test_mysql(self):
         self.assertEqual("select c1, c2 from testSchema.t1",
@@ -432,60 +437,64 @@ class SelectQueryTest:
 class TestDispatcher(TestCase):
 
     def test_sqlite_dispatch(self):
-        with mock.patch('piicatcher.db.explorer.SqliteExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.db.explorer.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    Explorer.dispatch(Namespace(host='connection', list_all=None, output_format='ascii_table',
-                                                connection_type='sqlite', scan_type=None, port=None))
+        with mock.patch('piicatcher.explorer.databases.SqliteExplorer.scan', autospec=True) as mock_scan_method:
+            with mock.patch('piicatcher.explorer.databases.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
+                    SqliteExplorer.dispatch(Namespace(host='connection', list_all=None, output_format='ascii_table',
+                                                      connection_type='sqlite', scan_type=None, configfile=None,
+                                                      port=None))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
 
     def test_mysql_dispatch(self):
-        with mock.patch('piicatcher.db.explorer.MySQLExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.db.explorer.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    Explorer.dispatch(Namespace(host='connection',
-                                                port=None,
-                                                list_all=None,
-                                                output_format='ascii_table',
-                                                connection_type='mysql',
-                                                scan_type='deep',
-                                                user='user',
-                                                password='pass'))
+        with mock.patch('piicatcher.explorer.databases.MySQLExplorer.scan', autospec=True) as mock_scan_method:
+            with mock.patch('piicatcher.explorer.databases.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
+                    MSSQLExplorer.dispatch(Namespace(host='connection',
+                                                     port=None,
+                                                     list_all=None,
+                                                     output_format='ascii_table',
+                                                     connection_type='mysql',
+                                                     scan_type='deep',
+                                                     configfile=None,
+                                                     user='user',
+                                                     password='pass'))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
 
     def test_postgres_dispatch(self):
-        with mock.patch('piicatcher.db.explorer.PostgreSQLExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.db.explorer.PostgreSQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    Explorer.dispatch(Namespace(host='connection',
-                                                port=None,
-                                                list_all=None,
-                                                output_format='ascii_table',
-                                                connection_type='postgres',
-                                                database='public',
-                                                scan_type=None,
-                                                user='user',
-                                                password='pass'))
+        with mock.patch('piicatcher.explorer.databases.PostgreSQLExplorer.scan', autospec=True) as mock_scan_method:
+            with mock.patch('piicatcher.explorer.databases.PostgreSQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
+                    PostgreSQLExplorer.dispatch(Namespace(host='connection',
+                                                          port=None,
+                                                          list_all=None,
+                                                          output_format='ascii_table',
+                                                          connection_type='postgres',
+                                                          database='public',
+                                                          scan_type=None,
+                                                          configfile=None,
+                                                          user='user',
+                                                          password='pass'))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
 
     def test_mysql_shallow_scan(self):
-        with mock.patch('piicatcher.db.explorer.MySQLExplorer.shallow_scan', autospec=True) as mock_shallow_scan_method:
-            with mock.patch('piicatcher.db.explorer.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.db.explorer.tableprint', autospec=True) as MockTablePrint:
-                    Explorer.dispatch(Namespace(host='connection',
-                                                port=None,
-                                                list_all=None,
-                                                output_format='ascii_table',
-                                                connection_type='mysql',
-                                                user='user',
-                                                password='pass',
-                                                scan_type="shallow"))
+        with mock.patch('piicatcher.explorer.databases.MySQLExplorer.shallow_scan', autospec=True) as mock_shallow_scan_method:
+            with mock.patch('piicatcher.explorer.databases.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
+                    MySQLExplorer.dispatch(Namespace(host='connection',
+                                                     port=None,
+                                                     list_all=None,
+                                                     output_format='ascii_table',
+                                                     connection_type='mysql',
+                                                     configfile=None,
+                                                     user='user',
+                                                     password='pass',
+                                                     scan_type="shallow"))
                     mock_shallow_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
