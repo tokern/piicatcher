@@ -23,9 +23,9 @@ class GlueStore(Store):
                 logging.debug("Processing table %s" % t.get_name())
                 field_value = {}
                 for c in t.get_columns():
-                    pii = c.get_pii_types();
+                    pii = c.get_pii_types()
                     if pii:
-                        field_value[c.get_name()] = list(pii)
+                        field_value[c.get_name()] = [str(v) for v in pii]
 
                 table_info = client.get_table(
                     DatabaseName=s.get_name(),
@@ -33,22 +33,32 @@ class GlueStore(Store):
                 )
 
                 logging.debug(table_info)
-                parameters = table_info['Table']['Parameters']
-                if parameters is None:
-                    parameters = {}
 
-                logging.debug("Parameters are :")
-                logging.debug(parameters)
+                updated_columns = []
+                is_table_updated = False
 
-                parameters['piicatcher'] = json.dumps(field_value, cls=PiiTypeEncoder, sort_keys=True)
+                for c in table_info['Table']['StorageDescriptor']['Columns']:
+                    if c['Name'] in field_value:
+                        c['Parameters'] = {
+                            'PII': field_value[c['Name']][0]
+                        }
+                        is_table_updated = True
+                    updated_columns.append(c)
 
-                logging.debug("Updated parameters are :")
-                logging.debug(parameters)
+                if is_table_updated:
+                    updated_params = {}
+                    for param in ['Name', 'Description', 'Owner', 'LastAccessTime', 'LastAnalyzedTime', 'Retention',
+                                   'StorageDescriptor', 'PartitionKeys', 'ViewOriginalText', 'ViewExpandedText',
+                                   'TableType', 'Parameters']:
+                        if param in table_info['Table']:
+                            updated_params[param] = table_info['Table'][param]
 
-                client.update_table(
-                    DatabaseName=s.get_name(),
-                    TableInput={
-                        'Name': t.get_name(),
-                        'Parameters': parameters
-                    }
-                )
+                    updated_params['StorageDescriptor']['Columns'] = updated_columns
+
+                    logging.debug("Updated parameters are :")
+                    logging.debug(updated_params)
+
+                    client.update_table(
+                        DatabaseName=s.get_name(),
+                        TableInput=updated_params
+                    )
