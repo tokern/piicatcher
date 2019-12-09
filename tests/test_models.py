@@ -87,7 +87,6 @@ class TestStore(TestCase):
         init_test(cls.sqlite_path)
 
         explorer = MockExplorer(Namespace(config_file=None))
-        explorer.set_schema()
 
         DbStore.save_schemas(explorer)
 
