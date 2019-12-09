@@ -44,18 +44,6 @@ class MockExplorer(Explorer):
         pass
 
     def _load_catalog(self):
-        pass
-
-    def set_schema(self, schema):
-        self._schemas = [schema]
-
-
-class TestStore(TestCase):
-    sqlite_path = 'file::memory:?cache=shared'
-
-    @classmethod
-    def setUpClass(cls):
-        init_test(cls.sqlite_path)
         schema = Schema("test_store")
 
         no_pii_table = Table("test_store", "no_pii")
@@ -86,11 +74,20 @@ class TestStore(TestCase):
 
         full_pii_table.add(full_pii_a)
         full_pii_table.add(full_pii_b)
-
         schema.add(full_pii_table)
 
+        self._schemas = [schema]
+
+
+class TestStore(TestCase):
+    sqlite_path = 'file::memory:?cache=shared'
+
+    @classmethod
+    def setUpClass(cls):
+        init_test(cls.sqlite_path)
+
         explorer = MockExplorer(Namespace(config_file=None))
-        explorer.set_schema(schema)
+        explorer.set_schema()
 
         DbStore.save_schemas(explorer)
 
