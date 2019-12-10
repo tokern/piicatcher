@@ -2,7 +2,8 @@ import logging
 
 import pyathena
 
-from piicatcher.db.explorer import Explorer
+from piicatcher.explorer.explorer import Explorer
+from piicatcher.store.glue import GlueStore
 
 
 class AthenaExplorer(Explorer):
@@ -20,18 +21,14 @@ class AthenaExplorer(Explorer):
     _select_query_template = "select {column_list} from {schema_name}.{table_name} limit 10"
     _count_query = "select count(*) from {schema_name}.{table_name}"
 
-    def __init__(self, access_key, secret_key, staging_dir, region_name):
-        super(AthenaExplorer, self).__init__()
-        self._access_key = access_key
-        self._secret_key = secret_key
-        self._staging_dir = staging_dir
-        self._region_name = region_name
+    def __init__(self, ns):
+        super(AthenaExplorer, self).__init__(ns)
+        self.config = ns
 
     @classmethod
     def factory(cls, ns):
         logging.debug("AWS Dispatch entered")
-        explorer = AthenaExplorer(ns.access_key, ns.secret_key,
-                                  ns.staging_dir, ns.region)
+        explorer = AthenaExplorer(ns)
         return explorer
 
     @classmethod
@@ -46,15 +43,25 @@ class AthenaExplorer(Explorer):
                                 help="S3 Staging Directory for Athena results")
         sub_parser.add_argument("-r", "--region", required=True,
                                 help="AWS Region")
+        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "db", "glue"],
+                                default="ascii_table",
+                                help="Choose output format type")
 
         cls.scan_options(sub_parser)
         sub_parser.set_defaults(func=AthenaExplorer.dispatch)
 
+    @classmethod
+    def output(cls, ns, explorer):
+        if ns.output_format == "glue":
+            GlueStore.save_schemas(explorer)
+        else:
+            super(AthenaExplorer, cls).output(ns, explorer)
+
     def _open_connection(self):
-        return pyathena.connect(aws_access_key_id=self._access_key,
-                                aws_secret_access_key=self._secret_key,
-                                s3_staging_dir=self._staging_dir,
-                                region_name=self._region_name)
+        return pyathena.connect(aws_access_key_id=self.config.access_key,
+                                aws_secret_access_key=self.config.secret_key,
+                                s3_staging_dir=self.config.staging_dir,
+                                region_name=self.config.region)
 
     def _get_catalog_query(self):
         return self._catalog_query

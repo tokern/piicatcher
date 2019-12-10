@@ -1,5 +1,4 @@
 import json
-import logging
 from peewee import Field
 from piicatcher.piitypes import PiiTypeEncoder, as_enum
 

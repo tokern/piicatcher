@@ -1,5 +1,5 @@
 from unittest import TestCase
-from piicatcher.db.metadata import Column, Table, Schema
+from piicatcher.explorer.metadata import Column, Table, Schema
 
 
 class DbMetadataTests(TestCase):

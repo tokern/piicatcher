@@ -12,3 +12,4 @@ peewee
 pyyaml
 python-magic
 pyathena[sqlalchemy]
+boto3 == 1.10.34
