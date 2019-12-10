@@ -43,9 +43,8 @@ class MockExplorer(Explorer):
     def _get_catalog_query(self):
         pass
 
-    def _load_catalog(self):
-        schema = Schema("test_store")
-
+    @staticmethod
+    def get_no_pii_table():
         no_pii_table = Table("test_store", "no_pii")
         no_pii_a = Column("a")
         no_pii_b = Column("b")
@@ -53,8 +52,10 @@ class MockExplorer(Explorer):
         no_pii_table.add(no_pii_a)
         no_pii_table.add(no_pii_b)
 
-        schema.add(no_pii_table)
+        return no_pii_table
 
+    @staticmethod
+    def get_partial_pii_table():
         partial_pii_table = Table("test_store", "partial_pii")
         partial_pii_a = Column("a")
         partial_pii_a.add_pii_type(PiiTypes.PHONE)
@@ -63,8 +64,10 @@ class MockExplorer(Explorer):
         partial_pii_table.add(partial_pii_a)
         partial_pii_table.add(partial_pii_b)
 
-        schema.add(partial_pii_table)
+        return partial_pii_table
 
+    @staticmethod
+    def get_full_pii_table():
         full_pii_table = Table("test_store", "full_pii")
         full_pii_a = Column("a")
         full_pii_a.add_pii_type(PiiTypes.PHONE)
@@ -74,7 +77,14 @@ class MockExplorer(Explorer):
 
         full_pii_table.add(full_pii_a)
         full_pii_table.add(full_pii_b)
-        schema.add(full_pii_table)
+
+        return full_pii_table
+
+    def _load_catalog(self):
+        schema = Schema("test_store")
+        schema.add(MockExplorer.get_no_pii_table())
+        schema.add(MockExplorer.get_partial_pii_table())
+        schema.add(MockExplorer.get_full_pii_table())
 
         self._schemas = [schema]
 
