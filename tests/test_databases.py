@@ -287,7 +287,6 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
 
 
 @pytest.mark.usefixtures("create_tables")
-@pytest.mark.dbtest
 class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
     char_db_drop = """
         DROP TABLE char_columns;
@@ -304,8 +303,9 @@ class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
     @pytest.fixture(scope="class")
     def create_tables(self, request):
         self.conn = psycopg2.connect(host="127.0.0.1",
-                                     user="postgres",
-                                     password="pii_secret")
+                                     user="piiuser",
+                                     password="p11secret",
+                                     database="piidb")
 
         self.conn.autocommit = True
 
@@ -325,9 +325,11 @@ class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
     def setUp(self):
         self.explorer = PostgreSQLExplorer(Namespace(
             host="127.0.0.1",
-            user="postgres",
-            password="pii_secret",
-            database="postgres"))
+            user="piiuser",
+            password="p11secret",
+            database="piidb",
+            config_file=None
+        ))
 
     def tearDown(self):
         self.explorer.get_connection().close()
@@ -337,7 +339,6 @@ class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
 
 
 @pytest.mark.usefixtures("create_tables")
-@pytest.mark.dbtest
 class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
     pii_db_drop = """
         DROP TABLE full_pii;
@@ -354,8 +355,9 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
     @pytest.fixture(scope="class")
     def create_tables(self, request):
         self.conn = psycopg2.connect(host="127.0.0.1",
-                                     user="postgres",
-                                     password="pii_secret")
+                                     user="piiuser",
+                                     password="p11secret",
+                                     database="piidb")
 
         self.conn.autocommit = True
 
@@ -375,9 +377,11 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
     def setUp(self):
         self.explorer = PostgreSQLExplorer(Namespace(
             host="127.0.0.1",
-            user="postgres",
-            password="pii_secret",
-            database="postgres"))
+            user="piiuser",
+            password="p11secret",
+            database="piidb",
+            config_file=None
+        ))
 
     def tearDown(self):
         self.explorer.get_connection().close()

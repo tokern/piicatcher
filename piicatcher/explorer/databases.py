@@ -17,7 +17,7 @@ class RelDbExplorer(Explorer):
         self.host = ns.host
         self.user = ns.user
         self.password = ns.password
-        self.port = self.default_port if ns.port is None else int(ns.port)
+        self.port = int(ns.port) if 'port' in vars(ns) and ns.port is not None else self.default_port
 
     @property
     @abstractmethod
