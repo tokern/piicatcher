@@ -19,7 +19,7 @@ def dispatch(ns):
         headers = ["Path", "Mime/Type", "pii"]
         tableprint.table(explorer.get_tabular(), headers)
     elif ns.output_format == "json":
-        print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2))
+        print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
 
 
 def parser(sub_parsers):
@@ -70,13 +70,18 @@ class FileExplorer:
 
     def scan(self):
         logging.debug("Scanning %s" % self._path)
-        for root, subdirs, files in os.walk(self._path):
-            for filename in files:
-                file_path = os.path.join(root, filename)
-                mime_type = magic.from_file(file_path, mime=True)
+        if os.path.isfile(self._path):
+            mime_type = magic.from_file(self._path, mime=True)
+            self._files.append(File(self._path, mime_type))
+            logging.debug('\t- full path: %s, mime_type: %s' % (os.path.abspath(self._path), mime_type))
+        else:
+            for root, subdirs, files in os.walk(self._path):
+                for filename in files:
+                    file_path = os.path.join(root, filename)
+                    mime_type = magic.from_file(file_path, mime=True)
 
-                logging.debug('\t- full path: %s, mime_type: %s' % (file_path, mime_type))
-                self._files.append(File(file_path, mime_type))
+                    logging.debug('\t- full path: %s, mime_type: %s' % (file_path, mime_type))
+                    self._files.append(File(file_path, mime_type))
 
         context = {'tokenizer': Tokenizer(), 'regex': RegexScanner(), 'ner': NERScanner()}
         for f in self._files:
@@ -89,3 +94,14 @@ class FileExplorer:
                                                                         cls=PiiTypeEncoder)])
 
         return tabular
+
+    def get_dict(self):
+        result = []
+        for f in self._files:
+            result.append({
+                'path': f.get_name(),
+                'Mime/Type': f.get_mime_type(),
+                'pii': list(f.get_pii_types())
+            })
+
+        return {'files': result}
