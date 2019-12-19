@@ -122,3 +122,15 @@ jobs:
           name: upload to pypi
           command: |
             pipenv run twine upload dist/*
+
+      - run:
+          name: install git release utilities
+          command: |
+            go get github.com/aktau/github-release
+            go get -u github.com/git-chglog/git-chglog/cmd/git-chglog
+
+      - run:
+          name: release
+          command: |
+            ~/go/bin/git-chglog $CIRCLE_TAG | ~/go/bin/github-release release --description - --tag $CIRCLE_TAG
+
