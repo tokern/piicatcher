@@ -42,28 +42,9 @@ class Explorer(ABC):
         pass
 
     @classmethod
+    @abstractmethod
     def parser(cls, sub_parsers):
-        sub_parser = sub_parsers.add_parser("db")
-
-        sub_parser.add_argument("-s", "--host", required=True,
-                                help="Hostname of the database. File path if it is SQLite")
-        sub_parser.add_argument("-R", "--port",
-                                help="Port of database.")
-        sub_parser.add_argument("-u", "--user",
-                                help="Username to connect database")
-        sub_parser.add_argument("-p", "--password",
-                                help="Password of the user")
-        sub_parser.add_argument("-d", "--database", default='',
-                                help="Name of the database")
-        sub_parser.add_argument("-t", "--connection-type", default="sqlite",
-                                choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
-                                help="Type of database")
-        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "db"],
-                                default="ascii_table",
-                                help="Choose output format type")
-
-        cls.scan_options(sub_parser)
-        sub_parser.set_defaults(func=Explorer.dispatch)
+        pass
 
     @classmethod
     def scan_options(cls, sub_parser):

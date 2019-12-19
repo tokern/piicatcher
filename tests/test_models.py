@@ -5,7 +5,7 @@ import sqlite3
 import pytest
 
 from piicatcher.store.db import *
-from piicatcher.explorer.databases import SqliteExplorer
+from piicatcher.explorer.sqlite import SqliteExplorer
 from piicatcher.explorer.explorer import Explorer
 from piicatcher.explorer.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
@@ -37,6 +37,10 @@ class TestCreateTables(TestCase):
 
 
 class MockExplorer(Explorer):
+    @classmethod
+    def parser(cls, sub_parsers):
+        pass
+
     def _open_connection(self):
         pass
 

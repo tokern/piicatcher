@@ -47,6 +47,33 @@ class TestDbParser(TestCase):
         self.assertEqual("shallow", ns.scan_type)
 
 
+class TestSqliteParser(TestCase):
+    def test_path_required(self):
+        with self.assertRaises(ValueError):
+            get_parser(ErrorRaisingArgumentParser).parse_args(["sqlite"])
+
+    def test_host(self):
+        ns = get_parser().parse_args(["sqlite", "-s", "connection_string"])
+        self.assertEqual("connection_string", ns.path)
+
+    def test_default_console(self):
+        ns = get_parser().parse_args(["sqlite", "-s", "connection_string"])
+        self.assertIsNone(ns.output)
+        self.assertEqual("ascii_table", ns.output_format)
+
+    def test_default_scan_type(self):
+        ns = get_parser().parse_args(["sqlite", "-s", "connection_string"])
+        self.assertIsNone(ns.scan_type)
+
+    def test_deep_scan_type(self):
+        ns = get_parser().parse_args(["sqlite", "-s", "connection_string", "-c", "deep"])
+        self.assertEqual("deep", ns.scan_type)
+
+    def test_default_scan_type(self):
+        ns = get_parser().parse_args(["sqlite", "-s", "connection_string", "-c", "shallow"])
+        self.assertEqual("shallow", ns.scan_type)
+
+
 class TestAWSParser(TestCase):
     def test_access_key_required(self):
         with self.assertRaises(ValueError):
