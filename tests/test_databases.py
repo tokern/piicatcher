@@ -1,49 +1,21 @@
 from abc import ABC, abstractmethod
 from unittest import TestCase, mock
-from shutil import rmtree
 
 from argparse import Namespace
-import sqlite3
 import pymysql
 import psycopg2
 import logging
 import pytest
 
-from piicatcher.explorer.databases import SqliteExplorer, MySQLExplorer, PostgreSQLExplorer, OracleExplorer, \
-    MSSQLExplorer
+from piicatcher.explorer.databases import MySQLExplorer, PostgreSQLExplorer, OracleExplorer, \
+    MSSQLExplorer, RelDbExplorer
+from piicatcher.explorer.sqlite import SqliteExplorer
 from piicatcher.explorer.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
 
 logging.basicConfig(level=logging.DEBUG)
 
 
-class ExplorerTest(TestCase):
-    def setUp(self):
-        self.explorer = SqliteExplorer(Namespace(host="mock_connection", config_file=None))
-
-        col1 = Column('c1')
-        col2 = Column('c2')
-        col2._pii = [PiiTypes.LOCATION]
-
-        schema = Schema('s1')
-        table = Table(schema, 't1')
-        table._columns = [col1, col2]
-
-        schema = Schema('testSchema')
-        schema.tables = [table]
-
-        self.explorer._schemas = [schema]
-
-    def test_tabular_all(self):
-        self.assertEqual([
-            ['testSchema', 't1', 'c1', False],
-            ['testSchema', 't1', 'c2', True]
-        ], self.explorer.get_tabular(True))
-
-    def test_tabular_pii(self):
-        self.assertEqual([
-            ['testSchema', 't1', 'c2', True]
-        ], self.explorer.get_tabular(False))
 
 
 pii_data_script = """
@@ -113,68 +85,6 @@ class CommonDataTypeTestCases:
             self.assertEqual(sorted(['char_columns', 'some_char_columns']), sorted(names))
 
 
-@pytest.mark.usefixtures("temp_sqlite")
-@pytest.mark.dbtest
-class SqliteExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
-
-    @pytest.fixture(scope="class")
-    def temp_sqlite(self, request, tmpdir_factory):
-        request.cls.temp_dir = tmpdir_factory.mktemp("sqlite_test")
-        request.cls.sqlite_conn = request.cls.temp_dir.join("sqldb")
-
-        self.conn = sqlite3.connect(str(request.cls.sqlite_conn))
-        self.conn.executescript(pii_data_script)
-        self.conn.commit()
-        self.conn.close()
-
-        def finalizer():
-            rmtree(self.temp_dir)
-            logging.info("Deleted {}".format(str(self.temp_dir)))
-
-        request.addfinalizer(finalizer)
-
-    def setUp(self):
-        self.explorer = SqliteExplorer(str(self.sqlite_conn))
-
-    def tearDown(self):
-        self.explorer.get_connection().close()
-
-    def test_schema(self):
-        names = [sch.get_name() for sch in self.explorer.get_schemas()]
-        self.assertEqual([''], names)
-
-    def get_test_schema(self):
-        return ""
-
-
-@pytest.mark.usefixtures("temp_sqlite")
-@pytest.mark.dbtest
-class SqliteDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
-
-    @pytest.fixture(scope="class")
-    def temp_sqlite(self, request, tmpdir_factory):
-        request.cls.temp_dir = tmpdir_factory.mktemp("sqlite_test")
-        request.cls.sqlite_conn = request.cls.temp_dir.join("data_type_tests")
-
-        self.conn = sqlite3.connect(str(request.cls.sqlite_conn))
-        self.conn.executescript(char_data_types)
-        self.conn.commit()
-        self.conn.close()
-
-        def finalizer():
-            rmtree(self.temp_dir)
-            logging.info("Deleted {}".format(str(self.temp_dir)))
-
-        request.addfinalizer(finalizer)
-
-    def setUp(self):
-        self.explorer = SqliteExplorer(str(self.sqlite_conn))
-
-    def tearDown(self):
-        self.explorer.get_connection().close()
-
-    def get_test_schema(self):
-        return ""
 
 
 @pytest.mark.usefixtures("create_tables")
@@ -440,22 +350,11 @@ class SelectQueryTest:
 
 class TestDispatcher(TestCase):
 
-    def test_sqlite_dispatch(self):
-        with mock.patch('piicatcher.explorer.databases.SqliteExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.explorer.databases.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
-                    SqliteExplorer.dispatch(Namespace(host='connection', list_all=None, output_format='ascii_table',
-                                                      connection_type='sqlite', scan_type=None, config_file=None,
-                                                      port=None))
-                    mock_scan_method.assert_called_once()
-                    mock_tabular_method.assert_called_once()
-                    MockTablePrint.table.assert_called_once()
-
     def test_mysql_dispatch(self):
         with mock.patch('piicatcher.explorer.databases.MySQLExplorer.scan', autospec=True) as mock_scan_method:
             with mock.patch('piicatcher.explorer.databases.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
-                    MSSQLExplorer.dispatch(Namespace(host='connection',
+                    RelDbExplorer.dispatch(Namespace(host='connection',
                                                      port=None,
                                                      list_all=None,
                                                      output_format='ascii_table',
@@ -472,16 +371,16 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.explorer.databases.PostgreSQLExplorer.scan', autospec=True) as mock_scan_method:
             with mock.patch('piicatcher.explorer.databases.PostgreSQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
-                    PostgreSQLExplorer.dispatch(Namespace(host='connection',
-                                                          port=None,
-                                                          list_all=None,
-                                                          output_format='ascii_table',
-                                                          connection_type='postgres',
-                                                          database='public',
-                                                          scan_type=None,
-                                                          config_file=None,
-                                                          user='user',
-                                                          password='pass'))
+                    RelDbExplorer.dispatch(Namespace(host='connection',
+                                                     port=None,
+                                                     list_all=None,
+                                                     output_format='ascii_table',
+                                                     connection_type='postgres',
+                                                     database='public',
+                                                     scan_type=None,
+                                                     config_file=None,
+                                                     user='user',
+                                                     password='pass'))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
@@ -490,7 +389,7 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.explorer.databases.MySQLExplorer.shallow_scan', autospec=True) as mock_shallow_scan_method:
             with mock.patch('piicatcher.explorer.databases.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
-                    MySQLExplorer.dispatch(Namespace(host='connection',
+                    RelDbExplorer.dispatch(Namespace(host='connection',
                                                      port=None,
                                                      list_all=None,
                                                      output_format='ascii_table',

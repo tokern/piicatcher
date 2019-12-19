@@ -1,4 +1,3 @@
-import sqlite3
 from abc import abstractmethod
 
 import pymysql
@@ -28,9 +27,7 @@ class RelDbExplorer(Explorer):
     def factory(cls, ns):
         logging.debug("Relational Db Factory entered")
         explorer = None
-        if ns.connection_type == "sqlite":
-            explorer = SqliteExplorer(ns)
-        elif ns.connection_type == "mysql":
+        if ns.connection_type == "mysql":
             explorer = MySQLExplorer(ns)
         elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
             explorer = PostgreSQLExplorer(ns)
@@ -42,63 +39,29 @@ class RelDbExplorer(Explorer):
 
         return explorer
 
-
-class SqliteExplorer(Explorer):
-    _catalog_query = """
-            SELECT 
-                "" as schema_name,
-                m.name as table_name, 
-                p.name as column_name,
-                p.type as data_type
-            FROM 
-                sqlite_master AS m
-            JOIN 
-                pragma_table_info(m.name) AS p
-            WHERE
-                p.type like 'text' or p.type like 'varchar%' or p.type like 'char%'
-            ORDER BY 
-                m.name, 
-                p.name
-    """
-
-    _query_template = "select {column_list} from {table_name}"
-
-    class CursorContextManager:
-        def __init__(self, connection):
-            self.connection = connection
-
-        def __enter__(self):
-            self.cursor = self.connection.cursor()
-            return self.cursor
-
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            pass
-
-    def __init__(self, ns):
-        super(SqliteExplorer, self).__init__(ns)
-        self.host = ns.host
-
     @classmethod
-    def factory(cls, ns):
-        logging.debug("Sqlite Factory entered")
-        return SqliteExplorer(ns)
+    def parser(cls, sub_parsers):
+        sub_parser = sub_parsers.add_parser("db")
 
-    def _open_connection(self):
-        logging.debug("Sqlite connection string '{}'".format(self.host))
-        return sqlite3.connect(self.host)
+        sub_parser.add_argument("-s", "--host", required=True,
+                                help="Hostname of the database. File path if it is SQLite")
+        sub_parser.add_argument("-R", "--port",
+                                help="Port of database.")
+        sub_parser.add_argument("-u", "--user",
+                                help="Username to connect database")
+        sub_parser.add_argument("-p", "--password",
+                                help="Password of the user")
+        sub_parser.add_argument("-d", "--database", default='',
+                                help="Name of the database")
+        sub_parser.add_argument("-t", "--connection-type", default="sqlite",
+                                choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
+                                help="Type of database")
+        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "db"],
+                                default="ascii_table",
+                                help="Choose output format type")
 
-    def _get_catalog_query(self):
-        return self._catalog_query
-
-    def _get_context_manager(self):
-        return SqliteExplorer.CursorContextManager(self.get_connection())
-
-    @classmethod
-    def _get_select_query(cls, schema_name, table_name, column_list):
-        return cls._query_template.format(
-            column_list=",".join([col.get_name() for col in column_list]),
-            table_name=table_name.get_name()
-        )
+        cls.scan_options(sub_parser)
+        sub_parser.set_defaults(func=RelDbExplorer.dispatch)
 
 
 class MySQLExplorer(RelDbExplorer):

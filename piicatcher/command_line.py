@@ -2,8 +2,9 @@ import argparse
 import logging
 
 from piicatcher.explorer.aws import AthenaExplorer
-from piicatcher.explorer.explorer import Explorer
+from piicatcher.explorer.databases import RelDbExplorer
 from piicatcher.explorer.files import parser as files_parser
+from piicatcher.explorer.sqlite import SqliteExplorer
 
 
 def get_parser(parser_cls=argparse.ArgumentParser):
@@ -13,7 +14,8 @@ def get_parser(parser_cls=argparse.ArgumentParser):
 
     sub_parsers = parser.add_subparsers()
     AthenaExplorer.parser(sub_parsers)
-    Explorer.parser(sub_parsers)
+    RelDbExplorer.parser(sub_parsers)
+    SqliteExplorer.parser(sub_parsers)
     files_parser(sub_parsers)
 
     return parser
