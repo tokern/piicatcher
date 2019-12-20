@@ -1,5 +1,6 @@
 from unittest import TestCase
 from piicatcher.explorer.metadata import Column, Table, Schema
+from piicatcher.scanner import RegexScanner, NERScanner
 
 
 class DbMetadataTests(TestCase):
@@ -26,17 +27,17 @@ class DbMetadataTests(TestCase):
 
     def test_negative_scan_column(self):
         col = Column('col')
-        col.scan('abc')
+        col.scan('abc', [RegexScanner(), NERScanner()])
         self.assertFalse(col.has_pii())
 
     def test_positive_scan_column(self):
         col = Column('col')
-        col.scan('Jonathan Smith')
+        col.scan('Jonathan Smith', [RegexScanner(), NERScanner()])
         self.assertTrue(col.has_pii())
 
     def test_null_scan_column(self):
         col = Column('col')
-        col.scan(None)
+        col.scan(None, [RegexScanner(), NERScanner()])
         self.assertFalse(col.has_pii())
 
     def test_no_pii_table(self):
