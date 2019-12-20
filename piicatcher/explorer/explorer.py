@@ -46,6 +46,10 @@ class Explorer(ABC):
     def parser(cls, sub_parsers):
         pass
 
+    @property
+    def small_table_max(self):
+        return 100
+
     @classmethod
     def scan_options(cls, sub_parser):
         sub_parser.add_argument("-c", "--scan-type", default='shallow',
@@ -132,7 +136,7 @@ class Explorer(ABC):
 
     @classmethod
     def _get_sample_query(cls, schema_name, table_name, column_list):
-        return NotImplementedError
+        raise NotImplementedError
 
     def _get_table_count(self, schema_name, table_name, column_list):
         count = self._get_count_query(schema_name, table_name)
@@ -147,12 +151,13 @@ class Explorer(ABC):
     def _get_query(self, schema_name, table_name, column_list):
         count = self._get_table_count(schema_name, table_name, column_list)
         query = None
-        if count < 100:
+        if count < self.small_table_max:
             query = self._get_select_query(schema_name, table_name, column_list)
         else:
             try:
                 query = self._get_sample_query(schema_name, table_name, column_list)
             except NotImplementedError:
+                logging.warning("Sample Row is not implemented for %s" % self.__class__.__name__)
                 query = self._get_select_query(schema_name, table_name, column_list)
 
         return query
@@ -212,8 +217,6 @@ class Explorer(ABC):
     def get_tables(self, schema_name):
         self._load_catalog()
         for s in self._schemas:
-            print(schema_name)
-            print(s.get_name())
             if s.get_name() == schema_name:
                 return s.tables
         raise ValueError("{} schema not found".format(schema_name))
