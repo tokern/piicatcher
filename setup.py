@@ -5,7 +5,7 @@ from os import path, getenv
 
 import sys
 
-__version__ = '0.6.3'
+__version__ = '0.6.4'
 
 
 class VerifyVersionCommand(install):
