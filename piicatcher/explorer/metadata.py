@@ -76,13 +76,17 @@ class Table(NamedObject):
         return self._columns
 
     def scan(self, generator):
+        scanners = [
+            RegexScanner(),
+            NERScanner()
+        ]
         for row in generator(
             column_list=self._columns,
             schema_name=self._schema,
             table_name=self
         ):
             for col, val in zip(self._columns, row):
-                col.scan(val)
+                col.scan(val, scanners)
 
         for col in self._columns:
             [self._pii.add(p) for p in col.get_pii_types()]
@@ -117,9 +121,9 @@ class Column(NamedObject):
     def get_pii_types(self):
         return self._pii
 
-    def scan(self, data):
+    def scan(self, data, scanners):
         if data is not None:
-            for scanner in [RegexScanner(), NERScanner()]:
+            for scanner in scanners:
                 [self._pii.add(pii) for pii in scanner.scan(data)]
 
             logging.debug(self._pii)
