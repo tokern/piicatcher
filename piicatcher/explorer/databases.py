@@ -76,6 +76,8 @@ class MySQLExplorer(RelDbExplorer):
         ORDER BY table_schema, table_name, column_name 
     """
 
+    _sample_query_template = "select {column_list} from {schema_name}.{table_name} limit 10"
+
     def __init__(self, ns):
         super(MySQLExplorer, self).__init__(ns)
         self.database = ns.database if 'database' in vars(ns) and ns.database is not None else None
@@ -94,6 +96,14 @@ class MySQLExplorer(RelDbExplorer):
     def _get_catalog_query(self):
         return self._catalog_query
 
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return cls.query_template.format(
+            column_list=",".join([col.get_name() for col in column_list]),
+            schema_name=schema_name.get_name(),
+            table_name=table_name.get_name()
+        )
+
 
 class PostgreSQLExplorer(RelDbExplorer):
     _catalog_query = """
@@ -106,6 +116,8 @@ class PostgreSQLExplorer(RelDbExplorer):
             AND DATA_TYPE SIMILAR TO '%char%|%text%'
         ORDER BY table_schema, table_name, column_name 
     """
+
+    _sample_query_template = "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI (10)"
 
     def __init__(self, ns):
         super(PostgreSQLExplorer, self).__init__(ns)
@@ -128,6 +140,14 @@ class PostgreSQLExplorer(RelDbExplorer):
 
     def _get_catalog_query(self):
         return self._catalog_query
+
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return cls.query_template.format(
+            column_list=",".join([col.get_name() for col in column_list]),
+            schema_name=schema_name.get_name(),
+            table_name=table_name.get_name()
+        )
 
 
 class MSSQLExplorer(RelDbExplorer):
