@@ -78,16 +78,18 @@ class MySQLExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(MySQLExplorer, self).__init__(ns)
+        self.database = ns.database if 'database' in vars(ns) and ns.database is not None else None
 
     @property
     def default_port(self):
-        return 3036
+        return 3306
 
     def _open_connection(self):
         return pymysql.connect(host=self.host,
                                port=self.port,
                                user=self.user,
-                               password=self.password)
+                               password=self.password,
+                               database=self.database)
 
     def _get_catalog_query(self):
         return self._catalog_query
@@ -107,7 +109,7 @@ class PostgreSQLExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(PostgreSQLExplorer, self).__init__(ns)
-        self.database = self.database if ns.database is None else ns.database
+        self.database = ns.database if 'database' in vars(ns) and ns.database is not None else None
 
     @property
     def default_database(self):

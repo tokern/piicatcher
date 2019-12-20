@@ -16,8 +16,6 @@ from piicatcher.piitypes import PiiTypes
 logging.basicConfig(level=logging.DEBUG)
 
 
-
-
 pii_data_script = """
 create table no_pii(a text, b text);
 insert into no_pii values ('abc', 'def');
@@ -85,18 +83,13 @@ class CommonDataTypeTestCases:
             self.assertEqual(sorted(['char_columns', 'some_char_columns']), sorted(names))
 
 
-
-
 @pytest.mark.usefixtures("create_tables")
-@pytest.mark.dbtest
 class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
-    pii_db_query = """
-        CREATE DATABASE IF NOT EXISTS pii_db;
-        use pii_db;
-    """
 
     pii_db_drop = """
-        DROP DATABASE IF EXISTS pii_db
+        DROP TABLE full_pii;
+        DROP TABLE partial_pii;
+        DROP TABLE no_pii;
     """
 
     @staticmethod
@@ -108,18 +101,19 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
     @pytest.fixture(scope="class")
     def create_tables(self, request):
         self.conn = pymysql.connect(host="127.0.0.1",
-                                    user="pii_tester",
-                                    password="pii_secret")
+                                    user="piiuser",
+                                    password="p11secret",
+                                    database="piidb"
+                                    )
 
         with self.conn.cursor() as cursor:
-            self.execute_script(cursor, self.pii_db_query)
             self.execute_script(cursor, pii_data_script)
             cursor.execute("commit")
             cursor.close()
 
         def drop_tables():
             with self.conn.cursor() as cursor:
-                cursor.execute(self.pii_db_drop)
+                self.execute_script(cursor, self.pii_db_drop)
                 logging.info("Executed drop script")
                 cursor.close()
             self.conn.close()
@@ -129,30 +123,30 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
     def setUp(self):
         self.explorer = MySQLExplorer(Namespace(
             host="127.0.0.1",
-            user="pii_tester",
-            password="pii_secret"))
+            user="piiuser",
+            password="p11secret",
+            database="piidb",
+            config_file=None
+        ))
 
     def tearDown(self):
         self.explorer.get_connection().close()
 
     def test_schema(self):
         names = [sch.get_name() for sch in self.explorer.get_schemas()]
-        self.assertEqual(['pii_db'], names)
+        self.assertEqual(['piidb'], names)
+        return "piidb"
 
     def get_test_schema(self):
-        return "pii_db"
+        return "piidb"
 
 
 @pytest.mark.usefixtures("create_tables")
-@pytest.mark.dbtest
 class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
-    char_db_query = """
-        CREATE DATABASE IF NOT EXISTS pii_db;
-        use pii_db;
-    """
-
     char_db_drop = """
-        DROP DATABASE IF EXISTS pii_db
+        DROP TABLE char_columns;
+        DROP TABLE no_char_columns;
+        DROP TABLE some_char_columns;
     """
 
     @staticmethod
@@ -163,20 +157,20 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
 
     @pytest.fixture(scope="class")
     def create_tables(self, request):
-        self.conn = pymysql.connect(Namespace(
-            host="127.0.0.1",
-            user="pii_tester",
-            password="pii_secret"))
+        self.conn = pymysql.connect(host="127.0.0.1",
+            user="piiuser",
+            password="p11secret",
+            database="piidb"
+        )
 
         with self.conn.cursor() as cursor:
-            self.execute_script(cursor, self.char_db_query)
             self.execute_script(cursor, char_data_types)
             cursor.execute("commit")
             cursor.close()
 
         def drop_tables():
             with self.conn.cursor() as drop_cursor:
-                drop_cursor.execute(self.char_db_drop)
+                self.execute_script(drop_cursor, self.char_db_drop)
                 logging.info("Executed drop script")
                 drop_cursor.close()
             self.conn.close()
@@ -186,14 +180,17 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
     def setUp(self):
         self.explorer = MySQLExplorer(Namespace(
             host="127.0.0.1",
-            user="pii_tester",
-            password="pii_secret"))
+            user="piiuser",
+            password="p11secret",
+            database="piidb",
+            config_file=None
+        ))
 
     def tearDown(self):
         self.explorer.get_connection().close()
 
     def get_test_schema(self):
-        return "pii_db"
+        return "piidb"
 
 
 @pytest.mark.usefixtures("create_tables")
