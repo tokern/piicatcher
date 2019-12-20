@@ -93,7 +93,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:3.7.3
+      - image: tokern/python:3.7.5-buster
     steps:
       - checkout
       - restore_cache:
@@ -103,7 +103,6 @@ jobs:
           command: |
             sudo pip install pipenv
             pipenv install --dev
-            pipenv run python -m spacy download en_core_web_sm
       - save_cache:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
