@@ -59,5 +59,5 @@ For advanced usage refer documentation [at its website](https://tokern.io/docs/p
 
 ## Contributing
 
-For Contribution guidelines, [refer to developer documentation](https://tokern.io/docs/development). 
+For Contribution guidelines, [refer to developer documentation](https://tokern.io/docs/piicatcher/development). 
 
