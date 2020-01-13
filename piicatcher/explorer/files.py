@@ -1,3 +1,6 @@
+from argparse import Namespace
+
+import click
 import tableprint
 import json
 import logging
@@ -10,31 +13,20 @@ from piicatcher.piitypes import PiiTypes, PiiTypeEncoder
 from piicatcher.scanner import NERScanner, RegexScanner
 
 
-def dispatch(ns):
-    logging.debug("File Dispatch entered")
-    explorer = FileExplorer(ns.path)
-    explorer.scan()
+@click.command('files')
+@click.pass_context
+@click.option("--path", type=click.Path(), help="Path to file or directory")
+@click.option("--output", type=click.File(), default=None,
+              help="File path for report. If not specified, then report is printed to sys.stdout")
+@click.option("--output-format", type=click.Choice(["ascii_table", "json", "orm"]),
+              default="ascii_table", help="Choose output format type")
+def cli(ctx, path, output, output_format):
+    ns = Namespace(path=path,
+                   output=output,
+                   output_format=output_format)
 
-    if ns.output_format == "ascii_table":
-        headers = ["Path", "Mime/Type", "pii"]
-        tableprint.table(explorer.get_tabular(), headers)
-    elif ns.output_format == "json":
-        print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
-
-
-def parser(sub_parsers):
-    sub_parser = sub_parsers.add_parser("files")
-
-    sub_parser.add_argument("--path",
-                            help="Path to file or directory")
-
-    sub_parser.add_argument("--output", default=None,
-                            help="File path for report. If not specified, "
-                                 "then report is printed to sys.stdout")
-    sub_parser.add_argument("--output-format", choices=["ascii_table", "json", "orm"],
-                            default="ascii_table",
-                            help="Choose output format type")
-    sub_parser.set_defaults(func=dispatch)
+    logging.debug(vars(ns))
+    FileExplorer.dispatch(ns)
 
 
 class File(NamedObject):
@@ -64,6 +56,18 @@ class File(NamedObject):
 
 
 class FileExplorer:
+    @classmethod
+    def dispatch(cls, ns):
+        logging.debug("File Dispatch entered")
+        explorer = FileExplorer(ns.path)
+        explorer.scan()
+
+        if ns.output_format == "ascii_table":
+            headers = ["Path", "Mime/Type", "pii"]
+            tableprint.table(explorer.get_tabular(), headers)
+        elif ns.output_format == "json":
+            print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
+
     def __init__(self, path):
         self._path = path
         self._files = []

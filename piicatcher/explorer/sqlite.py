@@ -1,7 +1,33 @@
 import logging
 import sqlite3
+from argparse import Namespace
+
+import click
 
 from piicatcher.explorer.explorer import Explorer
+
+
+@click.command('sqlite')
+@click.option("-s", "--path", required=True, help="File path to SQLite database")
+@click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db"]),
+              default="ascii_table",
+              help="Choose output format type")
+@click.option("-c", "--scan-type", default='shallow',
+              type=click.Choice(["deep", "shallow"]),
+              help="Choose deep(scan data) or shallow(scan column names only)")
+@click.option("-o", "--output", default=None, type=click.File(),
+              help="File path for report. If not specified, "
+                   "then report is printed to sys.stdout")
+@click.option("--list-all", default=False, is_flag=True,
+              help="List all columns. By default only columns with PII information is listed")
+def cli(path, output_format, scan_type, output, list_all):
+    ns = Namespace(path=path,
+                   output_format=output_format,
+                   scan_type=scan_type,
+                   output=output,
+                   list_all=list_all)
+
+    Explorer.dispatch(ns)
 
 
 class SqliteExplorer(Explorer):
@@ -29,19 +55,6 @@ class SqliteExplorer(Explorer):
     @classmethod
     def factory(cls, ns):
         return SqliteExplorer(ns)
-
-    @classmethod
-    def parser(cls, sub_parsers):
-        sub_parser = sub_parsers.add_parser("sqlite")
-
-        sub_parser.add_argument("-s", "--path", required=True,
-                                help="File path to SQLite database")
-        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "db"],
-                                default="ascii_table",
-                                help="Choose output format type")
-
-        cls.scan_options(sub_parser)
-        sub_parser.set_defaults(func=SqliteExplorer.dispatch)
 
     class CursorContextManager:
         def __init__(self, connection):

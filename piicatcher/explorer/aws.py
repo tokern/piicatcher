@@ -1,9 +1,40 @@
 import logging
+from argparse import Namespace
 
+import click
 import pyathena
 
 from piicatcher.explorer.explorer import Explorer
 from piicatcher.store.glue import GlueStore
+
+
+@click.command('aws')
+@click.option("-a", "--access-key", required=True, help="AWS Access Key ")
+@click.option("-s", "--secret-key", required=True, help="AWS Secret Key")
+@click.option("-d", "--staging-dir", required=True, help="S3 Staging Directory for Athena results")
+@click.option("-r", "--region", required=True, help="AWS Region")
+@click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db", "glue"]),
+              default="ascii_table",
+              help="Choose output format type")
+@click.option("-c", "--scan-type", default='shallow',
+              type=click.Choice(["deep", "shallow"]),
+              help="Choose deep(scan data) or shallow(scan column names only)")
+@click.option("-o", "--output", default=None, type=click.File(),
+              help="File path for report. If not specified, "
+                   "then report is printed to sys.stdout")
+@click.option("--list-all", default=False, is_flag=True,
+              help="List all columns. By default only columns with PII information is listed")
+def cli(access_key, secret_key, staging_dir, region, output_format, scan_type, output, list_all):
+    ns = Namespace(access_key=access_key,
+                   secret_key=secret_key,
+                   staging_dir=staging_dir,
+                   region=region,
+                   output_format=output_format,
+                   scan_type=scan_type,
+                   output=output,
+                   list_all=list_all)
+    logging.debug(vars(ns))
+    Explorer.dispatch(ns)
 
 
 class AthenaExplorer(Explorer):
@@ -30,25 +61,6 @@ class AthenaExplorer(Explorer):
         logging.debug("AWS Dispatch entered")
         explorer = AthenaExplorer(ns)
         return explorer
-
-    @classmethod
-    def parser(cls, sub_parsers):
-        sub_parser = sub_parsers.add_parser("aws")
-
-        sub_parser.add_argument("-a", "--access-key", required=True,
-                                help="AWS Access Key ")
-        sub_parser.add_argument("-s", "--secret-key", required=True,
-                                help="AWS Secret Key")
-        sub_parser.add_argument("-d", "--staging-dir", required=True,
-                                help="S3 Staging Directory for Athena results")
-        sub_parser.add_argument("-r", "--region", required=True,
-                                help="AWS Region")
-        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "db", "glue"],
-                                default="ascii_table",
-                                help="Choose output format type")
-
-        cls.scan_options(sub_parser)
-        sub_parser.set_defaults(func=AthenaExplorer.dispatch)
 
     @classmethod
     def output(cls, ns, explorer):

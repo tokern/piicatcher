@@ -1,31 +1,33 @@
 import argparse
 import logging
 
-from piicatcher.explorer.aws import AthenaExplorer
-from piicatcher.explorer.databases import RelDbExplorer
-from piicatcher.explorer.files import parser as files_parser
-from piicatcher.explorer.sqlite import SqliteExplorer
-
 
 def get_parser(parser_cls=argparse.ArgumentParser):
     parser = parser_cls()
     parser.add_argument("-c", "--config-file", help="Path to config file")
     parser.add_argument("-l", "--log-level", help="Logging Level", default="WARNING")
 
-    sub_parsers = parser.add_subparsers()
-    AthenaExplorer.parser(sub_parsers)
-    RelDbExplorer.parser(sub_parsers)
-    SqliteExplorer.parser(sub_parsers)
-    files_parser(sub_parsers)
-
     return parser
 
 
-def dispatch(ns):
-    logging.basicConfig(level=getattr(logging, ns.log_level.upper()))
+import click
+import click_config_file
 
-    ns.func(ns)
+from piicatcher.explorer.aws import cli as aws_cli
+from piicatcher.explorer.databases import cli as db_cli
+from piicatcher.explorer.files import cli as files_cli
+from piicatcher.explorer.sqlite import cli as sqlite_cli
 
 
-def main():
-    dispatch(get_parser().parse_args())
+@click.group()
+@click.pass_context
+@click_config_file.configuration_option()
+@click.option("-l", "--log-level", help="Logging Level", default="WARNING")
+def cli(ctx, log_level):
+    logging.basicConfig(level=getattr(logging, log_level.upper()))
+
+
+cli.add_command(aws_cli)
+cli.add_command(files_cli)
+cli.add_command(sqlite_cli)
+cli.add_command(db_cli)

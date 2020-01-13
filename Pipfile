@@ -14,6 +14,9 @@ twine = "*"
 [requires]
 python_version = "3.7"
 
+[packages]
+click = "*"
+
 [dev-packages.e1839a8]
 path = "."
 editable = true
