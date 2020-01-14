@@ -1,14 +1,9 @@
 from unittest import TestCase
 from unittest.mock import patch
-from piicatcher.command_line import get_parser
 
-from argparse import ArgumentParser, Namespace
+from argparse import Namespace
 from click.testing import CliRunner
 from piicatcher.command_line import cli
-
-class ErrorRaisingArgumentParser(ArgumentParser):
-    def error(self, message):
-        raise ValueError(message)  # reraise an error
 
 
 class TestDbParser(TestCase):

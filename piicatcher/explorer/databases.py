@@ -44,7 +44,7 @@ def cli(host, port, user, password, database, connection_type, output_format, sc
                    output=output,
                    list_all=list_all)
 
-    logging.debug(vars(ns))
+    logging.info(vars(ns))
     Explorer.dispatch(ns)
 
 

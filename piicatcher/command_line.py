@@ -1,15 +1,4 @@
-import argparse
 import logging
-
-
-def get_parser(parser_cls=argparse.ArgumentParser):
-    parser = parser_cls()
-    parser.add_argument("-c", "--config-file", help="Path to config file")
-    parser.add_argument("-l", "--log-level", help="Logging Level", default="WARNING")
-
-    return parser
-
-
 import click
 import click_config_file
 
