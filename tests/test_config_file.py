@@ -24,24 +24,26 @@ output_format="json"
                            )
 
     logging.info("Config File: %s" % config_file)
-    explorer = mocker.patch("piicatcher.explorer.databases.Explorer")
+    rel = mocker.patch("piicatcher.explorer.databases.RelDbExplorer")
     runner = CliRunner()
     result = runner.invoke(cli, ["--config", str(config_file), "db"])
     assert result.exception is None
     assert "" == result.stdout
     assert 0 == result.exit_code
-    explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
-                                                        database='db',
-                                                        host='localhost',
-                                                        list_all=True,
-                                                        output=None,
-                                                        output_format='json',
-                                                        password="password",
-                                                        port=6032,
-                                                        scan_type='deep',
-                                                        user='user',
-                                                        orm={'host': None, 'port': None,
-                                                             'user': None, 'password': None}))
+
+    ns = Namespace(connection_type='mysql',
+                   database='db',
+                   host='localhost',
+                   list_all=True,
+                   output=None,
+                   output_format='json',
+                   password="password",
+                   port=6032,
+                   scan_type='deep',
+                   user='user',
+                   orm={'host': None, 'port': None,
+                   'user': None, 'password': None})
+    rel.dispatch.assert_called_once_with(ns)
 
 
 def test_sqlite(tmp_path, mocker, caplog):
@@ -57,7 +59,7 @@ output_format="json"
                            )
 
     logging.info("Config File: %s" % config_file)
-    explorer = mocker.patch("piicatcher.explorer.sqlite.Explorer")
+    explorer = mocker.patch("piicatcher.explorer.sqlite.SqliteExplorer")
     runner = CliRunner()
     result = runner.invoke(cli, ["--config", str(config_file), "sqlite"])
     assert result.exception is None
@@ -109,7 +111,7 @@ staging_dir='s3://dir'
 """)
 
     logging.info("Config File: %s" % config_file)
-    explorer = mocker.patch("piicatcher.explorer.aws.Explorer")
+    explorer = mocker.patch("piicatcher.explorer.aws.AthenaExplorer")
     runner = CliRunner()
     result = runner.invoke(cli, ["--config", str(config_file), "aws"])
     assert result.exception is None

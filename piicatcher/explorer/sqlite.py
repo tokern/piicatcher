@@ -29,7 +29,7 @@ def cli(cxt, path, output_format, scan_type, output, list_all):
                    list_all=list_all,
                    orm=cxt.obj['orm'])
 
-    Explorer.dispatch(ns)
+    SqliteExplorer.dispatch(ns)
 
 
 class SqliteExplorer(Explorer):
