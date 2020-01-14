@@ -16,7 +16,7 @@ class AwsExplorerTest(TestCase):
                                                       region='us-east-1',
                                                       scan_type=None,
                                                       output_format="ascii_table",
-                                                      config_file=None,
+                                                      orm=None,
                                                       list_all=False))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
