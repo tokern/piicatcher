@@ -67,7 +67,7 @@ class TestDispatcher(TestCase):
             with mock.patch('piicatcher.explorer.sqlite.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
                     SqliteExplorer.dispatch(Namespace(path='connection', list_all=None, output_format='ascii_table',
-                                                      scan_type=None))
+                                                      scan_type=None, orm=None))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()

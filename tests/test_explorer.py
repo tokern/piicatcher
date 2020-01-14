@@ -20,7 +20,7 @@ class MockExplorer(Explorer):
 
 class ExplorerTest(TestCase):
     def setUp(self):
-        self.explorer = MockExplorer(Namespace(host="mock_connection", config_file=None))
+        self.explorer = MockExplorer(Namespace(host="mock_connection", orm=None))
 
         col1 = Column('c1')
         col2 = Column('c2')
