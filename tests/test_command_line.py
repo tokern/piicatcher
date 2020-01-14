@@ -15,7 +15,7 @@ class TestDbParser(TestCase):
             'Usage: cli db [OPTIONS]\nTry "cli db --help" for help.\n\nError: Missing option "-s" / "--host".\n'
             , result.stdout)
 
-    @patch('piicatcher.explorer.databases.Explorer')
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_host(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["db", "-s", "connection_string"])
@@ -33,7 +33,7 @@ class TestDbParser(TestCase):
                                                             orm={'host': None, 'port': None,
                                                                  'user': None, 'password': None}))
 
-    @patch('piicatcher.explorer.databases.Explorer')
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_port(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["db", "-s", "connection_string", "-R", "6032"])
@@ -52,7 +52,7 @@ class TestDbParser(TestCase):
                                                             orm={'host': None, 'port': None, 
                                                                  'user': None, 'password': None}))
 
-    @patch('piicatcher.explorer.databases.Explorer')
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_host_user_password(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["db", "-s", "connection_string", "-u", "user", "-p", "passwd"])
@@ -71,7 +71,7 @@ class TestDbParser(TestCase):
                                                             orm={'host': None, 'port': None,
                                                                  'user': None, 'password': None}))
 
-    @patch('piicatcher.explorer.databases.Explorer')
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_deep_scan_type(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["db", "-s", "connection_string", "-c", "deep"])
@@ -90,7 +90,7 @@ class TestDbParser(TestCase):
                                                             orm={'host': None, 'port': None, 
                                                                  'user': None, 'password': None}))
 
-    @patch('piicatcher.explorer.databases.Explorer')
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_deep_scan_type(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["db", "-s", "connection_string", "-c", "shallow"])
@@ -109,14 +109,6 @@ class TestDbParser(TestCase):
                                                             orm={'host': None, 'port': None, 
                                                                  'user': None, 'password': None}))
 
-    @patch('piicatcher.explorer.databases.Explorer')
-    def test_successful_dispatch(self, explorer):
-        runner = CliRunner()
-        result = runner.invoke(cli, ["db", "-s", "connection_string", "-c", "shallow"])
-        self.assertEqual("", result.stdout)
-        self.assertEqual(0, result.exit_code)
-        explorer.shallow_scan.assert_called_once()
-
 
 class TestSqliteParser(TestCase):
     def test_path_required(self):
@@ -127,7 +119,7 @@ class TestSqliteParser(TestCase):
             'Usage: cli sqlite [OPTIONS]\nTry "cli sqlite --help" for help.\n\nError: Missing option "-s" / "--path".\n'
             , result.stdout)
 
-    @patch('piicatcher.explorer.sqlite.Explorer')
+    @patch('piicatcher.explorer.sqlite.SqliteExplorer')
     def test_host(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["sqlite", "-s", "connection_string"])
@@ -144,7 +136,7 @@ class TestSqliteParser(TestCase):
 
 class TestAWSParser(TestCase):
 
-    @patch('piicatcher.explorer.aws.Explorer')
+    @patch('piicatcher.explorer.aws.AthenaExplorer')
     def test_host_user_password(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east"])
