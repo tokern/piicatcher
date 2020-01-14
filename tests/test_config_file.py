@@ -39,7 +39,9 @@ output_format="json"
                                                         password="password",
                                                         port=6032,
                                                         scan_type='deep',
-                                                        user='user'))
+                                                        user='user',
+                                                        orm={'host': None, 'port': None,
+                                                             'user': None, 'password': None}))
 
 
 def test_sqlite(tmp_path, mocker, caplog):
@@ -65,7 +67,9 @@ output_format="json"
                                                         list_all=True,
                                                         output=None,
                                                         output_format='json',
-                                                        scan_type='deep'))
+                                                        scan_type='deep',
+                                                        orm={'host': None, 'port': None, 
+                                                             'user': None, 'password': None}))
 
 
 def test_files(tmp_path, mocker, caplog):
@@ -119,5 +123,6 @@ staging_dir='s3://dir'
         region='us-east',
         scan_type='deep',
         secret_key='SSSS',
-        staging_dir='s3://dir'))
+        staging_dir='s3://dir',
+        orm={'host': None, 'port': None, 'user': None, 'password': None}))
 

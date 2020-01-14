@@ -8,6 +8,7 @@ from piicatcher.explorer.explorer import Explorer
 
 
 @click.command('sqlite')
+@click.pass_context
 @click.option("-s", "--path", required=True, help="File path to SQLite database")
 @click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db"]),
               default="ascii_table",
@@ -20,12 +21,13 @@ from piicatcher.explorer.explorer import Explorer
                    "then report is printed to sys.stdout")
 @click.option("--list-all", default=False, is_flag=True,
               help="List all columns. By default only columns with PII information is listed")
-def cli(path, output_format, scan_type, output, list_all):
+def cli(cxt, path, output_format, scan_type, output, list_all):
     ns = Namespace(path=path,
                    output_format=output_format,
                    scan_type=scan_type,
                    output=output,
-                   list_all=list_all)
+                   list_all=list_all,
+                   orm=cxt.obj['orm'])
 
     Explorer.dispatch(ns)
 

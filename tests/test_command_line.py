@@ -29,7 +29,9 @@ class TestDbParser(TestCase):
                                                             password=None,
                                                             port=None,
                                                             scan_type='shallow',
-                                                            user=None))
+                                                            user=None,
+                                                            orm={'host': None, 'port': None,
+                                                                 'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.Explorer')
     def test_port(self, explorer):
@@ -46,7 +48,9 @@ class TestDbParser(TestCase):
                                                             password=None,
                                                             port=6032,
                                                             scan_type='shallow',
-                                                            user=None))
+                                                            user=None,
+                                                            orm={'host': None, 'port': None, 
+                                                                 'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.Explorer')
     def test_host_user_password(self, explorer):
@@ -63,7 +67,9 @@ class TestDbParser(TestCase):
                                                             password='passwd',
                                                             port=None,
                                                             scan_type='shallow',
-                                                            user='user'))
+                                                            user='user',
+                                                            orm={'host': None, 'port': None,
+                                                                 'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.Explorer')
     def test_deep_scan_type(self, explorer):
@@ -80,7 +86,9 @@ class TestDbParser(TestCase):
                                                             password=None,
                                                             port=None,
                                                             scan_type='deep',
-                                                            user=None))
+                                                            user=None,
+                                                            orm={'host': None, 'port': None, 
+                                                                 'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.Explorer')
     def test_deep_scan_type(self, explorer):
@@ -97,7 +105,9 @@ class TestDbParser(TestCase):
                                                             password=None,
                                                             port=None,
                                                             scan_type='shallow',
-                                                            user=None))
+                                                            user=None, 
+                                                            orm={'host': None, 'port': None, 
+                                                                 'user': None, 'password': None}))
 
 
 class TestSqliteParser(TestCase):
@@ -120,7 +130,8 @@ class TestSqliteParser(TestCase):
             output=None,
             output_format='ascii_table',
             path='connection_string',
-            scan_type='shallow'))
+            scan_type='shallow',
+            orm={'host': None, 'port': None, 'user': None, 'password': None}))
 
 
 class TestAWSParser(TestCase):
@@ -139,5 +150,6 @@ class TestAWSParser(TestCase):
             region='us-east',
             scan_type='shallow',
             secret_key='SSSS',
-            staging_dir='s3://dir'))
+            staging_dir='s3://dir',
+            orm={'host': None, 'port': None, 'user': None, 'password': None}))
 

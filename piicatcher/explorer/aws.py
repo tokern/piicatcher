@@ -9,6 +9,7 @@ from piicatcher.store.glue import GlueStore
 
 
 @click.command('aws')
+@click.pass_context
 @click.option("-a", "--access-key", required=True, help="AWS Access Key ")
 @click.option("-s", "--secret-key", required=True, help="AWS Secret Key")
 @click.option("-d", "--staging-dir", required=True, help="S3 Staging Directory for Athena results")
@@ -24,7 +25,7 @@ from piicatcher.store.glue import GlueStore
                    "then report is printed to sys.stdout")
 @click.option("--list-all", default=False, is_flag=True,
               help="List all columns. By default only columns with PII information is listed")
-def cli(access_key, secret_key, staging_dir, region, output_format, scan_type, output, list_all):
+def cli(cxt, access_key, secret_key, staging_dir, region, output_format, scan_type, output, list_all):
     ns = Namespace(access_key=access_key,
                    secret_key=secret_key,
                    staging_dir=staging_dir,
@@ -32,7 +33,8 @@ def cli(access_key, secret_key, staging_dir, region, output_format, scan_type, o
                    output_format=output_format,
                    scan_type=scan_type,
                    output=output,
-                   list_all=list_all)
+                   list_all=list_all,
+                   orm=cxt.obj['orm'])
     logging.debug(vars(ns))
     Explorer.dispatch(ns)
 

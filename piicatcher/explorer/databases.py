@@ -13,6 +13,7 @@ from piicatcher.explorer.explorer import Explorer
 
 
 @click.command('db')
+@click.pass_context
 @click.option("-s", "--host", required=True, help="Hostname of the database. File path if it is SQLite")
 @click.option("-R", "--port", help="Port of database.")
 @click.option("-u", "--user", help="Username to connect database")
@@ -32,7 +33,7 @@ from piicatcher.explorer.explorer import Explorer
                    "then report is printed to sys.stdout")
 @click.option("--list-all", default=False, is_flag=True,
               help="List all columns. By default only columns with PII information is listed")
-def cli(host, port, user, password, database, connection_type, output_format, scan_type, output, list_all):
+def cli(cxt, host, port, user, password, database, connection_type, output_format, scan_type, output, list_all):
     ns = Namespace(host=host,
                    port=int(port) if port is not None else None,
                    user=user,
@@ -42,7 +43,8 @@ def cli(host, port, user, password, database, connection_type, output_format, sc
                    output_format=output_format,
                    scan_type=scan_type,
                    output=output,
-                   list_all=list_all)
+                   list_all=list_all,
+                   orm=cxt.obj['orm'])
 
     logging.info(vars(ns))
     Explorer.dispatch(ns)
