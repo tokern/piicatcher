@@ -16,7 +16,7 @@ def temp_sqlite(request, tmpdir_factory):
     sqlite_path = temp_dir.join("sqldb")
 
     explorer = SqliteExplorer(Namespace(
-        path=sqlite_path))
+        path=sqlite_path, orm=None))
 
     request.cls.explorer = explorer
     request.cls.path = str(sqlite_path)
