@@ -1,31 +1,36 @@
-import argparse
 import logging
+import click
+import click_config_file
 
-from piicatcher.explorer.aws import AthenaExplorer
-from piicatcher.explorer.databases import RelDbExplorer
-from piicatcher.explorer.files import parser as files_parser
-from piicatcher.explorer.sqlite import SqliteExplorer
-
-
-def get_parser(parser_cls=argparse.ArgumentParser):
-    parser = parser_cls()
-    parser.add_argument("-c", "--config-file", help="Path to config file")
-    parser.add_argument("-l", "--log-level", help="Logging Level", default="WARNING")
-
-    sub_parsers = parser.add_subparsers()
-    AthenaExplorer.parser(sub_parsers)
-    RelDbExplorer.parser(sub_parsers)
-    SqliteExplorer.parser(sub_parsers)
-    files_parser(sub_parsers)
-
-    return parser
+from piicatcher.explorer.aws import cli as aws_cli
+from piicatcher.explorer.databases import cli as db_cli
+from piicatcher.explorer.files import cli as files_cli
+from piicatcher.explorer.sqlite import cli as sqlite_cli
 
 
-def dispatch(ns):
-    logging.basicConfig(level=getattr(logging, ns.log_level.upper()))
+@click.group()
+@click.pass_context
+@click_config_file.configuration_option()
+@click.option("-l", "--log-level", help="Logging Level", default="WARNING")
+@click.option("--orm-host", help="Hostname of the database. Use if output is a db")
+@click.option("--orm-port", help="Port of database. Use if output is a db")
+@click.option("--orm-user", help="Username to connect database.  Use if output is a db")
+@click.option("--orm-password", help="Password of the user. Use if output is a db")
+def cli(ctx, log_level, orm_host, orm_port, orm_user, orm_password):
+    logging.basicConfig(level=getattr(logging, log_level.upper()))
+    logging.debug("ORM - host: %s, port: %s, user: %s, password: %s" % (orm_host, orm_port, orm_user, orm_password))
 
-    ns.func(ns)
+    ctx.ensure_object(dict)
+
+    ctx.obj['orm'] = {
+        'host': orm_host,
+        'port': orm_port,
+        'user': orm_user,
+        'password': orm_password,
+    }
 
 
-def main():
-    dispatch(get_parser().parse_args())
+cli.add_command(aws_cli)
+cli.add_command(files_cli)
+cli.add_command(sqlite_cli)
+cli.add_command(db_cli)

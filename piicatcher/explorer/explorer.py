@@ -3,7 +3,6 @@ import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
-import yaml
 import tableprint
 
 from piicatcher.explorer.metadata import Schema, Table, Column
@@ -18,10 +17,7 @@ class Explorer(ABC):
         self._connection = None
         self._schemas = None
         self._cache_ts = None
-        self.config = None
-
-        if ns.config_file is not None:
-            self.config = yaml.full_load(ns.configfile)
+        self.orm = ns.orm
 
     def __enter__(self):
         return self
@@ -41,26 +37,9 @@ class Explorer(ABC):
     def factory(cls, ns):
         pass
 
-    @classmethod
-    @abstractmethod
-    def parser(cls, sub_parsers):
-        pass
-
     @property
     def small_table_max(self):
         return 100
-
-    @classmethod
-    def scan_options(cls, sub_parser):
-        sub_parser.add_argument("-c", "--scan-type", default='shallow',
-                                choices=["deep", "shallow"],
-                                help="Choose deep(scan data) or shallow(scan column names only)")
-
-        sub_parser.add_argument("-o", "--output", default=None,
-                                help="File path for report. If not specified, "
-                                     "then report is printed to sys.stdout")
-        sub_parser.add_argument("--list-all", action="store_true", default=False,
-                                help="List all columns. By default only columns with PII information is listed")
 
     @classmethod
     def dispatch(cls, ns):

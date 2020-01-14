@@ -49,9 +49,8 @@ def model_db_close():
 
 class DbStore(Store):
     @classmethod
-    def setup_database(cls, config):
-        if config is not None and 'orm' in config:
-            orm = config['store']
+    def setup_database(cls, orm):
+        if orm is not None:
             database = MySQLDatabase('tokern',
                                      host=orm['host'],
                                      port=int(orm['port']),
@@ -63,7 +62,7 @@ class DbStore(Store):
 
     @classmethod
     def save_schemas(cls, explorer):
-        cls.setup_database(explorer.config)
+        cls.setup_database(explorer.orm)
         with database_proxy.atomic():
             schemas = explorer.get_schemas()
             for s in schemas:

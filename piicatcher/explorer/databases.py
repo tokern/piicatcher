@@ -1,5 +1,7 @@
 from abc import abstractmethod
+from argparse import Namespace
 
+import click
 import pymysql
 import psycopg2
 import pymssql
@@ -8,6 +10,44 @@ import cx_Oracle
 import logging
 
 from piicatcher.explorer.explorer import Explorer
+
+
+@click.command('db')
+@click.pass_context
+@click.option("-s", "--host", required=True, help="Hostname of the database")
+@click.option("-R", "--port", help="Port of database.")
+@click.option("-u", "--user", help="Username to connect database")
+@click.option("-p", "--password", help="Password of the user")
+@click.option("-d", "--database", default='', help="Name of the database")
+@click.option("-t", "--connection-type", default="mysql",
+              type=click.Choice(["mysql", "postgres", "redshift", "oracle", "sqlserver"]),
+              help="Type of database")
+@click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db"]),
+              default="ascii_table",
+              help="Choose output format type")
+@click.option("-c", "--scan-type", default='shallow',
+              type=click.Choice(["deep", "shallow"]),
+              help="Choose deep(scan data) or shallow(scan column names only)")
+@click.option("-o", "--output", default=None, type=click.File(),
+              help="File path for report. If not specified, "
+                   "then report is printed to sys.stdout")
+@click.option("--list-all", default=False, is_flag=True,
+              help="List all columns. By default only columns with PII information is listed")
+def cli(cxt, host, port, user, password, database, connection_type, output_format, scan_type, output, list_all):
+    ns = Namespace(host=host,
+                   port=int(port) if port is not None else None,
+                   user=user,
+                   password=password,
+                   database=database,
+                   connection_type=connection_type,
+                   output_format=output_format,
+                   scan_type=scan_type,
+                   output=output,
+                   list_all=list_all,
+                   orm=cxt.obj['orm'])
+
+    logging.info(vars(ns))
+    Explorer.dispatch(ns)
 
 
 class RelDbExplorer(Explorer):
@@ -38,30 +78,6 @@ class RelDbExplorer(Explorer):
         assert (explorer is not None)
 
         return explorer
-
-    @classmethod
-    def parser(cls, sub_parsers):
-        sub_parser = sub_parsers.add_parser("db")
-
-        sub_parser.add_argument("-s", "--host", required=True,
-                                help="Hostname of the database. File path if it is SQLite")
-        sub_parser.add_argument("-R", "--port",
-                                help="Port of database.")
-        sub_parser.add_argument("-u", "--user",
-                                help="Username to connect database")
-        sub_parser.add_argument("-p", "--password",
-                                help="Password of the user")
-        sub_parser.add_argument("-d", "--database", default='',
-                                help="Name of the database")
-        sub_parser.add_argument("-t", "--connection-type", default="sqlite",
-                                choices=["sqlite", "mysql", "postgres", "redshift", "oracle", "sqlserver"],
-                                help="Type of database")
-        sub_parser.add_argument("-f", "--output-format", choices=["ascii_table", "json", "db"],
-                                default="ascii_table",
-                                help="Choose output format type")
-
-        cls.scan_options(sub_parser)
-        sub_parser.set_defaults(func=RelDbExplorer.dispatch)
 
 
 class MySQLExplorer(RelDbExplorer):

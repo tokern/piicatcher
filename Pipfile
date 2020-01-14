@@ -10,9 +10,13 @@ pytest-cov = "*"
 codecov = "*"
 pytest-pylint = "*"
 twine = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.7"
+
+[packages]
+click = "*"
 
 [dev-packages.e1839a8]
 path = "."

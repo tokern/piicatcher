@@ -1,100 +1,155 @@
 from unittest import TestCase
-from piicatcher.command_line import get_parser
+from unittest.mock import patch
 
-from argparse import ArgumentParser
-
-
-class ErrorRaisingArgumentParser(ArgumentParser):
-    def error(self, message):
-        raise ValueError(message)  # reraise an error
+from argparse import Namespace
+from click.testing import CliRunner
+from piicatcher.command_line import cli
 
 
 class TestDbParser(TestCase):
     def test_host_required(self):
-        with self.assertRaises(ValueError):
-            get_parser(ErrorRaisingArgumentParser).parse_args(["db"])
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db"])
+        self.assertNotEqual(0, result.exit_code)
+        self.assertEqual(
+            'Usage: cli db [OPTIONS]\nTry "cli db --help" for help.\n\nError: Missing option "-s" / "--host".\n'
+            , result.stdout)
 
-    def test_host(self):
-        ns = get_parser().parse_args(["db", "-s", "connection_string"])
-        self.assertEqual("connection_string", ns.host)
+    @patch('piicatcher.explorer.databases.Explorer')
+    def test_host(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string"])
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            output=None,
+                                                            output_format='ascii_table',
+                                                            password=None,
+                                                            port=None,
+                                                            scan_type='shallow',
+                                                            user=None,
+                                                            orm={'host': None, 'port': None,
+                                                                 'user': None, 'password': None}))
 
-    def test_port(self):
-        ns = get_parser().parse_args(["db", "-s", "connection_string", "-R", "6032"])
-        self.assertEqual("connection_string", ns.host)
-        self.assertEqual("6032", ns.port)
+    @patch('piicatcher.explorer.databases.Explorer')
+    def test_port(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string", "-R", "6032"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            output=None,
+                                                            output_format='ascii_table',
+                                                            password=None,
+                                                            port=6032,
+                                                            scan_type='shallow',
+                                                            user=None,
+                                                            orm={'host': None, 'port': None, 
+                                                                 'user': None, 'password': None}))
 
-    def test_host_user_password(self):
-        ns = get_parser().parse_args(["db", "-s", "connection_string", "-u", "user", "-p", "passwd"])
-        self.assertEqual("connection_string", ns.host)
-        self.assertEqual("user", ns.user)
-        self.assertEqual("passwd", ns.password)
+    @patch('piicatcher.explorer.databases.Explorer')
+    def test_host_user_password(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string", "-u", "user", "-p", "passwd"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            output=None,
+                                                            output_format='ascii_table',
+                                                            password='passwd',
+                                                            port=None,
+                                                            scan_type='shallow',
+                                                            user='user',
+                                                            orm={'host': None, 'port': None,
+                                                                 'user': None, 'password': None}))
 
-    def test_default_console(self):
-        ns = get_parser().parse_args(["db", "-s", "connection_string"])
-        self.assertIsNone(ns.output)
-        self.assertEqual("ascii_table", ns.output_format)
+    @patch('piicatcher.explorer.databases.Explorer')
+    def test_deep_scan_type(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string", "-c", "deep"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            output=None,
+                                                            output_format='ascii_table',
+                                                            password=None,
+                                                            port=None,
+                                                            scan_type='deep',
+                                                            user=None,
+                                                            orm={'host': None, 'port': None, 
+                                                                 'user': None, 'password': None}))
 
-    def test_default_scan_type(self):
-        ns = get_parser().parse_args(["db", "-s", "connection_string"])
-        self.assertIsNone(ns.scan_type)
-
-    def test_deep_scan_type(self):
-        ns = get_parser().parse_args(["db", "-s", "connection_string", "-c", "deep"])
-        self.assertEqual("deep", ns.scan_type)
-
-    def test_default_scan_type(self):
-        ns = get_parser().parse_args(["db", "-s", "connection_string", "-c", "shallow"])
-        self.assertEqual("shallow", ns.scan_type)
+    @patch('piicatcher.explorer.databases.Explorer')
+    def test_deep_scan_type(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string", "-c", "shallow"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            output=None,
+                                                            output_format='ascii_table',
+                                                            password=None,
+                                                            port=None,
+                                                            scan_type='shallow',
+                                                            user=None, 
+                                                            orm={'host': None, 'port': None, 
+                                                                 'user': None, 'password': None}))
 
 
 class TestSqliteParser(TestCase):
     def test_path_required(self):
-        with self.assertRaises(ValueError):
-            get_parser(ErrorRaisingArgumentParser).parse_args(["sqlite"])
+        runner = CliRunner()
+        result = runner.invoke(cli, ["sqlite"])
+        self.assertNotEqual(0, result.exit_code)
+        self.assertEqual(
+            'Usage: cli sqlite [OPTIONS]\nTry "cli sqlite --help" for help.\n\nError: Missing option "-s" / "--path".\n'
+            , result.stdout)
 
-    def test_host(self):
-        ns = get_parser().parse_args(["sqlite", "-s", "connection_string"])
-        self.assertEqual("connection_string", ns.path)
-
-    def test_default_console(self):
-        ns = get_parser().parse_args(["sqlite", "-s", "connection_string"])
-        self.assertIsNone(ns.output)
-        self.assertEqual("ascii_table", ns.output_format)
-
-    def test_default_scan_type(self):
-        ns = get_parser().parse_args(["sqlite", "-s", "connection_string"])
-        self.assertIsNone(ns.scan_type)
-
-    def test_deep_scan_type(self):
-        ns = get_parser().parse_args(["sqlite", "-s", "connection_string", "-c", "deep"])
-        self.assertEqual("deep", ns.scan_type)
-
-    def test_default_scan_type(self):
-        ns = get_parser().parse_args(["sqlite", "-s", "connection_string", "-c", "shallow"])
-        self.assertEqual("shallow", ns.scan_type)
+    @patch('piicatcher.explorer.sqlite.Explorer')
+    def test_host(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["sqlite", "-s", "connection_string"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(
+            list_all=False,
+            output=None,
+            output_format='ascii_table',
+            path='connection_string',
+            scan_type='shallow',
+            orm={'host': None, 'port': None, 'user': None, 'password': None}))
 
 
 class TestAWSParser(TestCase):
-    def test_access_key_required(self):
-        with self.assertRaises(ValueError):
-            get_parser(ErrorRaisingArgumentParser).parse_args(["aws", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east"])
 
-    def test_secret_key_required(self):
-        with self.assertRaises(ValueError):
-            get_parser(ErrorRaisingArgumentParser).parse_args(["aws", "-a", "AAAA", "-d", "s3://dir", "-r", "us-east"])
-
-    def test_staging_dir_required(self):
-        with self.assertRaises(ValueError):
-            get_parser(ErrorRaisingArgumentParser).parse_args(["aws", "-a", "AAAA", "-s", "SSSS", "-r", "us-east"])
-
-    def test_region_required(self):
-        with self.assertRaises(ValueError):
-            get_parser(ErrorRaisingArgumentParser).parse_args(["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir"])
-
-    def test_host_user_password(self):
-        ns = get_parser().parse_args(["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east"])
-        self.assertEqual("AAAA", ns.access_key)
-        self.assertEqual("SSSS", ns.secret_key)
-        self.assertEqual("s3://dir", ns.staging_dir)
-        self.assertEqual("us-east", ns.region)
+    @patch('piicatcher.explorer.aws.Explorer')
+    def test_host_user_password(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(
+            access_key='AAAA',
+            list_all=False,
+            output=None,
+            output_format='ascii_table',
+            region='us-east',
+            scan_type='shallow',
+            secret_key='SSSS',
+            staging_dir='s3://dir',
+            orm={'host': None, 'port': None, 'user': None, 'password': None}))
 

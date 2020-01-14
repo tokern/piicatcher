@@ -22,6 +22,9 @@ To install use pip:
     source .env/bin/activate
     pip install piicatcher
 
+    # Install Spacy English package
+    python -m spacy download en_core_web_sm
+    
     # run piicatcher on a sqlite db and print report to console
     piicatcher db -c '/db/sqlqb'
     ╭─────────────┬─────────────┬─────────────┬─────────────╮
