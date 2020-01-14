@@ -14,7 +14,7 @@ from piicatcher.explorer.explorer import Explorer
 
 @click.command('db')
 @click.pass_context
-@click.option("-s", "--host", required=True, help="Hostname of the database. File path if it is SQLite")
+@click.option("-s", "--host", required=True, help="Hostname of the database")
 @click.option("-R", "--port", help="Port of database.")
 @click.option("-u", "--user", help="Username to connect database")
 @click.option("-p", "--password", help="Password of the user")
