@@ -18,7 +18,7 @@ from piicatcher.scanner import NERScanner, RegexScanner
 @click.option("--path", type=click.Path(), help="Path to file or directory")
 @click.option("--output", type=click.File(), default=None,
               help="File path for report. If not specified, then report is printed to sys.stdout")
-@click.option("--output-format", type=click.Choice(["ascii_table", "json", "orm"]),
+@click.option("--output-format", type=click.Choice(["ascii_table", "json", "db"]),
               default="ascii_table", help="Choose output format type")
 def cli(ctx, path, output, output_format):
     ns = Namespace(path=path,
