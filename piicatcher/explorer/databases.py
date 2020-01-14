@@ -46,8 +46,8 @@ def cli(cxt, host, port, user, password, database, connection_type, output_forma
                    list_all=list_all,
                    orm=cxt.obj['orm'])
 
-    logging.info(vars(ns))
-    Explorer.dispatch(ns)
+    logging.debug(vars(ns))
+    RelDbExplorer.dispatch(ns)
 
 
 class RelDbExplorer(Explorer):

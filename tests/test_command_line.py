@@ -109,6 +109,14 @@ class TestDbParser(TestCase):
                                                             orm={'host': None, 'port': None, 
                                                                  'user': None, 'password': None}))
 
+    @patch('piicatcher.explorer.databases.Explorer')
+    def test_successful_dispatch(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string", "-c", "shallow"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.shallow_scan.assert_called_once()
+
 
 class TestSqliteParser(TestCase):
     def test_path_required(self):
