@@ -6,10 +6,12 @@ from piicatcher.explorer.aws import cli as aws_cli
 from piicatcher.explorer.databases import cli as db_cli
 from piicatcher.explorer.files import cli as files_cli
 from piicatcher.explorer.sqlite import cli as sqlite_cli
+from piicatcher import __version__
 
 
 @click.group()
 @click.pass_context
+@click.version_option(__version__)
 @click_config_file.configuration_option()
 @click.option("-l", "--log-level", help="Logging Level", default="WARNING")
 @click.option("--orm-host", help="Hostname of the database. Use if output is a db")

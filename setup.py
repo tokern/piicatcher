@@ -2,10 +2,15 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 from codecs import open
 from os import path, getenv
-
+import ast
 import sys
+import re
 
-__version__ = '0.7.0'
+_version_re = re.compile(r'__version__\s*=\s*(.*)')
+
+with open('piicatcher/__init__.py', 'rb') as f:
+    __version__ = str(ast.literal_eval(_version_re.search(
+        f.read().decode('utf-8')).group(1)))
 
 
 class VerifyVersionCommand(install):
