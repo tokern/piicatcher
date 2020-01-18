@@ -11,6 +11,7 @@
 PiiCatcher finds PII data in your databases. It scans all the columns in your 
 database and files in your storage. 
 
+Check out [AWS Glue & Lake Formation Privilege Analyzer](https://tokern.io/blog/lake-glue-access-analyzer) for an example of how piicatcher is used in production.
 
 ## Quick Start
 
@@ -39,8 +40,8 @@ To install use pip:
     ╰─────────────┴─────────────┴─────────────┴─────────────╯
 
 
-Supported Technologies
-----------------------
+## Supported Technologies
+
 PiiCatcher supports the following filesystems:
 * POSIX
 * AWS S3 (for files that are part of tables in AWS Glue and AWS Athena)
