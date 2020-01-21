@@ -8,8 +8,9 @@
 
 ## Overview
 
-PiiCatcher finds PII data in your databases. It scans all the columns in your 
-database and files in your storage. 
+PiiCatcher is a data catalog and scanner for PII and PHI information. It finds PII data in your databases and file systems
+and tracks critical data. The data catalog can be used as a foundation to build governance, compliance and security
+applications.
 
 Check out [AWS Glue & Lake Formation Privilege Analyzer](https://tokern.io/blog/lake-glue-access-analyzer) for an example of how piicatcher is used in production.
 
