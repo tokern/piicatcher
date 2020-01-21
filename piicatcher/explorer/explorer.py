@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import tableprint
 
 from piicatcher.explorer.metadata import Schema, Table, Column
-from piicatcher.store.db import DbStore
+from piicatcher.catalog.db import DbStore
 
 
 class Explorer(ABC):

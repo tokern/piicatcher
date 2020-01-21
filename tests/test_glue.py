@@ -3,7 +3,7 @@ import datetime
 
 from dateutil.tz import tzlocal
 
-from piicatcher.store.glue import GlueStore
+from piicatcher.catalog.glue import GlueStore
 from tests.test_models import MockExplorer
 
 

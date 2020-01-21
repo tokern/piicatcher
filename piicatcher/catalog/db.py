@@ -1,7 +1,7 @@
 from peewee import *
 
-from piicatcher.store import Store
-from piicatcher.store.PiiTypeField import PiiTypeField
+from piicatcher.catalog import Store
+from piicatcher.catalog.PiiTypeField import PiiTypeField
 
 database_proxy = DatabaseProxy()
 
