@@ -49,20 +49,20 @@ def model_db_close():
 
 class DbStore(Store):
     @classmethod
-    def setup_database(cls, orm):
-        if orm is not None:
+    def setup_database(cls, catalog):
+        if catalog is not None:
             database = MySQLDatabase('tokern',
-                                     host=orm['host'],
-                                     port=int(orm['port']),
-                                     user=orm['user'],
-                                     password=orm['password'])
+                                     host=catalog['host'],
+                                     port=int(catalog['port']),
+                                     user=catalog['user'],
+                                     password=catalog['password'])
             database_proxy.initialize(database)
             database_proxy.connect()
             database_proxy.create_tables([DbSchemas, DbTables, DbColumns, DbFile])
 
     @classmethod
     def save_schemas(cls, explorer):
-        cls.setup_database(explorer.orm)
+        cls.setup_database(explorer.catalog)
         with database_proxy.atomic():
             schemas = explorer.get_schemas()
             for s in schemas:
