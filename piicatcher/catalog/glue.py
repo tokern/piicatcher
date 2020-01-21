@@ -1,6 +1,6 @@
 import logging
 
-from piicatcher.store import Store
+from piicatcher.catalog import Store
 
 import boto3
 

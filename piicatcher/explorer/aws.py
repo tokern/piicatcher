@@ -5,7 +5,7 @@ import click
 import pyathena
 
 from piicatcher.explorer.explorer import Explorer
-from piicatcher.store.glue import GlueStore
+from piicatcher.catalog.glue import GlueStore
 
 
 @click.command('aws')
