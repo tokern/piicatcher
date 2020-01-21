@@ -134,6 +134,6 @@ class Column(NamedObject):
 
     def get_dict(self):
         return {
-            'has_pii': self.has_pii(),
+            'pii_types': list(self.get_pii_types()),
             'name': self.get_name()
         }

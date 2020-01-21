@@ -1,9 +1,10 @@
+import json
 from argparse import Namespace
 from unittest import TestCase
 
 from piicatcher.explorer.explorer import Explorer
 from piicatcher.explorer.metadata import Column, Schema, Table
-from piicatcher.piitypes import PiiTypes
+from piicatcher.piitypes import PiiTypes, PiiTypeEncoder
 
 
 class MockExplorer(Explorer):
@@ -46,3 +47,31 @@ class ExplorerTest(TestCase):
             ['testSchema', 't1', 'c2', True]
         ], self.explorer.get_tabular(False))
 
+    def test_json(self):
+        self.assertEqual('''[
+  {
+    "has_pii": false,
+    "name": "testSchema",
+    "tables": [
+      {
+        "columns": [
+          {
+            "name": "c1",
+            "pii_types": []
+          },
+          {
+            "name": "c2",
+            "pii_types": [
+              {
+                "__enum__": "PiiTypes.LOCATION"
+              }
+            ]
+          }
+        ],
+        "has_pii": false,
+        "name": "t1"
+      }
+    ]
+  }
+]''',
+                         json.dumps(self.explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
