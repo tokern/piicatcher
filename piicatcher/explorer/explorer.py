@@ -17,7 +17,7 @@ class Explorer(ABC):
         self._connection = None
         self._schemas = None
         self._cache_ts = None
-        self.orm = ns.orm
+        self.catalog = ns.catalog
 
     def __enter__(self):
         return self

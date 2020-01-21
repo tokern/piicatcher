@@ -44,7 +44,7 @@ def cli(cxt, host, port, user, password, database, connection_type, output_forma
                    scan_type=scan_type,
                    output=output,
                    list_all=list_all,
-                   orm=cxt.obj['orm'])
+                   catalog=cxt.obj['catalog'])
 
     logging.debug(vars(ns))
     RelDbExplorer.dispatch(ns)

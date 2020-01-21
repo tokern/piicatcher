@@ -41,8 +41,7 @@ output_format="json"
                    port=6032,
                    scan_type='deep',
                    user='user',
-                   orm={'host': None, 'port': None,
-                   'user': None, 'password': None})
+                   catalog={'host': None, 'port': None, 'user': None, 'password': None})
     rel.dispatch.assert_called_once_with(ns)
 
 
@@ -70,8 +69,8 @@ output_format="json"
                                                         output=None,
                                                         output_format='json',
                                                         scan_type='deep',
-                                                        orm={'host': None, 'port': None, 
-                                                             'user': None, 'password': None}))
+                                                        catalog={'host': None, 'port': None,
+                                                                 'user': None, 'password': None}))
 
 
 def test_files(tmp_path, mocker, caplog):
@@ -126,5 +125,5 @@ staging_dir='s3://dir'
         scan_type='deep',
         secret_key='SSSS',
         staging_dir='s3://dir',
-        orm={'host': None, 'port': None, 'user': None, 'password': None}))
+        catalog={'host': None, 'port': None, 'user': None, 'password': None}))
 

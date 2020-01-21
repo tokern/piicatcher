@@ -27,7 +27,7 @@ def cli(cxt, path, output_format, scan_type, output, list_all):
                    scan_type=scan_type,
                    output=output,
                    list_all=list_all,
-                   orm=cxt.obj['orm'])
+                   catalog=cxt.obj['catalog'])
 
     SqliteExplorer.dispatch(ns)
 

@@ -100,7 +100,7 @@ class TestStore(TestCase):
     def setUpClass(cls):
         init_test(cls.sqlite_path)
 
-        explorer = MockExplorer(Namespace(orm=None))
+        explorer = MockExplorer(Namespace(catalog=None))
 
         DbStore.save_schemas(explorer)
 

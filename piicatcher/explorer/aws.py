@@ -34,7 +34,7 @@ def cli(cxt, access_key, secret_key, staging_dir, region, output_format, scan_ty
                    scan_type=scan_type,
                    output=output,
                    list_all=list_all,
-                   orm=cxt.obj['orm'])
+                   catalog=cxt.obj['catalog'])
     logging.debug(vars(ns))
     AthenaExplorer.dispatch(ns)
 

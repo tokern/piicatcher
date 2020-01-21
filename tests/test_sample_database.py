@@ -88,7 +88,7 @@ class VanillaMySqlExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
-            orm=None
+            catalog=None
         )
 
     @classmethod
@@ -128,7 +128,7 @@ class VanillaPGExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
-            orm=None
+            catalog=None
         )
 
     @classmethod

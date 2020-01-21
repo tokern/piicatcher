@@ -126,7 +126,7 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
-            orm=None
+            catalog=None
         ))
 
     def tearDown(self):
@@ -183,7 +183,7 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
-            orm=None
+            catalog=None
         ))
 
     def tearDown(self):
@@ -235,7 +235,7 @@ class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
-            orm=None
+            catalog=None
         ))
 
     def tearDown(self):
@@ -287,7 +287,7 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
-            orm=None
+            catalog=None
         ))
 
     def tearDown(self):
@@ -357,7 +357,7 @@ class TestDispatcher(TestCase):
                                                      output_format='ascii_table',
                                                      connection_type='mysql',
                                                      scan_type='deep',
-                                                     orm=None,
+                                                     catalog=None,
                                                      user='user',
                                                      password='pass'))
                     mock_scan_method.assert_called_once()
@@ -375,7 +375,7 @@ class TestDispatcher(TestCase):
                                                      connection_type='postgres',
                                                      database='public',
                                                      scan_type=None,
-                                                     orm=None,
+                                                     catalog=None,
                                                      user='user',
                                                      password='pass'))
                     mock_scan_method.assert_called_once()
@@ -391,7 +391,7 @@ class TestDispatcher(TestCase):
                                                      list_all=None,
                                                      output_format='ascii_table',
                                                      connection_type='mysql',
-                                                     orm=None,
+                                                     catalog=None,
                                                      user='user',
                                                      password='pass',
                                                      scan_type="shallow"))

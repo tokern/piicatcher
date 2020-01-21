@@ -30,8 +30,8 @@ class TestDbParser(TestCase):
                                                             port=None,
                                                             scan_type='shallow',
                                                             user=None,
-                                                            orm={'host': None, 'port': None,
-                                                                 'user': None, 'password': None}))
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_port(self, explorer):
@@ -49,8 +49,8 @@ class TestDbParser(TestCase):
                                                             port=6032,
                                                             scan_type='shallow',
                                                             user=None,
-                                                            orm={'host': None, 'port': None, 
-                                                                 'user': None, 'password': None}))
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_host_user_password(self, explorer):
@@ -68,8 +68,8 @@ class TestDbParser(TestCase):
                                                             port=None,
                                                             scan_type='shallow',
                                                             user='user',
-                                                            orm={'host': None, 'port': None,
-                                                                 'user': None, 'password': None}))
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_deep_scan_type(self, explorer):
@@ -87,8 +87,8 @@ class TestDbParser(TestCase):
                                                             port=None,
                                                             scan_type='deep',
                                                             user=None,
-                                                            orm={'host': None, 'port': None, 
-                                                                 'user': None, 'password': None}))
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_deep_scan_type(self, explorer):
@@ -106,8 +106,8 @@ class TestDbParser(TestCase):
                                                             port=None,
                                                             scan_type='shallow',
                                                             user=None, 
-                                                            orm={'host': None, 'port': None, 
-                                                                 'user': None, 'password': None}))
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None}))
 
 
 class TestSqliteParser(TestCase):
@@ -131,7 +131,7 @@ class TestSqliteParser(TestCase):
             output_format='ascii_table',
             path='connection_string',
             scan_type='shallow',
-            orm={'host': None, 'port': None, 'user': None, 'password': None}))
+            catalog={'host': None, 'port': None, 'user': None, 'password': None}))
 
 
 class TestAWSParser(TestCase):
@@ -151,5 +151,5 @@ class TestAWSParser(TestCase):
             scan_type='shallow',
             secret_key='SSSS',
             staging_dir='s3://dir',
-            orm={'host': None, 'port': None, 'user': None, 'password': None}))
+            catalog={'host': None, 'port': None, 'user': None, 'password': None}))
 
