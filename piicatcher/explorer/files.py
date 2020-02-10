@@ -10,6 +10,7 @@ import magic
 from piicatcher.explorer.metadata import NamedObject
 from piicatcher.piitypes import PiiTypes, PiiTypeEncoder
 from piicatcher.scanner import NERScanner, RegexScanner
+from piicatcher.tokenizer import Tokenizer
 
 
 @click.command('files')

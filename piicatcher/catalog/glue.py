@@ -24,7 +24,7 @@ class GlueStore(Store):
 
     @staticmethod
     def get_pii_table(table):
-        logging.debug("Processing table %s", table.get_name())
+        logging.debug("Processing table %s".format(table.get_name()))
         field_value = {}
         for col in table.get_children():
             pii = col.get_pii_types()
@@ -57,7 +57,7 @@ class GlueStore(Store):
 
         logging.debug(client)
         for schema in schemas:
-            logging.debug("Processing schema %s", schema.get_name())
+            logging.debug("Processing schema %s".format(schema.get_name()))
             for table in schema.get_tables():
                 field_value = GlueStore.get_pii_table(table)
                 table_info = client.get_table(

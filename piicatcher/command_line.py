@@ -21,11 +21,11 @@ from piicatcher import __version__
 # pylint: disable=too-many-arguments
 def cli(ctx, log_level, catalog_host, catalog_port, catalog_user, catalog_password):
     logging.basicConfig(level=getattr(logging, log_level.upper()))
-    logging.debug("Catalog - host: %s, port: %s, user: %s, password: %s",
+    logging.debug("Catalog - host: %s, port: %s, user: %s, password: %s".format(
                   catalog_host,
                   catalog_port,
                   catalog_user,
-                  catalog_password)
+                  catalog_password))
 
     ctx.ensure_object(dict)
 
