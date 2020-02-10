@@ -7,7 +7,8 @@ from unittest import TestCase, mock
 import pytest
 
 from piicatcher.explorer.sqlite import SqliteExplorer
-from tests.test_databases import CommonExplorerTestCases, CommonDataTypeTestCases, pii_data_script, char_data_types
+from tests.test_databases import CommonExplorerTestCases, CommonDataTypeTestCases, \
+    pii_data_script, char_data_types
 
 
 @pytest.fixture(scope="class")
@@ -29,12 +30,13 @@ def temp_sqlite(request, tmpdir_factory):
     def finalizer():
         explorer.get_connection().close()
         rmtree(temp_dir)
-        logging.info("Deleted {}".format(str(temp_dir)))
+        logging.info("Deleted {}", str(temp_dir))
 
     request.addfinalizer(finalizer)
 
 
 @pytest.fixture(scope="class")
+# pylint: disable=redefined-outer-name, unused-argument
 def load_pii(request, temp_sqlite):
     conn = sqlite3.connect(request.cls.path)
     conn.executescript(pii_data_script)
@@ -45,6 +47,7 @@ def load_pii(request, temp_sqlite):
 @pytest.mark.usefixtures("load_pii")
 class SqliteExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
     def test_schema(self):
+        # pylint: disable=no-member
         names = [sch.get_name() for sch in self.explorer.get_schemas()]
         self.assertEqual([''], names)
 
@@ -53,6 +56,7 @@ class SqliteExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
 
 
 @pytest.fixture(scope="class")
+# pylint: disable=redefined-outer-name, unused-argument
 def load_char_data(request, temp_sqlite):
     conn = sqlite3.connect(request.cls.path)
     conn.executescript(char_data_types)
@@ -68,10 +72,14 @@ class SqliteDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
 
 class TestDispatcher(TestCase):
     def test_sqlite_dispatch(self):
-        with mock.patch('piicatcher.explorer.sqlite.SqliteExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.explorer.sqlite.SqliteExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
-                    SqliteExplorer.dispatch(Namespace(path='connection', list_all=None, output_format='ascii_table',
+        with mock.patch('piicatcher.explorer.sqlite.SqliteExplorer.scan', autospec=True) \
+                as mock_scan_method:
+            with mock.patch('piicatcher.explorer.sqlite.SqliteExplorer.get_tabular',
+                            autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) \
+                        as mock_table_print:
+                    SqliteExplorer.dispatch(Namespace(path='connection', list_all=None,
+                                                      output_format='ascii_table',
                                                       scan_type=None, catalog=None,
                                                       include_schema=(),
                                                       exclude_schema=(),
@@ -80,4 +88,4 @@ class TestDispatcher(TestCase):
                                                       ))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
-                    MockTablePrint.table.assert_called_once()
+                    mock_table_print.table.assert_called_once()

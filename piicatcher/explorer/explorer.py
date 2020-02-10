@@ -126,7 +126,7 @@ class Explorer(ABC):
     def _get_sample_query(cls, schema_name, table_name, column_list):
         raise NotImplementedError
 
-    def _get_table_count(self, schema_name, table_name, column_list):
+    def _get_table_count(self, schema_name, table_name):
         count = self._get_count_query(schema_name, table_name)
         logging.debug("Count Query: %s" % count)
 
@@ -137,8 +137,7 @@ class Explorer(ABC):
             return int(row[0])
 
     def _get_query(self, schema_name, table_name, column_list):
-        count = self._get_table_count(schema_name, table_name, column_list)
-        query = None
+        count = self._get_table_count(schema_name, table_name)
         if count < self.small_table_max:
             query = self._get_select_query(schema_name, table_name, column_list)
         else:
@@ -166,7 +165,7 @@ class Explorer(ABC):
     def _load_catalog(self):
         if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(minutes=10):
             with self._get_context_manager() as cursor:
-                logging.debug("Catalog Query: %s", self._get_catalog_query())
+                logging.debug("Catalog Query: {0}".format(self._get_catalog_query()))
                 cursor.execute(self._get_catalog_query())
                 self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
                 self._database = Database('database')

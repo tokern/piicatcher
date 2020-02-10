@@ -24,6 +24,7 @@ class PiiTypes(Enum):
 
 # Ref: https://stackoverflow.com/questions/24481852/serialising-an-enum-member-to-json
 class PiiTypeEncoder(json.JSONEncoder):
+    # pylint: disable=method-hidden
     def default(self, obj):
         if type(obj) == PiiTypes:
             return {"__enum__": str(obj)}

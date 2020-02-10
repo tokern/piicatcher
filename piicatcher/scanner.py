@@ -1,9 +1,10 @@
 """Different types of scanners for PII data"""
 from abc import ABC, abstractmethod
-from commonregex import CommonRegex
 import logging
 import re
 import spacy
+
+from commonregex import CommonRegex
 
 from piicatcher.piitypes import PiiTypes
 
@@ -43,11 +44,11 @@ class NERScanner(Scanner):
 
     def scan(self, text):
         """Scan the text and return an array of PiiTypes that are found"""
-        logging.debug("Processing '{}'".format(text))
+        logging.debug("Processing '{}'", text)
         doc = self.nlp(text)
         types = set()
         for ent in doc.ents:
-            logging.debug("Found {}".format(ent.label_))
+            logging.debug("Found {}", ent.label_)
             if ent.label_ == 'PERSON':
                 types.add(PiiTypes.PERSON)
 
@@ -57,14 +58,14 @@ class NERScanner(Scanner):
             if ent.label_ == 'DATE':
                 types.add(PiiTypes.BIRTH_DATE)
 
-        logging.debug("PiiTypes are {}".format(list(types)))
+        logging.debug("PiiTypes are {}", list(types))
         return list(types)
 
 
 class ColumnNameScanner(Scanner):
     regex = {
         PiiTypes.PERSON: re.compile("^.*(firstname|fname|lastname|lname|"
-                                    "fullname|fname|maidenname|_name|"
+                                    "fullname|maidenname|_name|"
                                     "nickname|name_suffix|name).*$", re.IGNORECASE),
         PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
         PiiTypes.BIRTH_DATE: re.compile("^.*(date_of_birth|dateofbirth|dob|"
@@ -80,9 +81,9 @@ class ColumnNameScanner(Scanner):
 
     def scan(self, text):
         types = set()
-        for pii_type in self.regex.keys():
+        for pii_type in self.regex:
             if self.regex[pii_type].match(text) is not None:
                 types.add(pii_type)
 
-        logging.debug("PiiTypes are {}".format(list(types)))
+        logging.debug("PiiTypes are {}", list(types))
         return list(types)

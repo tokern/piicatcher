@@ -79,7 +79,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            pipenv run pytest -m "not dbtest" --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
+            pipenv run pytest -m "not dbtest" --pylint --pylint-error-types=EF --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
       
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results

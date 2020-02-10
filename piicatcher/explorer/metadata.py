@@ -74,16 +74,16 @@ class Schema(NamedObject):
         super(Schema, self).__init__(name, include, exclude)
 
     def get_dict(self):
-        dict = {
+        dictionary = {
             'has_pii': self.has_pii(),
             'name': self._name,
             'tables': []
         }
 
         for table in self.get_children():
-            dict['tables'].append(table.get_dict())
+            dictionary['tables'].append(table.get_dict())
 
-        return dict
+        return dictionary
 
 
 class Table(NamedObject):
@@ -115,15 +115,15 @@ class Table(NamedObject):
             [self._pii.add(p) for p in col.get_pii_types()]
 
     def get_dict(self):
-        dict = {
+        dictionary = {
             'has_pii': self.has_pii(),
             'name': self.get_name(),
             'columns': []
         }
 
         for col in self.get_children():
-            dict['columns'].append(col.get_dict())
-        return dict
+            dictionary['columns'].append(col.get_dict())
+        return dictionary
 
 
 class Column(NamedObject):

@@ -27,24 +27,24 @@ from piicatcher.explorer.explorer import Explorer
 @click.option("-N", "--exclude-schema", multiple=True, help=exclude_schema_help_text)
 @click.option("-t", "--table", multiple=True, help=table_help_text)
 @click.option("-T", "--exclude-table", multiple=True, help=exclude_table_help_text)
+# pylint: disable=too-many-arguments
 def cli(cxt, path, output_format, scan_type, output, list_all,
         schema, exclude_schema, table, exclude_table):
-    ns = Namespace(path=path,
-                   output_format=output_format,
-                   scan_type=scan_type,
-                   output=output,
-                   list_all=list_all,
-                   catalog=cxt.obj['catalog'],
-                   include_schema=schema,
-                   exclude_schema=exclude_schema,
-                   include_table=table,
-                   exclude_table=exclude_table)
+    args = Namespace(path=path,
+                     output_format=output_format,
+                     scan_type=scan_type,
+                     output=output,
+                     list_all=list_all,
+                     catalog=cxt.obj['catalog'],
+                     include_schema=schema,
+                     exclude_schema=exclude_schema,
+                     include_table=table,
+                     exclude_table=exclude_table)
 
-    SqliteExplorer.dispatch(ns)
+    SqliteExplorer.dispatch(args)
 
 
 class SqliteExplorer(Explorer):
-
     _catalog_query = """
             SELECT 
                 "" as schema_name,
@@ -65,13 +65,10 @@ class SqliteExplorer(Explorer):
     _query_template = "select {column_list} from {table_name}"
     _count_query = "select count(*) from {table_name}"
 
-    @classmethod
-    def factory(cls, ns):
-        return SqliteExplorer(ns)
-
     class CursorContextManager:
         def __init__(self, connection):
             self.connection = connection
+            self.cursor = None
 
         def __enter__(self):
             self.cursor = self.connection.cursor()
@@ -90,7 +87,7 @@ class SqliteExplorer(Explorer):
         return SqliteExplorer(ns)
 
     def _open_connection(self):
-        logging.debug("Sqlite connection string '{}'".format(self.path))
+        logging.debug("Sqlite connection string '{}'", self.path)
         return sqlite3.connect(self.path)
 
     def _get_catalog_query(self):

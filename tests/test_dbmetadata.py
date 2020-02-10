@@ -1,6 +1,6 @@
 from argparse import Namespace
 from unittest import TestCase
-from piicatcher.explorer.metadata import Column, Table, Schema, Database
+from piicatcher.explorer.metadata import Column, Table, Schema
 from piicatcher.piitypes import PiiTypes
 from piicatcher.scanner import RegexScanner, NERScanner
 from tests.test_models import MockExplorer
