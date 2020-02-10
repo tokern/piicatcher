@@ -53,8 +53,9 @@ class CommonExplorerTestCases:
 
         def test_scan_dbexplorer(self):
             self.explorer.scan()
-            schema = self.explorer.get_schemas()[0]
-            self.assertTrue(schema.has_pii())
+            for schema in self.explorer.get_schemas():
+                if schema.get_name() == self.get_test_schema():
+                    self.assertTrue(schema.has_pii())
 
 
 char_data_types = """
@@ -263,8 +264,14 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
         DROP TABLE full_pii;
         DROP TABLE partial_pii;
         DROP TABLE no_pii;
+        DROP SCHEMA company cascade;
     """
 
+    second_schema = """
+        CREATE SCHEMA company;
+        CREATE TABLE company.employees(name varchar, designation varchar);
+        CREATE TABLE company.departments(name varchar, manager varchar);
+    """
     @staticmethod
     def execute_script(cursor, script):
         for query in script.split(';'):
@@ -282,6 +289,7 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
 
         with self.conn.cursor() as cursor:
             self.execute_script(cursor, pii_data_script)
+            self.execute_script(cursor, self.second_schema)
             cursor.close()
 
         def drop_tables():
@@ -311,7 +319,7 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
 
     def test_schema(self):
         names = [sch.get_name() for sch in self.explorer.get_schemas()]
-        self.assertEqual(['public'], names)
+        self.assertCountEqual(['public', 'company'], names)
 
     def get_test_schema(self):
         return "public"

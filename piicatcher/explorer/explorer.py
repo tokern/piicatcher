@@ -184,7 +184,7 @@ class Explorer(ABC):
 
                 while row is not None:
                     if current_schema.get_name() != row[0]:
-                        current_schema.tables.append(current_table)
+                        current_schema.add_child(current_table)
                         self._database.add_child(current_schema)
                         current_schema = Schema(row[0],
                                                 include=self._include_table,
