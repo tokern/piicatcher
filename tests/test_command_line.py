@@ -130,6 +130,29 @@ class TestDbParser(TestCase):
                                                                      'file': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
+    def test_output_format(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string", "--output-format", "json"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            password=None,
+                                                            port=None,
+                                                            scan_type='shallow',
+                                                            user=None,
+                                                            include_schema=(),
+                                                            exclude_schema=(),
+                                                            include_table=(),
+                                                            exclude_table=(),
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'json',
+                                                                     'file': None}))
+
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_include_exclude(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["db", "-s", "connection_string",
@@ -198,7 +221,7 @@ class TestSqliteParser(TestCase):
     @patch('piicatcher.explorer.sqlite.SqliteExplorer')
     def test_host(self, explorer):
         runner = CliRunner()
-        result = runner.invoke(cli, ["sqlite", "-s", "connection_string",
+        result = runner.invoke(cli, ["sqlite", "-s", "connection_string", "--output-format", "json",
                                      "-n", "include_schema",
                                      "-N", "exclude_schema",
                                      "-t", "include_table",
@@ -214,7 +237,7 @@ class TestSqliteParser(TestCase):
             include_table=("include_table",),
             exclude_table=("exclude_table",),
             catalog={'host': None, 'port': None, 'user': None, 'password': None,
-                     'format': 'ascii_table',
+                     'format': 'json',
                      'file': None}))
 
     @patch('piicatcher.explorer.sqlite.SqliteExplorer')
@@ -264,6 +287,7 @@ class TestAWSParser(TestCase):
     def test_host_user_password(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east",
+                                     "--output-format", "json",
                                      "-n", "include_schema", "-n", "include_schema_2",
                                      "-N", "exclude_schema", "-N", "exclude_schema_2",
                                      "-t", "include_table", "-t", "include_table_2",
@@ -282,6 +306,6 @@ class TestAWSParser(TestCase):
             include_table=("include_table", "include_table_2"),
             exclude_table=("exclude_table", "exclude_table_2"),
             catalog={'host': None, 'port': None, 'user': None, 'password': None,
-                     'format': 'ascii_table',
+                     'format': 'json',
                      'file': None}))
 
