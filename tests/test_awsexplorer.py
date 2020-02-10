@@ -1,10 +1,10 @@
-from unittest import TestCase, mock
+from unittest import mock
 from argparse import Namespace
 
 from piicatcher.explorer.aws import AthenaExplorer
 
 
-def test_aws_dispath(self):
+def test_aws_dispatch():
     with mock.patch('piicatcher.explorer.aws.AthenaExplorer.scan', autospec=True) \
             as mock_scan_method:
         with mock.patch('piicatcher.explorer.aws.AthenaExplorer.get_tabular',
