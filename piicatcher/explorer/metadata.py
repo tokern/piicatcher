@@ -1,13 +1,19 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 import logging
+import re
 
 from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
 
 
 class NamedObject(ABC):
-    def __init__(self, name):
+    def __init__(self, name, include, exclude):
         self._name = name
         self._pii = set()
+        self._children = []
+        self._include_regex = ()
+        self._exclude_regex = ()
+        self.set_include_regex(include)
+        self.set_exclude_regex(exclude)
 
     def get_name(self):
         return self._name
@@ -19,36 +25,53 @@ class NamedObject(ABC):
     def get_pii_types(self):
         return self._pii
 
-    @abstractmethod
-    def scan(self, context):
-        pass
+    def get_children(self):
+        matches = self._children
+        if len(self._include_regex) > 0:
+            matched_set = set()
+            for regex in self._include_regex:
+                matched_set |= set(list(filter(lambda m: regex.search(m.get_name()) is not None, self._children)))
 
+            matches = list(matched_set)
 
-class Schema(NamedObject):
-    def __init__(self, name):
-        super(Schema, self).__init__(name)
-        self.tables = []
+        for regex in self._exclude_regex:
+            matches = list(filter(lambda m: regex.search(m.get_name()) is None, matches))
 
-    def add(self, table):
-        self.tables.append(table)
+        return matches
 
-    def get_tables(self):
-        return self.tables
+    def add_child(self, child):
+        self._children.append(child)
+
+    def set_include_regex(self, include):
+        self._include_regex = [re.compile(exp, re.IGNORECASE) for exp in include]
+
+    def set_exclude_regex(self, exclude):
+        self._exclude_regex = [re.compile(exp, re.IGNORECASE) for exp in exclude]
 
     def scan(self, generator):
-        for table in self.tables:
-            table.scan(generator)
-            logging.debug("{} has {}".format(table.get_name(), table.get_pii_types()))
-            [self._pii.add(p) for p in table.get_pii_types()]
+        for child in self.get_children():
+            child.scan(generator)
+            logging.debug("{} has {}".format(child.get_name(), child.get_pii_types()))
+            [self._pii.add(p) for p in child.get_pii_types()]
 
         logging.debug("{} has {}".format(self, self._pii))
 
     def shallow_scan(self):
-        for table in self.tables:
-            table.shallow_scan()
-            [self._pii.add(p) for p in table.get_pii_types()]
+        for child in self.get_children():
+            child.shallow_scan()
+            [self._pii.add(p) for p in child.get_pii_types()]
 
         logging.debug("{} has {}".format(self, self._pii))
+
+
+class Database(NamedObject):
+    def __init__(self, name, include=(), exclude=()):
+        super(Database, self).__init__(name, include, exclude)
+
+
+class Schema(NamedObject):
+    def __init__(self, name, include=(), exclude=()):
+        super(Schema, self).__init__(name, include, exclude)
 
     def get_dict(self):
         dict = {
@@ -57,7 +80,7 @@ class Schema(NamedObject):
             'tables': []
         }
 
-        for table in self.tables:
+        for table in self.get_children():
             dict['tables'].append(table.get_dict())
 
         return dict
@@ -65,15 +88,8 @@ class Schema(NamedObject):
 
 class Table(NamedObject):
     def __init__(self, schema, name):
-        super(Table, self).__init__(name)
+        super(Table, self).__init__(name, (), ())
         self._schema = schema
-        self._columns = []
-
-    def add(self, col):
-        self._columns.append(col)
-
-    def get_columns(self):
-        return self._columns
 
     def scan(self, generator):
         scanners = [
@@ -81,20 +97,20 @@ class Table(NamedObject):
             NERScanner()
         ]
         for row in generator(
-            column_list=self._columns,
+            column_list=self.get_children(),
             schema_name=self._schema,
             table_name=self
         ):
-            for col, val in zip(self._columns, row):
+            for col, val in zip(self.get_children(), row):
                 col.scan(val, scanners)
 
-        for col in self._columns:
+        for col in self.get_children():
             [self._pii.add(p) for p in col.get_pii_types()]
 
         logging.debug(self._pii)
 
     def shallow_scan(self):
-        for col in self._columns:
+        for col in self.get_children():
             col.shallow_scan()
             [self._pii.add(p) for p in col.get_pii_types()]
 
@@ -105,21 +121,18 @@ class Table(NamedObject):
             'columns': []
         }
 
-        for col in self._columns:
+        for col in self.get_children():
             dict['columns'].append(col.get_dict())
         return dict
 
 
 class Column(NamedObject):
     def __init__(self, name):
-        super(Column, self).__init__(name)
+        super(Column, self).__init__(name, (), ())
         self.column_scanner = ColumnNameScanner()
 
     def add_pii_type(self, pii):
         self._pii.add(pii)
-
-    def get_pii_types(self):
-        return self._pii
 
     def scan(self, data, scanners):
         if data is not None:

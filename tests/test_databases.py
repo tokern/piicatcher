@@ -126,6 +126,10 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
+            include_schema=(),
+            exclude_schema=(),
+            include_table=(),
+            exclude_table=(),
             catalog=None
         ))
 
@@ -183,6 +187,10 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
+            include_schema=(),
+            exclude_schema=(),
+            include_table=(),
+            exclude_table=(),
             catalog=None
         ))
 
@@ -235,6 +243,10 @@ class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
+            include_schema=(),
+            exclude_schema=(),
+            include_table=(),
+            exclude_table=(),
             catalog=None
         ))
 
@@ -287,6 +299,10 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
+            include_schema=(),
+            exclude_schema=(),
+            include_table=(),
+            exclude_table=(),
             catalog=None
         ))
 
@@ -359,6 +375,10 @@ class TestDispatcher(TestCase):
                                                      scan_type='deep',
                                                      catalog=None,
                                                      user='user',
+                                                     include_schema=(),
+                                                     exclude_schema=(),
+                                                     include_table=(),
+                                                     exclude_table=(),
                                                      password='pass'))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
@@ -376,6 +396,10 @@ class TestDispatcher(TestCase):
                                                      database='public',
                                                      scan_type=None,
                                                      catalog=None,
+                                                     include_schema=(),
+                                                     exclude_schema=(),
+                                                     include_table=(),
+                                                     exclude_table=(),
                                                      user='user',
                                                      password='pass'))
                     mock_scan_method.assert_called_once()
@@ -392,6 +416,10 @@ class TestDispatcher(TestCase):
                                                      output_format='ascii_table',
                                                      connection_type='mysql',
                                                      catalog=None,
+                                                     include_schema=(),
+                                                     exclude_schema=(),
+                                                     include_table=(),
+                                                     exclude_table=(),
                                                      user='user',
                                                      password='pass',
                                                      scan_type="shallow"))

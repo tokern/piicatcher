@@ -3,7 +3,7 @@ from argparse import Namespace
 from unittest import TestCase
 
 from piicatcher.explorer.explorer import Explorer
-from piicatcher.explorer.metadata import Column, Schema, Table
+from piicatcher.explorer.metadata import Column, Schema, Table, Database
 from piicatcher.piitypes import PiiTypes, PiiTypeEncoder
 
 
@@ -18,10 +18,18 @@ class MockExplorer(Explorer):
     def parser(cls, sub_parsers):
         pass
 
+    def _load_catalog(self):
+        pass
+
 
 class ExplorerTest(TestCase):
     def setUp(self):
-        self.explorer = MockExplorer(Namespace(host="mock_connection", catalog=None))
+        self.explorer = MockExplorer(Namespace(host="mock_connection",
+                                               include_schema=(),
+                                               exclude_schema=(),
+                                               include_table=(),
+                                               exclude_table=(),
+                                               catalog=None))
 
         col1 = Column('c1')
         col2 = Column('c2')
@@ -29,12 +37,14 @@ class ExplorerTest(TestCase):
 
         schema = Schema('s1')
         table = Table(schema, 't1')
-        table._columns = [col1, col2]
+        table.add_child(col1)
+        table.add_child(col2)
 
         schema = Schema('testSchema')
-        schema.tables = [table]
+        schema.add_child(table)
 
-        self.explorer._schemas = [schema]
+        self.explorer._database = Database('database')
+        self.explorer._database.add_child(schema)
 
     def test_tabular_all(self):
         self.assertEqual([

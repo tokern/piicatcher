@@ -1,11 +1,12 @@
+from argparse import Namespace
 from unittest import TestCase
-from piicatcher.explorer.metadata import Column, Table, Schema
+from piicatcher.explorer.metadata import Column, Table, Schema, Database
 from piicatcher.piitypes import PiiTypes
 from piicatcher.scanner import RegexScanner, NERScanner
+from tests.test_models import MockExplorer
 
 
 class DbMetadataTests(TestCase):
-
     data = {
         "no_pii": [
             ('abc', 'def'),
@@ -47,8 +48,8 @@ class DbMetadataTests(TestCase):
     def test_no_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'no_pii')
-        table.add(Column('a'))
-        table.add(Column('b'))
+        table.add_child(Column('a'))
+        table.add_child(Column('b'))
 
         table.scan(self.data_generator)
         self.assertFalse(table.has_pii())
@@ -60,12 +61,12 @@ class DbMetadataTests(TestCase):
     def test_partial_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'partial_pii')
-        table.add(Column('a'))
-        table.add(Column('b'))
+        table.add_child(Column('a'))
+        table.add_child(Column('b'))
 
         table.scan(self.data_generator)
         self.assertTrue(table.has_pii())
-        cols = table.get_columns()
+        cols = table.get_children()
         self.assertTrue(cols[0].has_pii())
         self.assertFalse(cols[1].has_pii())
         self.assertEqual({
@@ -77,13 +78,13 @@ class DbMetadataTests(TestCase):
     def test_full_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'full_pii')
-        table.add(Column('name'))
-        table.add(Column('location'))
+        table.add_child(Column('name'))
+        table.add_child(Column('location'))
 
         table.scan(self.data_generator)
         self.assertTrue(table.has_pii())
 
-        cols = table.get_columns()
+        cols = table.get_children()
         self.assertTrue(cols[0].has_pii())
         self.assertTrue(cols[1].has_pii())
         self.assertEqual({
@@ -97,8 +98,8 @@ class ShallowScan(TestCase):
     def test_no_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'no_pii')
-        table.add(Column('a'))
-        table.add(Column('b'))
+        table.add_child(Column('a'))
+        table.add_child(Column('b'))
 
         table.shallow_scan()
         self.assertFalse(table.has_pii())
@@ -106,25 +107,88 @@ class ShallowScan(TestCase):
     def test_partial_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'partial_pii')
-        table.add(Column('fname'))
-        table.add(Column('b'))
+        table.add_child(Column('fname'))
+        table.add_child(Column('b'))
 
         table.shallow_scan()
         self.assertTrue(table.has_pii())
-        cols = table.get_columns()
+        cols = table.get_children()
         self.assertTrue(cols[0].has_pii())
         self.assertFalse(cols[1].has_pii())
 
     def test_full_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'full_pii')
-        table.add(Column('name'))
-        table.add(Column('dob'))
+        table.add_child(Column('name'))
+        table.add_child(Column('dob'))
 
         table.shallow_scan()
         self.assertTrue(table.has_pii())
 
-        cols = table.get_columns()
+        cols = table.get_children()
         self.assertTrue(cols[0].has_pii())
         self.assertTrue(cols[1].has_pii())
 
+
+class IncludeExcludeTests(TestCase):
+    explorer = None
+
+    def setUp(self):
+        self.explorer = MockExplorer(Namespace(catalog=None,
+                                               include_schema=(),
+                                               exclude_schema=(),
+                                               include_table=(),
+                                               exclude_table=()
+                                               ))
+        self.explorer._load_catalog()
+
+    def test_simple_schema_get(self):
+        self.assertCountEqual(["test_store"], [s.get_name() for s in self.explorer.database.get_children()])
+
+    def test_simple_schema_include(self):
+        self.explorer.database.set_include_regex(['test_store'])
+        self.assertCountEqual(["test_store"], [s.get_name() for s in self.explorer.database.get_children()])
+
+    def test_simple_schema_exclude(self):
+        self.explorer.database.set_exclude_regex(['test_store'])
+        self.assertEqual(0, len([s.get_name() for s in self.explorer.database.get_children()]))
+
+    def test_simple_schema_include_exclude(self):
+        self.explorer.database.set_include_regex(['test_store'])
+        self.explorer.database.set_exclude_regex(['test_store'])
+        self.assertEqual(0, len([s.get_name() for s in self.explorer.database.get_children()]))
+
+    def test_regex_schema_include(self):
+        self.explorer.database.set_include_regex(['test_.*'])
+        self.assertCountEqual(["test_store"], [s.get_name() for s in self.explorer.database.get_children()])
+
+    def test_regex_schema_exclude(self):
+        self.explorer.database.set_exclude_regex(['test_.*'])
+        self.assertEqual(0, len([s.get_name() for s in self.explorer.database.get_children()]))
+
+    def test_regex_failed_schema_include(self):
+        self.explorer.database.set_include_regex(['tet_.*'])
+        self.assertEqual(0, len([s.get_name() for s in self.explorer.database.get_children()]))
+
+    def test_regex_failed_schema_exclude(self):
+        self.explorer.database.set_exclude_regex(['tet_.*'])
+        self.assertCountEqual(["test_store"], [s.get_name() for s in self.explorer.database.get_children()])
+
+    def test_regex_success_table_include(self):
+        schema = self.explorer.database.get_children()[0]
+        schema.set_include_regex(["full.*", "partial.*"])
+
+        self.assertCountEqual(["partial_pii", "full_pii"], [t.get_name() for t in schema.get_children()])
+
+    def test_regex_success_table_exclude(self):
+        schema = self.explorer.database.get_children()[0]
+        schema.set_exclude_regex(["full.*", "partial.*"])
+
+        self.assertCountEqual(["no_pii"], [t.get_name() for t in schema.get_children()])
+
+    def test_regex_success_table_include_exclude(self):
+        schema = self.explorer.database.get_children()[0]
+        schema.set_include_regex(["full.*", "partial.*"])
+        schema.set_exclude_regex(["full_pii"])
+
+        self.assertCountEqual(["partial_pii"], [t.get_name() for t in schema.get_children()])

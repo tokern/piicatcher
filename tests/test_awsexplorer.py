@@ -17,6 +17,10 @@ class AwsExplorerTest(TestCase):
                                                       scan_type=None,
                                                       output_format="ascii_table",
                                                       catalog=None,
+                                                      include_schema=(),
+                                                      exclude_schema=(),
+                                                      include_table=(),
+                                                      exclude_table=(),
                                                       list_all=False))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()

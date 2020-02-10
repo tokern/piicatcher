@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 import tableprint
 
-from piicatcher.explorer.metadata import Schema, Table, Column
+from piicatcher.explorer.metadata import Schema, Table, Column, Database
 from piicatcher.catalog.db import DbStore
 from piicatcher.piitypes import PiiTypeEncoder
 
@@ -16,9 +16,13 @@ class Explorer(ABC):
 
     def __init__(self, ns):
         self._connection = None
-        self._schemas = None
         self._cache_ts = None
         self.catalog = ns.catalog
+        self._include_schema = ns.include_schema
+        self._exclude_schema = ns.exclude_schema
+        self._include_table = ns.include_table
+        self._exclude_table = ns.exclude_table
+        self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
 
     def __enter__(self):
         return self
@@ -41,6 +45,10 @@ class Explorer(ABC):
     @property
     def small_table_max(self):
         return 100
+
+    @property
+    def database(self):
+        return self._database
 
     @classmethod
     def dispatch(cls, ns):
@@ -83,9 +91,9 @@ class Explorer(ABC):
 
     def get_tabular(self, list_all):
         tabular = []
-        for schema in self._schemas:
-            for table in schema.get_tables():
-                for column in table.get_columns():
+        for schema in self.get_schemas():
+            for table in schema.get_children():
+                for column in table.get_children():
                     if list_all or column.has_pii():
                         tabular.append([schema.get_name(), table.get_name(),
                                        column.get_name(), column.has_pii()])
@@ -94,7 +102,7 @@ class Explorer(ABC):
 
     def get_dict(self):
         schemas = []
-        for schema in self._schemas:
+        for schema in self._database.get_children():
             schemas.append(schema.get_dict())
 
         return schemas
@@ -160,7 +168,8 @@ class Explorer(ABC):
             with self._get_context_manager() as cursor:
                 logging.debug("Catalog Query: %s", self._get_catalog_query())
                 cursor.execute(self._get_catalog_query())
-                self._schemas = []
+                self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
+                self._database = Database('database')
 
                 row = cursor.fetchone()
 
@@ -168,37 +177,41 @@ class Explorer(ABC):
                 current_table = None
 
                 if row is not None:
-                    current_schema = Schema(row[0])
+                    current_schema = Schema(row[0],
+                                            include=self._include_table,
+                                            exclude=self._exclude_table)
                     current_table = Table(current_schema, row[1])
 
                 while row is not None:
                     if current_schema.get_name() != row[0]:
                         current_schema.tables.append(current_table)
-                        self._schemas.append(current_schema)
-                        current_schema = Schema(row[0])
+                        self._database.add_child(current_schema)
+                        current_schema = Schema(row[0],
+                                                include=self._include_table,
+                                                exclude=self._exclude_table)
                         current_table = Table(current_schema, row[1])
                     elif current_table.get_name() != row[1]:
-                        current_schema.tables.append(current_table)
+                        current_schema.add_child(current_table)
                         current_table = Table(current_schema, row[1])
-                    current_table.add(Column(row[2]))
+                    current_table.add_child(Column(row[2]))
 
                     row = cursor.fetchone()
 
                 if current_schema is not None and current_table is not None:
-                    current_schema.tables.append(current_table)
-                    self._schemas.append(current_schema)
+                    current_schema.add_child(current_table)
+                    self._database.add_child(current_schema)
 
             self._cache_ts = datetime.now()
 
     def get_schemas(self):
         self._load_catalog()
-        return self._schemas
+        return self._database.get_children()
 
     def get_tables(self, schema_name):
         self._load_catalog()
-        for s in self._schemas:
+        for s in self.get_schemas():
             if s.get_name() == schema_name:
-                return s.tables
+                return s.get_children()
         raise ValueError("{} schema not found".format(schema_name))
 
     def get_columns(self, schema_name, table_name):
@@ -206,6 +219,6 @@ class Explorer(ABC):
         tables = self.get_tables(schema_name)
         for t in tables:
             if t.get_name() == table_name:
-                return t.get_columns()
+                return t.get_children()
 
         raise ValueError("{} table not found".format(table_name))

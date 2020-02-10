@@ -20,6 +20,10 @@ password="password"
 scan_type="deep"
 list_all=True
 output_format="json"
+schema=["schema1", "schema2"]
+exclude_schema=["schema1", "schema2"]
+table=["table1", "table2"]
+exclude_table=["table1", "table2"]
 """
                            )
 
@@ -41,6 +45,10 @@ output_format="json"
                    port=6032,
                    scan_type='deep',
                    user='user',
+                   include_schema=("schema1", "schema2"),
+                   exclude_schema=("schema1", "schema2"),
+                   include_table=("table1", "table2"),
+                   exclude_table=("table1", "table2"),
                    catalog={'host': None, 'port': None, 'user': None, 'password': None})
     rel.dispatch.assert_called_once_with(ns)
 
@@ -54,6 +62,10 @@ path="sqlite.db"
 scan_type="deep"
 list_all=True
 output_format="json"
+schema=["schema1", "schema2"]
+exclude_schema=["schema1", "schema2"]
+table=["table1", "table2"]
+exclude_table=["table1", "table2"]
 """
                            )
 
@@ -69,6 +81,10 @@ output_format="json"
                                                         output=None,
                                                         output_format='json',
                                                         scan_type='deep',
+                                                        include_schema=("schema1", "schema2"),
+                                                        exclude_schema=("schema1", "schema2"),
+                                                        include_table=("table1", "table2"),
+                                                        exclude_table=("table1", "table2"),
                                                         catalog={'host': None, 'port': None,
                                                                  'user': None, 'password': None}))
 
