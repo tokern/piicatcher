@@ -129,6 +129,62 @@ class TestDbParser(TestCase):
                                                             catalog={'host': None, 'port': None,
                                                                      'user': None, 'password': None}))
 
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
+    def test_include_exclude(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string",
+                                     "-n", "include_schema",
+                                     "-N", "exclude_schema",
+                                     "-t", "include_table",
+                                     "-T", "exclude_table"])
+
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            output=None,
+                                                            output_format='ascii_table',
+                                                            password=None,
+                                                            port=None,
+                                                            scan_type='shallow',
+                                                            user=None,
+                                                            include_schema=("include_schema",),
+                                                            exclude_schema=("exclude_schema",),
+                                                            include_table=("include_table",),
+                                                            exclude_table=("exclude_table",),
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None}))
+
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
+    def test_include_exclude_multiple(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string",
+                                     "-n", "include_schema", "-n", "include_schema_2",
+                                     "-N", "exclude_schema", "-N", "exclude_schema_2",
+                                     "-t", "include_table", "-t", "include_table_2",
+                                     "-T", "exclude_table", "-T", "exclude_table_2"])
+
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            output=None,
+                                                            output_format='ascii_table',
+                                                            password=None,
+                                                            port=None,
+                                                            scan_type='shallow',
+                                                            user=None,
+                                                            include_schema=("include_schema", "include_schema_2"),
+                                                            exclude_schema=("exclude_schema", "exclude_schema_2"),
+                                                            include_table=("include_table", "include_table_2"),
+                                                            exclude_table=("exclude_table", "exclude_table_2"),
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None}))
+
 
 class TestSqliteParser(TestCase):
     def test_path_required(self):
@@ -141,6 +197,28 @@ class TestSqliteParser(TestCase):
 
     @patch('piicatcher.explorer.sqlite.SqliteExplorer')
     def test_host(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["sqlite", "-s", "connection_string",
+                                     "-n", "include_schema",
+                                     "-N", "exclude_schema",
+                                     "-t", "include_table",
+                                     "-T", "exclude_table"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(
+            list_all=False,
+            output=None,
+            output_format='ascii_table',
+            path='connection_string',
+            scan_type='shallow',
+            include_schema=("include_schema",),
+            exclude_schema=("exclude_schema",),
+            include_table=("include_table",),
+            exclude_table=("exclude_table",),
+            catalog={'host': None, 'port': None, 'user': None, 'password': None}))
+
+    @patch('piicatcher.explorer.sqlite.SqliteExplorer')
+    def test_include_exclude(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["sqlite", "-s", "connection_string"])
         self.assertEqual("", result.stdout)
@@ -155,6 +233,28 @@ class TestSqliteParser(TestCase):
             exclude_schema=(),
             include_table=(),
             exclude_table=(),
+            catalog={'host': None, 'port': None, 'user': None, 'password': None}))
+
+    @patch('piicatcher.explorer.sqlite.SqliteExplorer')
+    def test_include_exclude_multiple(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["sqlite", "-s", "connection_string",
+                                     "-n", "include_schema", "-n", "include_schema_2",
+                                     "-N", "exclude_schema", "-N", "exclude_schema_2",
+                                     "-t", "include_table", "-t", "include_table_2",
+                                     "-T", "exclude_table", "-T", "exclude_table_2"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(
+            list_all=False,
+            output=None,
+            output_format='ascii_table',
+            path='connection_string',
+            scan_type='shallow',
+            include_schema=("include_schema", "include_schema_2"),
+            exclude_schema=("exclude_schema", "exclude_schema_2"),
+            include_table=("include_table", "include_table_2"),
+            exclude_table=("exclude_table", "exclude_table_2"),
             catalog={'host': None, 'port': None, 'user': None, 'password': None}))
 
 
