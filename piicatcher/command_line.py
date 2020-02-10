@@ -18,12 +18,14 @@ from piicatcher import __version__
 @click.option("--catalog-port", help="Port of database. Use if output is a db")
 @click.option("--catalog-user", help="Username to connect database.  Use if output is a db")
 @click.option("--catalog-password", help="Password of the user. Use if output is a db")
+# pylint: disable=too-many-arguments
 def cli(ctx, log_level, catalog_host, catalog_port, catalog_user, catalog_password):
     logging.basicConfig(level=getattr(logging, log_level.upper()))
-    logging.debug("Catalog - host: %s, port: %s, user: %s, password: %s" % (catalog_host,
-                                                                        catalog_port,
-                                                                        catalog_user,
-                                                                        catalog_password))
+    logging.debug("Catalog - host: %s, port: %s, user: %s, password: %s",
+                  catalog_host,
+                  catalog_port,
+                  catalog_user,
+                  catalog_password)
 
     ctx.ensure_object(dict)
 

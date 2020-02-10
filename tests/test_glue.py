@@ -105,50 +105,50 @@ class TableParams(unittest.TestCase):
 
         table_params = {
             'Name': 'csv_misc', 'DatabaseName': 'taxidata', 'Owner': 'owner',
-                             'CreateTime': datetime.datetime(2019, 12, 9, 16, 12, 43, tzinfo=tzlocal()),
-                             'UpdateTime': datetime.datetime(2019, 12, 9, 16, 12, 43, tzinfo=tzlocal()),
-                             'LastAccessTime': datetime.datetime(2019, 12, 9, 16, 12, 43, tzinfo=tzlocal()),
-                             'Retention': 0,
-                             'StorageDescriptor': {'Columns': [
-                                 {'Name': 'locationid', 'Type': 'bigint'},
-                                 {'Name': 'borough', 'Type': 'string'},
-                                 {'Name': 'zone', 'Type': 'string'},
-                                 {'Name': 'service_zone', 'Type': 'string'}
-                             ],
-                                 'Location': 's3://nyc-tlc/misc/',
-                                 'InputFormat': 'org.apache.hadoop.mapred.TextInputFormat',
-                                 'OutputFormat': 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
-                                 'Compressed': False, 'NumberOfBuckets': -1,
-                                 'SerdeInfo': {
-                                     'SerializationLibrary': 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe',
-                                     'Parameters': {'field.delim': ','}}, 'BucketColumns': [],
-                                 'SortColumns': [],
-                                 'Parameters': {
-                                     'CrawlerSchemaDeserializerVersion': '1.0', 'CrawlerSchemaSerializerVersion': '1.0',
-                                     'UPDATED_BY_CRAWLER': 'TaxiCrawler', 'areColumnsQuoted': 'false',
-                                     'averageRecordSize': '36', 'classification': 'csv', 'columnsOrdered': 'true',
-                                     'compressionType': 'none', 'delimiter': ',',
-                                     'exclusions': '["s3://nyc-tlc/misc/*foil*","s3://nyc-tlc/misc/shared*",'
-                                                   '"s3://nyc-tlc/misc/uber*","s3://nyc-tlc/misc/*.html",'
-                                                   '"s3://nyc-tlc/misc/*.zip","s3://nyc-tlc/misc/FOIL_*"]',
-                                     'objectCount': '1', 'recordCount': '342', 'sizeKey': '12322',
-                                     'skip.header.line.count': '1', 'typeOfData': 'file'},
-                                 'StoredAsSubDirectories': False
-                             },
-                             'PartitionKeys': [], 'TableType': 'EXTERNAL_TABLE', 'Parameters': {
-                                'CrawlerSchemaDeserializerVersion': '1.0', 'CrawlerSchemaSerializerVersion': '1.0',
-                                'UPDATED_BY_CRAWLER': 'TaxiCrawler', 'areColumnsQuoted': 'false',
-                                'averageRecordSize': '36', 'classification': 'csv', 'columnsOrdered': 'true',
-                                'compressionType': 'none', 'delimiter': ',',
-                                'exclusions':
-                                    '["s3://nyc-tlc/misc/*foil*","s3://nyc-tlc/misc/shared*","s3://nyc-tlc/misc/uber*",'
-                                    '"s3://nyc-tlc/misc/*.html","s3://nyc-tlc/misc/*.zip","s3://nyc-tlc/misc/FOIL_*"]',
-                                'objectCount': '1', 'recordCount': '342', 'sizeKey': '12322',
-                                'skip.header.line.count': '1', 'typeOfData': 'file'},
-                             'CreatedBy':
-                                 'arn:aws:sts::172965158661:assumed-role/LakeFormationWorkflowRole/AWS-Crawler',
-                             'IsRegisteredWithLakeFormation': False
-                             }
+            'CreateTime': datetime.datetime(2019, 12, 9, 16, 12, 43, tzinfo=tzlocal()),
+            'UpdateTime': datetime.datetime(2019, 12, 9, 16, 12, 43, tzinfo=tzlocal()),
+            'LastAccessTime': datetime.datetime(2019, 12, 9, 16, 12, 43, tzinfo=tzlocal()),
+            'Retention': 0,
+            'StorageDescriptor': {'Columns': [
+                {'Name': 'locationid', 'Type': 'bigint'},
+                {'Name': 'borough', 'Type': 'string'},
+                {'Name': 'zone', 'Type': 'string'},
+                {'Name': 'service_zone', 'Type': 'string'}
+            ],
+                'Location': 's3://nyc-tlc/misc/',
+                'InputFormat': 'org.apache.hadoop.mapred.TextInputFormat',
+                'OutputFormat': 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
+                'Compressed': False, 'NumberOfBuckets': -1,
+                'SerdeInfo': {
+                    'SerializationLibrary': 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe',
+                    'Parameters': {'field.delim': ','}}, 'BucketColumns': [],
+                'SortColumns': [],
+                'Parameters': {
+                    'CrawlerSchemaDeserializerVersion': '1.0', 'CrawlerSchemaSerializerVersion': '1.0',
+                    'UPDATED_BY_CRAWLER': 'TaxiCrawler', 'areColumnsQuoted': 'false',
+                    'averageRecordSize': '36', 'classification': 'csv', 'columnsOrdered': 'true',
+                    'compressionType': 'none', 'delimiter': ',',
+                    'exclusions': '["s3://nyc-tlc/misc/*foil*","s3://nyc-tlc/misc/shared*",'
+                                  '"s3://nyc-tlc/misc/uber*","s3://nyc-tlc/misc/*.html",'
+                                  '"s3://nyc-tlc/misc/*.zip","s3://nyc-tlc/misc/FOIL_*"]',
+                    'objectCount': '1', 'recordCount': '342', 'sizeKey': '12322',
+                    'skip.header.line.count': '1', 'typeOfData': 'file'},
+                'StoredAsSubDirectories': False
+            },
+            'PartitionKeys': [], 'TableType': 'EXTERNAL_TABLE', 'Parameters': {
+                'CrawlerSchemaDeserializerVersion': '1.0', 'CrawlerSchemaSerializerVersion': '1.0',
+                'UPDATED_BY_CRAWLER': 'TaxiCrawler', 'areColumnsQuoted': 'false',
+                'averageRecordSize': '36', 'classification': 'csv', 'columnsOrdered': 'true',
+                'compressionType': 'none', 'delimiter': ',',
+                'exclusions':
+                    '["s3://nyc-tlc/misc/*foil*","s3://nyc-tlc/misc/shared*","s3://nyc-tlc/misc/uber*",'
+                    '"s3://nyc-tlc/misc/*.html","s3://nyc-tlc/misc/*.zip","s3://nyc-tlc/misc/FOIL_*"]',
+                'objectCount': '1', 'recordCount': '342', 'sizeKey': '12322',
+                'skip.header.line.count': '1', 'typeOfData': 'file'},
+            'CreatedBy':
+                'arn:aws:sts::172965158661:assumed-role/LakeFormationWorkflowRole/AWS-Crawler',
+            'IsRegisteredWithLakeFormation': False
+        }
 
         expected_table_params = {
             'Name': 'csv_misc', 'Owner': 'owner',

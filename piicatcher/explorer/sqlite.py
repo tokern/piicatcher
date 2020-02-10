@@ -44,7 +44,6 @@ def cli(cxt, path, output_format, scan_type, output, list_all,
 
 
 class SqliteExplorer(Explorer):
-
     _catalog_query = """
             SELECT 
                 "" as schema_name,
@@ -64,10 +63,6 @@ class SqliteExplorer(Explorer):
 
     _query_template = "select {column_list} from {table_name}"
     _count_query = "select count(*) from {table_name}"
-
-    @classmethod
-    def factory(cls, ns):
-        return SqliteExplorer(ns)
 
     class CursorContextManager:
         def __init__(self, connection):

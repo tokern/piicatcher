@@ -7,7 +7,6 @@ import logging
 import os
 import magic
 
-from piicatcher.tokenizer import Tokenizer
 from piicatcher.explorer.metadata import NamedObject
 from piicatcher.piitypes import PiiTypes, PiiTypeEncoder
 from piicatcher.scanner import NERScanner, RegexScanner

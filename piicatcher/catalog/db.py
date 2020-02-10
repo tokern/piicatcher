@@ -1,7 +1,7 @@
 from peewee import *
 
 from piicatcher.catalog import Store
-from piicatcher.catalog.PiiTypeField import PiiTypeField
+from piicatcher.catalog.pii_type_field import PiiTypeField
 
 database_proxy = DatabaseProxy()
 
@@ -72,5 +72,5 @@ class DbStore(Store):
                     tbl_model = DbTables.create(schema_id=schema_model, name=t.get_name())
 
                     for c in t.get_children():
-                        col_model = DbColumns.create(table_id=tbl_model, name=c.get_name(),
-                                                     pii_type=c.get_pii_types())
+                        DbColumns.create(table_id=tbl_model, name=c.get_name(),
+                                         pii_type=c.get_pii_types())

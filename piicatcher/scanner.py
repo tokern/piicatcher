@@ -64,7 +64,7 @@ class NERScanner(Scanner):
 class ColumnNameScanner(Scanner):
     regex = {
         PiiTypes.PERSON: re.compile("^.*(firstname|fname|lastname|lname|"
-                                    "fullname|fname|maidenname|_name|"
+                                    "fullname|maidenname|_name|"
                                     "nickname|name_suffix|name).*$", re.IGNORECASE),
         PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
         PiiTypes.BIRTH_DATE: re.compile("^.*(date_of_birth|dateofbirth|dob|"

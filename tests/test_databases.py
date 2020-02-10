@@ -15,7 +15,6 @@ from piicatcher.piitypes import PiiTypes
 
 logging.basicConfig(level=logging.DEBUG)
 
-
 pii_data_script = """
 create table no_pii(a text, b text);
 insert into no_pii values ('abc', 'def');
@@ -29,11 +28,6 @@ create table full_pii(name text, location text);
 insert into full_pii values ('Jonathan Smith', 'Virginia');
 insert into full_pii values ('Chase Ryan', 'Chennai');
 
-"""
-
-char_data_types = """
-create table char_columns(ch char, vch varchar, chn char(10), cvhn varchar(10));
-create table no_char_column(i int, d double, t time, dt date, ts timestamp);
 """
 
 
@@ -85,7 +79,6 @@ class CommonDataTypeTestCases:
 
 @pytest.mark.usefixtures("create_tables")
 class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
-
     pii_db_drop = """
         DROP TABLE full_pii;
         DROP TABLE partial_pii;
@@ -162,10 +155,10 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
     @pytest.fixture(scope="class")
     def create_tables(self, request):
         self.conn = pymysql.connect(host="127.0.0.1",
-            user="piiuser",
-            password="p11secret",
-            database="piidb"
-        )
+                                    user="piiuser",
+                                    password="p11secret",
+                                    database="piidb"
+                                    )
 
         with self.conn.cursor() as cursor:
             self.execute_script(cursor, char_data_types)
@@ -364,9 +357,12 @@ class SelectQueryTest:
 class TestDispatcher(TestCase):
 
     def test_mysql_dispatch(self):
-        with mock.patch('piicatcher.explorer.databases.MySQLExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.explorer.databases.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
+        with mock.patch('piicatcher.explorer.databases.MySQLExplorer.scan', autospec=True) \
+                as mock_scan_method:
+            with mock.patch('piicatcher.explorer.databases.MySQLExplorer.get_tabular',
+                            autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) \
+                        as MockTablePrint:
                     RelDbExplorer.dispatch(Namespace(host='connection',
                                                      port=None,
                                                      list_all=None,
@@ -385,9 +381,12 @@ class TestDispatcher(TestCase):
                     MockTablePrint.table.assert_called_once()
 
     def test_postgres_dispatch(self):
-        with mock.patch('piicatcher.explorer.databases.PostgreSQLExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.explorer.databases.PostgreSQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
+        with mock.patch('piicatcher.explorer.databases.PostgreSQLExplorer.scan', autospec=True) \
+                as mock_scan_method:
+            with mock.patch('piicatcher.explorer.databases.PostgreSQLExplorer.get_tabular',
+                            autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) \
+                        as MockTablePrint:
                     RelDbExplorer.dispatch(Namespace(host='connection',
                                                      port=None,
                                                      list_all=None,
@@ -407,9 +406,12 @@ class TestDispatcher(TestCase):
                     MockTablePrint.table.assert_called_once()
 
     def test_mysql_shallow_scan(self):
-        with mock.patch('piicatcher.explorer.databases.MySQLExplorer.shallow_scan', autospec=True) as mock_shallow_scan_method:
-            with mock.patch('piicatcher.explorer.databases.MySQLExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) as MockTablePrint:
+        with mock.patch('piicatcher.explorer.databases.MySQLExplorer.shallow_scan',
+                        autospec=True) as mock_shallow_scan_method:
+            with mock.patch('piicatcher.explorer.databases.MySQLExplorer.get_tabular',
+                            autospec=True) as mock_tabular_method:
+                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) \
+                        as MockTablePrint:
                     RelDbExplorer.dispatch(Namespace(host='connection',
                                                      port=None,
                                                      list_all=None,
@@ -426,4 +428,3 @@ class TestDispatcher(TestCase):
                     mock_shallow_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
-

@@ -2,7 +2,6 @@ from unittest import TestCase
 
 from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
 from piicatcher.piitypes import PiiTypes
-from piicatcher.tokenizer import Tokenizer
 
 
 class RegexTestCase(TestCase):
@@ -25,7 +24,7 @@ class RegexTestCase(TestCase):
         for text in non_matching:
             self.assertEqual(self.parser.scan(text), [])
 
-    def test_creditcards(self):
+    def test_credit_cards(self):
         matching = ["0000-0000-0000-0000", "0123456789012345",
                     "0000 0000 0000 0000", "012345678901234"]
         for text in matching:
@@ -103,9 +102,3 @@ class ColumnNameScannerTests(TestCase):
     def test_ssn(self):
         self.assertTrue(PiiTypes.SSN in self.parser.scan("ssn"))
 
-
-class TestTokenizer(TestCase):
-    def testTokenization(self):
-        tok = Tokenizer()
-        tokens = tok.tokenize("Jonathan is in Bangalore")
-        self.assertEqual(4, len(tokens))

@@ -126,7 +126,7 @@ class Explorer(ABC):
     def _get_sample_query(cls, schema_name, table_name, column_list):
         raise NotImplementedError
 
-    def _get_table_count(self, schema_name, table_name, column_list):
+    def _get_table_count(self, schema_name, table_name):
         count = self._get_count_query(schema_name, table_name)
         logging.debug("Count Query: %s" % count)
 
@@ -137,8 +137,7 @@ class Explorer(ABC):
             return int(row[0])
 
     def _get_query(self, schema_name, table_name, column_list):
-        count = self._get_table_count(schema_name, table_name, column_list)
-        query = None
+        count = self._get_table_count(schema_name, table_name)
         if count < self.small_table_max:
             query = self._get_select_query(schema_name, table_name, column_list)
         else:

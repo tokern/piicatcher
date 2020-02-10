@@ -107,7 +107,7 @@ class TestDbParser(TestCase):
                                                                      'user': None, 'password': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
-    def test_deep_scan_type(self, explorer):
+    def test_shallow_scan_type(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["db", "-s", "connection_string", "-c", "shallow"])
         self.assertEqual("", result.stdout)
