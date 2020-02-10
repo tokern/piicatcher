@@ -63,12 +63,12 @@ class Explorer(ABC):
 
     @classmethod
     def output(cls, ns, explorer):
-        if ns.output_format == "ascii_table":
+        if ns.catalog['format'] == "ascii_table":
             headers = ["schema", "table", "column", "has_pii"]
             tableprint.table(explorer.get_tabular(ns.list_all), headers)
-        elif ns.output_format == "json":
+        elif ns.catalog['format'] == "json":
             print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
-        elif ns.output_format == "db":
+        elif ns.catalog['format'] == "db":
             DbStore.save_schemas(explorer)
 
     def get_connection(self):

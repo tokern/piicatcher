@@ -14,12 +14,19 @@ from piicatcher import __version__
 @click.version_option(__version__)
 @click_config_file.configuration_option()
 @click.option("-l", "--log-level", help="Logging Level", default="WARNING")
+@click.option("--catalog-format", type=click.Choice(["ascii_table", "json", "db", "glue"]),
+              default="ascii_table",
+              help="Choose output format type")
+@click.option("--catalog-file", default=None, type=click.File(),
+              help="File path of the catalog if format is json. If not specified, "
+                   "then report is printed to sys.stdout")
 @click.option("--catalog-host", help="Hostname of the database. Use if output is a db")
 @click.option("--catalog-port", help="Port of database. Use if output is a db")
 @click.option("--catalog-user", help="Username to connect database.  Use if output is a db")
 @click.option("--catalog-password", help="Password of the user. Use if output is a db")
 # pylint: disable=too-many-arguments
-def cli(ctx, log_level, catalog_host, catalog_port, catalog_user, catalog_password):
+def cli(ctx, log_level, catalog_format, catalog_file,
+        catalog_host, catalog_port, catalog_user, catalog_password):
     logging.basicConfig(level=getattr(logging, log_level.upper()))
     logging.debug("Catalog - host: {0}, port: {1}, user: {2}, password: {3}".format(
                   catalog_host,
@@ -34,6 +41,8 @@ def cli(ctx, log_level, catalog_host, catalog_port, catalog_user, catalog_passwo
         'port': catalog_port,
         'user': catalog_user,
         'password': catalog_password,
+        'format': catalog_format,
+        'file': catalog_file
     }
 
 
