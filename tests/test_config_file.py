@@ -41,6 +41,10 @@ output_format="json"
                    port=6032,
                    scan_type='deep',
                    user='user',
+                   include_schema=(),
+                   exclude_schema=(),
+                   include_table=(),
+                   exclude_table=(),
                    catalog={'host': None, 'port': None, 'user': None, 'password': None})
     rel.dispatch.assert_called_once_with(ns)
 
@@ -69,6 +73,10 @@ output_format="json"
                                                         output=None,
                                                         output_format='json',
                                                         scan_type='deep',
+                                                        include_schema=(),
+                                                        exclude_schema=(),
+                                                        include_table=(),
+                                                        exclude_table=(),
                                                         catalog={'host': None, 'port': None,
                                                                  'user': None, 'password': None}))
 

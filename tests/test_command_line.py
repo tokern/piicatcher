@@ -30,6 +30,10 @@ class TestDbParser(TestCase):
                                                             port=None,
                                                             scan_type='shallow',
                                                             user=None,
+                                                            include_schema=(),
+                                                            exclude_schema=(),
+                                                            include_table=(),
+                                                            exclude_table=(),
                                                             catalog={'host': None, 'port': None,
                                                                      'user': None, 'password': None}))
 
@@ -49,6 +53,10 @@ class TestDbParser(TestCase):
                                                             port=6032,
                                                             scan_type='shallow',
                                                             user=None,
+                                                            include_schema=(),
+                                                            exclude_schema=(),
+                                                            include_table=(),
+                                                            exclude_table=(),
                                                             catalog={'host': None, 'port': None,
                                                                      'user': None, 'password': None}))
 
@@ -68,6 +76,10 @@ class TestDbParser(TestCase):
                                                             port=None,
                                                             scan_type='shallow',
                                                             user='user',
+                                                            include_schema=(),
+                                                            exclude_schema=(),
+                                                            include_table=(),
+                                                            exclude_table=(),
                                                             catalog={'host': None, 'port': None,
                                                                      'user': None, 'password': None}))
 
@@ -87,6 +99,10 @@ class TestDbParser(TestCase):
                                                             port=None,
                                                             scan_type='deep',
                                                             user=None,
+                                                            include_schema=(),
+                                                            exclude_schema=(),
+                                                            include_table=(),
+                                                            exclude_table=(),
                                                             catalog={'host': None, 'port': None,
                                                                      'user': None, 'password': None}))
 
@@ -105,7 +121,11 @@ class TestDbParser(TestCase):
                                                             password=None,
                                                             port=None,
                                                             scan_type='shallow',
-                                                            user=None, 
+                                                            user=None,
+                                                            include_schema=(),
+                                                            exclude_schema=(),
+                                                            include_table=(),
+                                                            exclude_table=(),
                                                             catalog={'host': None, 'port': None,
                                                                      'user': None, 'password': None}))
 
@@ -131,6 +151,10 @@ class TestSqliteParser(TestCase):
             output_format='ascii_table',
             path='connection_string',
             scan_type='shallow',
+            include_schema=(),
+            exclude_schema=(),
+            include_table=(),
+            exclude_table=(),
             catalog={'host': None, 'port': None, 'user': None, 'password': None}))
 
 

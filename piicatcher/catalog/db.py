@@ -68,9 +68,9 @@ class DbStore(Store):
             for s in schemas:
                 schema_model = DbSchemas.create(name=s.get_name())
 
-                for t in s.get_tables():
+                for t in s.get_children():
                     tbl_model = DbTables.create(schema_id=schema_model, name=t.get_name())
 
-                    for c in t.get_columns():
+                    for c in t.get_children():
                         col_model = DbColumns.create(table_id=tbl_model, name=c.get_name(),
                                                      pii_type=c.get_pii_types())

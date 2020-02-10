@@ -7,7 +7,7 @@ import pytest
 from piicatcher.catalog.db import *
 from piicatcher.explorer.sqlite import SqliteExplorer
 from piicatcher.explorer.explorer import Explorer
-from piicatcher.explorer.metadata import Schema, Table, Column
+from piicatcher.explorer.metadata import Schema, Table, Column, Database as mdDatabase
 from piicatcher.piitypes import PiiTypes
 from piicatcher.catalog.db import DbStore
 
@@ -53,8 +53,8 @@ class MockExplorer(Explorer):
         no_pii_a = Column("a")
         no_pii_b = Column("b")
 
-        no_pii_table.add(no_pii_a)
-        no_pii_table.add(no_pii_b)
+        no_pii_table.add_child(no_pii_a)
+        no_pii_table.add_child(no_pii_b)
 
         return no_pii_table
 
@@ -65,8 +65,8 @@ class MockExplorer(Explorer):
         partial_pii_a.add_pii_type(PiiTypes.PHONE)
         partial_pii_b = Column("b")
 
-        partial_pii_table.add(partial_pii_a)
-        partial_pii_table.add(partial_pii_b)
+        partial_pii_table.add_child(partial_pii_a)
+        partial_pii_table.add_child(partial_pii_b)
 
         return partial_pii_table
 
@@ -79,18 +79,19 @@ class MockExplorer(Explorer):
         full_pii_b.add_pii_type(PiiTypes.ADDRESS)
         full_pii_b.add_pii_type(PiiTypes.LOCATION)
 
-        full_pii_table.add(full_pii_a)
-        full_pii_table.add(full_pii_b)
+        full_pii_table.add_child(full_pii_a)
+        full_pii_table.add_child(full_pii_b)
 
         return full_pii_table
 
     def _load_catalog(self):
         schema = Schema("test_store")
-        schema.add(MockExplorer.get_no_pii_table())
-        schema.add(MockExplorer.get_partial_pii_table())
-        schema.add(MockExplorer.get_full_pii_table())
+        schema.add_child(MockExplorer.get_no_pii_table())
+        schema.add_child(MockExplorer.get_partial_pii_table())
+        schema.add_child(MockExplorer.get_full_pii_table())
 
-        self._schemas = [schema]
+        self._database = mdDatabase('database')
+        self._database.add_child(schema)
 
 
 class TestStore(TestCase):
@@ -100,7 +101,12 @@ class TestStore(TestCase):
     def setUpClass(cls):
         init_test(cls.sqlite_path)
 
-        explorer = MockExplorer(Namespace(catalog=None))
+        explorer = MockExplorer(Namespace(catalog=None,
+                                          include_schema=None,
+                                          exclude_schema=None,
+                                          include_table=None,
+                                          exclude_table=None
+                                          ))
 
         DbStore.save_schemas(explorer)
 

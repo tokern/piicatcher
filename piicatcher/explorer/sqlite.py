@@ -4,6 +4,8 @@ from argparse import Namespace
 
 import click
 
+from piicatcher.explorer.databases import schema_help_text, exclude_schema_help_text, table_help_text, \
+    exclude_table_help_text
 from piicatcher.explorer.explorer import Explorer
 
 
@@ -21,13 +23,22 @@ from piicatcher.explorer.explorer import Explorer
                    "then report is printed to sys.stdout")
 @click.option("--list-all", default=False, is_flag=True,
               help="List all columns. By default only columns with PII information is listed")
-def cli(cxt, path, output_format, scan_type, output, list_all):
+@click.option("-n", "--schema", multiple=True, help=schema_help_text)
+@click.option("-N", "--exclude-schema", multiple=True, help=exclude_schema_help_text)
+@click.option("-t", "--table", multiple=True, help=table_help_text)
+@click.option("-T", "--exclude-table", multiple=True, help=exclude_table_help_text)
+def cli(cxt, path, output_format, scan_type, output, list_all,
+        schema, exclude_schema, table, exclude_table):
     ns = Namespace(path=path,
                    output_format=output_format,
                    scan_type=scan_type,
                    output=output,
                    list_all=list_all,
-                   catalog=cxt.obj['catalog'])
+                   catalog=cxt.obj['catalog'],
+                   include_schema=schema,
+                   exclude_schema=exclude_schema,
+                   include_table=table,
+                   exclude_table=exclude_table)
 
     SqliteExplorer.dispatch(ns)
 

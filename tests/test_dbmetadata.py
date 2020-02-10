@@ -47,8 +47,8 @@ class DbMetadataTests(TestCase):
     def test_no_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'no_pii')
-        table.add(Column('a'))
-        table.add(Column('b'))
+        table.add_child(Column('a'))
+        table.add_child(Column('b'))
 
         table.scan(self.data_generator)
         self.assertFalse(table.has_pii())
@@ -60,12 +60,12 @@ class DbMetadataTests(TestCase):
     def test_partial_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'partial_pii')
-        table.add(Column('a'))
-        table.add(Column('b'))
+        table.add_child(Column('a'))
+        table.add_child(Column('b'))
 
         table.scan(self.data_generator)
         self.assertTrue(table.has_pii())
-        cols = table.get_columns()
+        cols = table.get_children()
         self.assertTrue(cols[0].has_pii())
         self.assertFalse(cols[1].has_pii())
         self.assertEqual({
@@ -77,13 +77,13 @@ class DbMetadataTests(TestCase):
     def test_full_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'full_pii')
-        table.add(Column('name'))
-        table.add(Column('location'))
+        table.add_child(Column('name'))
+        table.add_child(Column('location'))
 
         table.scan(self.data_generator)
         self.assertTrue(table.has_pii())
 
-        cols = table.get_columns()
+        cols = table.get_children()
         self.assertTrue(cols[0].has_pii())
         self.assertTrue(cols[1].has_pii())
         self.assertEqual({
@@ -97,8 +97,8 @@ class ShallowScan(TestCase):
     def test_no_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'no_pii')
-        table.add(Column('a'))
-        table.add(Column('b'))
+        table.add_child(Column('a'))
+        table.add_child(Column('b'))
 
         table.shallow_scan()
         self.assertFalse(table.has_pii())
@@ -106,25 +106,25 @@ class ShallowScan(TestCase):
     def test_partial_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'partial_pii')
-        table.add(Column('fname'))
-        table.add(Column('b'))
+        table.add_child(Column('fname'))
+        table.add_child(Column('b'))
 
         table.shallow_scan()
         self.assertTrue(table.has_pii())
-        cols = table.get_columns()
+        cols = table.get_children()
         self.assertTrue(cols[0].has_pii())
         self.assertFalse(cols[1].has_pii())
 
     def test_full_pii_table(self):
         schema = Schema('public')
         table = Table(schema, 'full_pii')
-        table.add(Column('name'))
-        table.add(Column('dob'))
+        table.add_child(Column('name'))
+        table.add_child(Column('dob'))
 
         table.shallow_scan()
         self.assertTrue(table.has_pii())
 
-        cols = table.get_columns()
+        cols = table.get_children()
         self.assertTrue(cols[0].has_pii())
         self.assertTrue(cols[1].has_pii())
 

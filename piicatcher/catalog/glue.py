@@ -26,7 +26,7 @@ class GlueStore(Store):
     def get_pii_table(table):
         logging.debug("Processing table %s" % table.get_name())
         field_value = {}
-        for c in table.get_columns():
+        for c in table.get_children():
             pii = c.get_pii_types()
             if pii:
                 field_value[c.get_name()] = sorted([str(v) for v in pii])
