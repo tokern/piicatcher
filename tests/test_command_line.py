@@ -263,7 +263,11 @@ class TestAWSParser(TestCase):
     @patch('piicatcher.explorer.aws.AthenaExplorer')
     def test_host_user_password(self, explorer):
         runner = CliRunner()
-        result = runner.invoke(cli, ["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east"])
+        result = runner.invoke(cli, ["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east",
+                                     "-n", "include_schema", "-n", "include_schema_2",
+                                     "-N", "exclude_schema", "-N", "exclude_schema_2",
+                                     "-t", "include_table", "-t", "include_table_2",
+                                     "-T", "exclude_table", "-T", "exclude_table_2"])
         self.assertEqual("", result.stdout)
         self.assertEqual(0, result.exit_code)
         explorer.dispatch.assert_called_once_with(Namespace(
@@ -275,5 +279,9 @@ class TestAWSParser(TestCase):
             scan_type='shallow',
             secret_key='SSSS',
             staging_dir='s3://dir',
+            include_schema=("include_schema", "include_schema_2"),
+            exclude_schema=("exclude_schema", "exclude_schema_2"),
+            include_table=("include_table", "include_table_2"),
+            exclude_table=("exclude_table", "exclude_table_2"),
             catalog={'host': None, 'port': None, 'user': None, 'password': None}))
 
