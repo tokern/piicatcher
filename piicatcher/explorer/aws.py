@@ -4,6 +4,8 @@ from argparse import Namespace
 import click
 import pyathena
 
+from piicatcher.explorer.databases import schema_help_text, exclude_schema_help_text, table_help_text, \
+    exclude_table_help_text
 from piicatcher.explorer.explorer import Explorer
 from piicatcher.catalog.glue import GlueStore
 
@@ -25,7 +27,12 @@ from piicatcher.catalog.glue import GlueStore
                    "then report is printed to sys.stdout")
 @click.option("--list-all", default=False, is_flag=True,
               help="List all columns. By default only columns with PII information is listed")
-def cli(cxt, access_key, secret_key, staging_dir, region, output_format, scan_type, output, list_all):
+@click.option("-n", "--schema", multiple=True, help=schema_help_text)
+@click.option("-N", "--exclude-schema", multiple=True, help=exclude_schema_help_text)
+@click.option("-t", "--table", multiple=True, help=table_help_text)
+@click.option("-T", "--exclude-table", multiple=True, help=exclude_table_help_text)
+def cli(cxt, access_key, secret_key, staging_dir, region, output_format, scan_type, output, list_all,
+        schema, exclude_schema, table, exclude_table):
     ns = Namespace(access_key=access_key,
                    secret_key=secret_key,
                    staging_dir=staging_dir,
@@ -34,6 +41,10 @@ def cli(cxt, access_key, secret_key, staging_dir, region, output_format, scan_ty
                    scan_type=scan_type,
                    output=output,
                    list_all=list_all,
+                   include_schema=schema,
+                   exclude_schema=exclude_schema,
+                   include_table=table,
+                   exclude_table=exclude_table,
                    catalog=cxt.obj['catalog'])
     logging.debug(vars(ns))
     AthenaExplorer.dispatch(ns)
