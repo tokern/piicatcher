@@ -32,7 +32,7 @@ def cli(ctx, path, output, output_format):
 class File(NamedObject):
 
     def __init__(self, name, mime_type):
-        super(File, self).__init__(name)
+        super(File, self).__init__(name, (), ())
         self._mime_type = mime_type
 
     def get_mime_type(self):

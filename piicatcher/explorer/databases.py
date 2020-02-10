@@ -11,7 +11,7 @@ import logging
 
 from piicatcher.explorer.explorer import Explorer
 
-schema_help_text='''
+schema_help_text = '''
 Scan only schemas matching schema; When this option is not specified, all
 non-system schemas in the target database will be dumped. Multiple schemas can
 be selected by writing multiple -n switches. Also, the schema parameter is
@@ -19,7 +19,7 @@ interpreted as a regular expression, so multiple schemas can also be selected
 by writing wildcard characters in the pattern. When using wildcards, be careful
 to quote the pattern if needed to prevent the shell from expanding the wildcards;
 '''
-exclude_schema_help_text='''
+exclude_schema_help_text = '''
 Do not scan any schemas matching the schema pattern. The pattern is interpreted
 according to the same rules as for -n. -N can be given more than once to exclude
  schemas matching any of several patterns.
@@ -29,7 +29,7 @@ match at least one -n switch but no -N switches. If -N appears without -n, then
 schemas matching -N are excluded from what is otherwise a normal dump.")
 '''
 
-table_help_text='''
+table_help_text = '''
 Dump only tables matching table. Multiple tables can be selected by writing
 multiple -t switches. Also, the table parameter is interpreted as a regular
 expression, so multiple tables can also be selected by writing wildcard
@@ -40,7 +40,7 @@ The -n and -N switches have no effect when -t is used, because tables selected
 by -t will be dumped regardless of those switches.
 '''
 
-exclude_table_help_text='''
+exclude_table_help_text = '''
 Do not dump any tables matching the table pattern. The pattern is interpreted
 according to the same rules as for -t. -T can be given more than once to
 exclude tables matching any of several patterns.
@@ -145,7 +145,7 @@ class MySQLExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(MySQLExplorer, self).__init__(ns)
-        self.database = ns.database if 'database' in vars(ns) and ns.database is not None else None
+        self._mysql_database = ns.database if 'database' in vars(ns) and ns.database is not None else None
 
     @property
     def default_port(self):
@@ -156,7 +156,7 @@ class MySQLExplorer(RelDbExplorer):
                                port=self.port,
                                user=self.user,
                                password=self.password,
-                               database=self.database)
+                               database=self._mysql_database)
 
     def _get_catalog_query(self):
         return self._catalog_query
@@ -186,7 +186,7 @@ class PostgreSQLExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(PostgreSQLExplorer, self).__init__(ns)
-        self.database = ns.database if 'database' in vars(ns) and ns.database is not None else None
+        self._pg_database = ns.database if 'database' in vars(ns) and ns.database is not None else None
 
     @property
     def default_database(self):
@@ -201,7 +201,7 @@ class PostgreSQLExplorer(RelDbExplorer):
                                 port=self.port,
                                 user=self.user,
                                 password=self.password,
-                                database=self.database)
+                                database=self._pg_database)
 
     def _get_catalog_query(self):
         return self._catalog_query
@@ -230,7 +230,7 @@ class MSSQLExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(MSSQLExplorer, self).__init__(ns)
-        self.database = self.database if ns.database is None else ns.database
+        self._mssql_database = self._mssql_database if ns.database is None else ns.database
 
     @property
     def default_database(self):
@@ -245,7 +245,7 @@ class MSSQLExplorer(RelDbExplorer):
                                port=self.port,
                                user=self.user,
                                password=self.password,
-                               database=self.database)
+                               database=self._mssql_database)
 
     def _get_catalog_query(self):
         return self._catalog_query
@@ -275,7 +275,7 @@ class OracleExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(OracleExplorer, self).__init__(ns)
-        self.database = ns.database
+        self._oracle_database = ns.database
 
     @property
     def default_port(self):
@@ -284,10 +284,10 @@ class OracleExplorer(RelDbExplorer):
     def _open_connection(self):
         return cx_Oracle.connect(self.user,
                                  self.password,
-                                 "%s:%d/%s" % (self.host, self.port, self.database))
+                                 "%s:%d/%s" % (self.host, self.port, self._oracle_database))
 
     def _get_catalog_query(self):
-        return self._catalog_query.format(db=self.database)
+        return self._catalog_query.format(db=self._oracle_database)
 
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):

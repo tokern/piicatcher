@@ -16,13 +16,13 @@ class Explorer(ABC):
 
     def __init__(self, ns):
         self._connection = None
-        self._database = Database('database')
         self._cache_ts = None
         self.catalog = ns.catalog
-        self.include_schema = ns.include_schema
-        self.exclude_schema=ns.exclude_schema
-        self.include_table=ns.include_table
-        self.exclude_table=ns.exclude_table
+        self._include_schema = ns.include_schema
+        self._exclude_schema = ns.exclude_schema
+        self._include_table = ns.include_table
+        self._exclude_table = ns.exclude_table
+        self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
 
     def __enter__(self):
         return self
@@ -45,6 +45,10 @@ class Explorer(ABC):
     @property
     def small_table_max(self):
         return 100
+
+    @property
+    def database(self):
+        return self._database
 
     @classmethod
     def dispatch(cls, ns):
@@ -164,6 +168,7 @@ class Explorer(ABC):
             with self._get_context_manager() as cursor:
                 logging.debug("Catalog Query: %s", self._get_catalog_query())
                 cursor.execute(self._get_catalog_query())
+                self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
                 self._database = Database('database')
 
                 row = cursor.fetchone()
@@ -172,14 +177,18 @@ class Explorer(ABC):
                 current_table = None
 
                 if row is not None:
-                    current_schema = Schema(row[0])
+                    current_schema = Schema(row[0],
+                                            include=self._include_table,
+                                            exclude=self._exclude_table)
                     current_table = Table(current_schema, row[1])
 
                 while row is not None:
                     if current_schema.get_name() != row[0]:
                         current_schema.tables.append(current_table)
                         self._database.add_child(current_schema)
-                        current_schema = Schema(row[0])
+                        current_schema = Schema(row[0],
+                                                include=self._include_table,
+                                                exclude=self._exclude_table)
                         current_table = Table(current_schema, row[1])
                     elif current_table.get_name() != row[1]:
                         current_schema.add_child(current_table)

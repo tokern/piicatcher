@@ -1,14 +1,19 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 import logging
+import re
 
 from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
 
 
 class NamedObject(ABC):
-    def __init__(self, name):
+    def __init__(self, name, include, exclude):
         self._name = name
         self._pii = set()
         self._children = []
+        self._include_regex = ()
+        self._exclude_regex = ()
+        self.set_include_regex(include)
+        self.set_exclude_regex(exclude)
 
     def get_name(self):
         return self._name
@@ -21,10 +26,27 @@ class NamedObject(ABC):
         return self._pii
 
     def get_children(self):
-        return self._children
+        matches = self._children
+        if len(self._include_regex) > 0:
+            matched_set = set()
+            for regex in self._include_regex:
+                matched_set |= set(list(filter(lambda m: regex.search(m.get_name()) is not None, self._children)))
+
+            matches = list(matched_set)
+
+        for regex in self._exclude_regex:
+            matches = list(filter(lambda m: regex.search(m.get_name()) is None, matches))
+
+        return matches
 
     def add_child(self, child):
         self._children.append(child)
+
+    def set_include_regex(self, include):
+        self._include_regex = [re.compile(exp, re.IGNORECASE) for exp in include]
+
+    def set_exclude_regex(self, exclude):
+        self._exclude_regex = [re.compile(exp, re.IGNORECASE) for exp in exclude]
 
     def scan(self, generator):
         for child in self.get_children():
@@ -43,13 +65,13 @@ class NamedObject(ABC):
 
 
 class Database(NamedObject):
-    def __init__(self, name):
-        super(Database, self).__init__(name)
+    def __init__(self, name, include=(), exclude=()):
+        super(Database, self).__init__(name, include, exclude)
 
 
 class Schema(NamedObject):
-    def __init__(self, name):
-        super(Schema, self).__init__(name)
+    def __init__(self, name, include=(), exclude=()):
+        super(Schema, self).__init__(name, include, exclude)
 
     def get_dict(self):
         dict = {
@@ -66,7 +88,7 @@ class Schema(NamedObject):
 
 class Table(NamedObject):
     def __init__(self, schema, name):
-        super(Table, self).__init__(name)
+        super(Table, self).__init__(name, (), ())
         self._schema = schema
 
     def scan(self, generator):
@@ -106,7 +128,7 @@ class Table(NamedObject):
 
 class Column(NamedObject):
     def __init__(self, name):
-        super(Column, self).__init__(name)
+        super(Column, self).__init__(name, (), ())
         self.column_scanner = ColumnNameScanner()
 
     def add_pii_type(self, pii):

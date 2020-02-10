@@ -85,12 +85,12 @@ class MockExplorer(Explorer):
         return full_pii_table
 
     def _load_catalog(self):
-        schema = Schema("test_store")
+        schema = Schema("test_store", include=self._include_table, exclude=self._exclude_table)
         schema.add_child(MockExplorer.get_no_pii_table())
         schema.add_child(MockExplorer.get_partial_pii_table())
         schema.add_child(MockExplorer.get_full_pii_table())
 
-        self._database = mdDatabase('database')
+        self._database = mdDatabase('database', include=self._include_schema, exclude=self._exclude_schema)
         self._database.add_child(schema)
 
 
@@ -102,10 +102,10 @@ class TestStore(TestCase):
         init_test(cls.sqlite_path)
 
         explorer = MockExplorer(Namespace(catalog=None,
-                                          include_schema=None,
-                                          exclude_schema=None,
-                                          include_table=None,
-                                          exclude_table=None
+                                          include_schema=(),
+                                          exclude_schema=(),
+                                          include_table=(),
+                                          exclude_table=()
                                           ))
 
         DbStore.save_schemas(explorer)
