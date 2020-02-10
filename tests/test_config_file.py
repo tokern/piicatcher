@@ -39,8 +39,6 @@ exclude_table=["table1", "table2"]
                    database='db',
                    host='localhost',
                    list_all=True,
-                   output=None,
-                   output_format='json',
                    password="password",
                    port=6032,
                    scan_type='deep',
@@ -49,7 +47,15 @@ exclude_table=["table1", "table2"]
                    exclude_schema=("schema1", "schema2"),
                    include_table=("table1", "table2"),
                    exclude_table=("table1", "table2"),
-                   catalog={'host': None, 'port': None, 'user': None, 'password': None})
+                   catalog={
+                       'host': None,
+                       'port': None,
+                       'user': None,
+                       'password': None,
+                       'format': 'json',
+                       'file': None
+                   })
+
     rel.dispatch.assert_called_once_with(ns)
 
 
@@ -78,15 +84,14 @@ exclude_table=["table1", "table2"]
     assert 0 == result.exit_code
     explorer.dispatch.assert_called_once_with(Namespace(path='sqlite.db',
                                                         list_all=True,
-                                                        output=None,
-                                                        output_format='json',
                                                         scan_type='deep',
                                                         include_schema=("schema1", "schema2"),
                                                         exclude_schema=("schema1", "schema2"),
                                                         include_table=("table1", "table2"),
                                                         exclude_table=("table1", "table2"),
                                                         catalog={'host': None, 'port': None,
-                                                                 'user': None, 'password': None}))
+                                                                 'user': None, 'password': None,
+                                                                 'format': 'json', 'file': None}))
 
 
 def test_files(tmp_path, mocker, caplog):
@@ -107,8 +112,14 @@ output_format="json"
     assert "" == result.stdout
     assert 0 == result.exit_code
     explorer.dispatch.assert_called_once_with(Namespace(path='file path',
-                                                        output=None,
-                                                        output_format='json'))
+                                                        catalog={
+                                                            'host': None,
+                                                            'port': None,
+                                                            'user': None,
+                                                            'password': None,
+                                                            'format': 'json',
+                                                            'file': None
+                                                        }))
 
 
 def test_aws(tmp_path, mocker, caplog):
@@ -139,8 +150,6 @@ exclude_table=["table1", "table2"]
     explorer.dispatch.assert_called_once_with(Namespace(
         access_key='AAAA',
         list_all=True,
-        output=None,
-        output_format='json',
         region='us-east',
         scan_type='deep',
         secret_key='SSSS',
@@ -149,5 +158,62 @@ exclude_table=["table1", "table2"]
         exclude_schema=("schema1", "schema2"),
         include_table=("table1", "table2"),
         exclude_table=("table1", "table2"),
-        catalog={'host': None, 'port': None, 'user': None, 'password': None}))
+        catalog={
+            'host': None,
+            'port': None,
+            'user': None,
+            'password': None,
+            'format': 'json',
+            'file': None
+        }))
 
+
+def test_catalog(tmp_path, mocker, caplog):
+    caplog.set_level(logging.DEBUG)
+    config_file = tmp_path / "db_host.ini"
+    config_file.write_text("""
+catalog_host='host'
+catalog_port='port'
+catalog_user='user'
+catalog_password='password'
+catalog_format='db'
+
+[aws]
+access_key='AAAA'
+list_all=True
+region='us-east'
+scan_type='deep'
+secret_key='SSSS'
+staging_dir='s3://dir'
+schema=["schema1", "schema2"]
+exclude_schema=["schema1", "schema2"]
+table=["table1", "table2"]
+exclude_table=["table1", "table2"]
+""")
+
+    logging.info("Config File: %s" % config_file)
+    explorer = mocker.patch("piicatcher.explorer.aws.AthenaExplorer")
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--config", str(config_file), "aws"])
+    assert "" == result.stdout
+    assert result.exception is None
+    assert 0 == result.exit_code
+    explorer.dispatch.assert_called_once_with(Namespace(
+        access_key='AAAA',
+        list_all=True,
+        region='us-east',
+        scan_type='deep',
+        secret_key='SSSS',
+        staging_dir='s3://dir',
+        include_schema=("schema1", "schema2"),
+        exclude_schema=("schema1", "schema2"),
+        include_table=("table1", "table2"),
+        exclude_table=("table1", "table2"),
+        catalog={
+            'host': 'host',
+            'port': 'port',
+            'user': 'user',
+            'password': 'password',
+            'format': 'db',
+            'file': None
+        }))

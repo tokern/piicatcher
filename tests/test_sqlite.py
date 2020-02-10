@@ -79,8 +79,10 @@ class TestDispatcher(TestCase):
                 with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) \
                         as mock_table_print:
                     SqliteExplorer.dispatch(Namespace(path='connection', list_all=None,
-                                                      output_format='ascii_table',
-                                                      scan_type=None, catalog=None,
+                                                      catalog={
+                                                          'format': 'ascii_table'
+                                                      },
+                                                      scan_type=None,
                                                       include_schema=(),
                                                       exclude_schema=(),
                                                       include_table=(),

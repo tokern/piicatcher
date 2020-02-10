@@ -379,10 +379,11 @@ class TestDispatcher(TestCase):
                     RelDbExplorer.dispatch(Namespace(host='connection',
                                                      port=None,
                                                      list_all=None,
-                                                     output_format='ascii_table',
                                                      connection_type='mysql',
                                                      scan_type='deep',
-                                                     catalog=None,
+                                                     catalog={
+                                                         'format': 'ascii_table'
+                                                     },
                                                      user='user',
                                                      include_schema=(),
                                                      exclude_schema=(),
@@ -403,11 +404,12 @@ class TestDispatcher(TestCase):
                     RelDbExplorer.dispatch(Namespace(host='connection',
                                                      port=None,
                                                      list_all=None,
-                                                     output_format='ascii_table',
                                                      connection_type='postgres',
                                                      database='public',
                                                      scan_type=None,
-                                                     catalog=None,
+                                                     catalog={
+                                                         'format': 'ascii_table'
+                                                     },
                                                      include_schema=(),
                                                      exclude_schema=(),
                                                      include_table=(),
@@ -428,9 +430,10 @@ class TestDispatcher(TestCase):
                     RelDbExplorer.dispatch(Namespace(host='connection',
                                                      port=None,
                                                      list_all=None,
-                                                     output_format='ascii_table',
                                                      connection_type='mysql',
-                                                     catalog=None,
+                                                     catalog={
+                                                         'format': 'ascii_table'
+                                                     },
                                                      include_schema=(),
                                                      exclude_schema=(),
                                                      include_table=(),

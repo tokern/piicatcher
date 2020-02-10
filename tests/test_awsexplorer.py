@@ -16,8 +16,9 @@ def test_aws_dispatch():
                                                   staging_dir='s3://DIR',
                                                   region='us-east-1',
                                                   scan_type=None,
-                                                  output_format="ascii_table",
-                                                  catalog=None,
+                                                  catalog={
+                                                      'format': 'ascii_table'
+                                                  },
                                                   include_schema=(),
                                                   exclude_schema=(),
                                                   include_table=(),

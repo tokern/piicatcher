@@ -24,8 +24,6 @@ class TestDbParser(TestCase):
                                                             database='',
                                                             host='connection_string',
                                                             list_all=False,
-                                                            output=None,
-                                                            output_format='ascii_table',
                                                             password=None,
                                                             port=None,
                                                             scan_type='shallow',
@@ -35,7 +33,9 @@ class TestDbParser(TestCase):
                                                             include_table=(),
                                                             exclude_table=(),
                                                             catalog={'host': None, 'port': None,
-                                                                     'user': None, 'password': None}))
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'ascii_table',
+                                                                     'file': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_port(self, explorer):
@@ -47,8 +47,6 @@ class TestDbParser(TestCase):
                                                             database='',
                                                             host='connection_string',
                                                             list_all=False,
-                                                            output=None,
-                                                            output_format='ascii_table',
                                                             password=None,
                                                             port=6032,
                                                             scan_type='shallow',
@@ -58,7 +56,9 @@ class TestDbParser(TestCase):
                                                             include_table=(),
                                                             exclude_table=(),
                                                             catalog={'host': None, 'port': None,
-                                                                     'user': None, 'password': None}))
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'ascii_table',
+                                                                     'file': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_host_user_password(self, explorer):
@@ -70,8 +70,6 @@ class TestDbParser(TestCase):
                                                             database='',
                                                             host='connection_string',
                                                             list_all=False,
-                                                            output=None,
-                                                            output_format='ascii_table',
                                                             password='passwd',
                                                             port=None,
                                                             scan_type='shallow',
@@ -81,7 +79,9 @@ class TestDbParser(TestCase):
                                                             include_table=(),
                                                             exclude_table=(),
                                                             catalog={'host': None, 'port': None,
-                                                                     'user': None, 'password': None}))
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'ascii_table',
+                                                                     'file': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_deep_scan_type(self, explorer):
@@ -93,8 +93,6 @@ class TestDbParser(TestCase):
                                                             database='',
                                                             host='connection_string',
                                                             list_all=False,
-                                                            output=None,
-                                                            output_format='ascii_table',
                                                             password=None,
                                                             port=None,
                                                             scan_type='deep',
@@ -104,7 +102,9 @@ class TestDbParser(TestCase):
                                                             include_table=(),
                                                             exclude_table=(),
                                                             catalog={'host': None, 'port': None,
-                                                                     'user': None, 'password': None}))
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'ascii_table',
+                                                                     'file': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_shallow_scan_type(self, explorer):
@@ -116,8 +116,6 @@ class TestDbParser(TestCase):
                                                             database='',
                                                             host='connection_string',
                                                             list_all=False,
-                                                            output=None,
-                                                            output_format='ascii_table',
                                                             password=None,
                                                             port=None,
                                                             scan_type='shallow',
@@ -127,7 +125,32 @@ class TestDbParser(TestCase):
                                                             include_table=(),
                                                             exclude_table=(),
                                                             catalog={'host': None, 'port': None,
-                                                                     'user': None, 'password': None}))
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'ascii_table',
+                                                                     'file': None}))
+
+    @patch('piicatcher.explorer.databases.RelDbExplorer')
+    def test_output_format(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["db", "-s", "connection_string", "--output-format", "json"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(connection_type='mysql',
+                                                            database='',
+                                                            host='connection_string',
+                                                            list_all=False,
+                                                            password=None,
+                                                            port=None,
+                                                            scan_type='shallow',
+                                                            user=None,
+                                                            include_schema=(),
+                                                            exclude_schema=(),
+                                                            include_table=(),
+                                                            exclude_table=(),
+                                                            catalog={'host': None, 'port': None,
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'json',
+                                                                     'file': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_include_exclude(self, explorer):
@@ -144,8 +167,6 @@ class TestDbParser(TestCase):
                                                             database='',
                                                             host='connection_string',
                                                             list_all=False,
-                                                            output=None,
-                                                            output_format='ascii_table',
                                                             password=None,
                                                             port=None,
                                                             scan_type='shallow',
@@ -155,7 +176,9 @@ class TestDbParser(TestCase):
                                                             include_table=("include_table",),
                                                             exclude_table=("exclude_table",),
                                                             catalog={'host': None, 'port': None,
-                                                                     'user': None, 'password': None}))
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'ascii_table',
+                                                                     'file': None}))
 
     @patch('piicatcher.explorer.databases.RelDbExplorer')
     def test_include_exclude_multiple(self, explorer):
@@ -172,8 +195,6 @@ class TestDbParser(TestCase):
                                                             database='',
                                                             host='connection_string',
                                                             list_all=False,
-                                                            output=None,
-                                                            output_format='ascii_table',
                                                             password=None,
                                                             port=None,
                                                             scan_type='shallow',
@@ -183,7 +204,9 @@ class TestDbParser(TestCase):
                                                             include_table=("include_table", "include_table_2"),
                                                             exclude_table=("exclude_table", "exclude_table_2"),
                                                             catalog={'host': None, 'port': None,
-                                                                     'user': None, 'password': None}))
+                                                                     'user': None, 'password': None,
+                                                                     'format': 'ascii_table',
+                                                                     'file': None}))
 
 
 class TestSqliteParser(TestCase):
@@ -198,7 +221,7 @@ class TestSqliteParser(TestCase):
     @patch('piicatcher.explorer.sqlite.SqliteExplorer')
     def test_host(self, explorer):
         runner = CliRunner()
-        result = runner.invoke(cli, ["sqlite", "-s", "connection_string",
+        result = runner.invoke(cli, ["sqlite", "-s", "connection_string", "--output-format", "json",
                                      "-n", "include_schema",
                                      "-N", "exclude_schema",
                                      "-t", "include_table",
@@ -207,15 +230,15 @@ class TestSqliteParser(TestCase):
         self.assertEqual(0, result.exit_code)
         explorer.dispatch.assert_called_once_with(Namespace(
             list_all=False,
-            output=None,
-            output_format='ascii_table',
             path='connection_string',
             scan_type='shallow',
             include_schema=("include_schema",),
             exclude_schema=("exclude_schema",),
             include_table=("include_table",),
             exclude_table=("exclude_table",),
-            catalog={'host': None, 'port': None, 'user': None, 'password': None}))
+            catalog={'host': None, 'port': None, 'user': None, 'password': None,
+                     'format': 'json',
+                     'file': None}))
 
     @patch('piicatcher.explorer.sqlite.SqliteExplorer')
     def test_include_exclude(self, explorer):
@@ -225,15 +248,15 @@ class TestSqliteParser(TestCase):
         self.assertEqual(0, result.exit_code)
         explorer.dispatch.assert_called_once_with(Namespace(
             list_all=False,
-            output=None,
-            output_format='ascii_table',
             path='connection_string',
             scan_type='shallow',
             include_schema=(),
             exclude_schema=(),
             include_table=(),
             exclude_table=(),
-            catalog={'host': None, 'port': None, 'user': None, 'password': None}))
+            catalog={'host': None, 'port': None, 'user': None, 'password': None,
+                     'format': 'ascii_table',
+                     'file': None}))
 
     @patch('piicatcher.explorer.sqlite.SqliteExplorer')
     def test_include_exclude_multiple(self, explorer):
@@ -247,15 +270,15 @@ class TestSqliteParser(TestCase):
         self.assertEqual(0, result.exit_code)
         explorer.dispatch.assert_called_once_with(Namespace(
             list_all=False,
-            output=None,
-            output_format='ascii_table',
             path='connection_string',
             scan_type='shallow',
             include_schema=("include_schema", "include_schema_2"),
             exclude_schema=("exclude_schema", "exclude_schema_2"),
             include_table=("include_table", "include_table_2"),
             exclude_table=("exclude_table", "exclude_table_2"),
-            catalog={'host': None, 'port': None, 'user': None, 'password': None}))
+            catalog={'host': None, 'port': None, 'user': None, 'password': None,
+                     'format': 'ascii_table',
+                     'file': None}))
 
 
 class TestAWSParser(TestCase):
@@ -264,6 +287,7 @@ class TestAWSParser(TestCase):
     def test_host_user_password(self, explorer):
         runner = CliRunner()
         result = runner.invoke(cli, ["aws", "-a", "AAAA", "-s", "SSSS", "-d", "s3://dir", "-r", "us-east",
+                                     "--output-format", "json",
                                      "-n", "include_schema", "-n", "include_schema_2",
                                      "-N", "exclude_schema", "-N", "exclude_schema_2",
                                      "-t", "include_table", "-t", "include_table_2",
@@ -273,8 +297,6 @@ class TestAWSParser(TestCase):
         explorer.dispatch.assert_called_once_with(Namespace(
             access_key='AAAA',
             list_all=False,
-            output=None,
-            output_format='ascii_table',
             region='us-east',
             scan_type='shallow',
             secret_key='SSSS',
@@ -283,5 +305,7 @@ class TestAWSParser(TestCase):
             exclude_schema=("exclude_schema", "exclude_schema_2"),
             include_table=("include_table", "include_table_2"),
             exclude_table=("exclude_table", "exclude_table_2"),
-            catalog={'host': None, 'port': None, 'user': None, 'password': None}))
+            catalog={'host': None, 'port': None, 'user': None, 'password': None,
+                     'format': 'json',
+                     'file': None}))
 

@@ -10,7 +10,9 @@ class TestDispatcher(TestCase):
         with mock.patch('piicatcher.explorer.files.FileExplorer.scan', autospec=True) as mock_scan_method:
             with mock.patch('piicatcher.explorer.files.FileExplorer.get_tabular', autospec=True) as mock_tabular_method:
                 with mock.patch('piicatcher.explorer.files.tableprint', autospec=True) as MockTablePrint:
-                    FileExplorer.dispatch(Namespace(path='/a/b/c', output_format='ascii_table'))
+                    FileExplorer.dispatch(Namespace(path='/a/b/c', catalog={
+                        'format': 'ascii_table'
+                    }))
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()

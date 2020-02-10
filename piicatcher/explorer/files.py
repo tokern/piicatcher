@@ -17,13 +17,22 @@ from piicatcher.tokenizer import Tokenizer
 @click.pass_context
 @click.option("--path", type=click.Path(), help="Path to file or directory")
 @click.option("--output", type=click.File(), default=None,
-              help="File path for report. If not specified, then report is printed to sys.stdout")
+              help="DEPRECATED. Please use --catalog-file")
 @click.option("--output-format", type=click.Choice(["ascii_table", "json", "db"]),
-              default="ascii_table", help="Choose output format type")
+              help="DEPRECATED. Please use --catalog-format")
 def cli(ctx, path, output, output_format):
     ns = Namespace(path=path,
-                   output=output,
-                   output_format=output_format)
+                   catalog=ctx.obj['catalog'])
+
+    if output_format is not None or output is not None:
+        logging.warning("--output-format and --output is deprecated. "
+                        "Please use --catalog-format and --catalog-file")
+
+    if output_format is not None:
+        ns.catalog['format'] = output_format
+
+    if output is not None:
+        ns.catalog['file'] = output
 
     logging.debug(vars(ns))
     FileExplorer.dispatch(ns)
@@ -62,10 +71,10 @@ class FileExplorer:
         explorer = FileExplorer(ns.path)
         explorer.scan()
 
-        if ns.output_format == "ascii_table":
+        if ns.catalog['format'] == "ascii_table":
             headers = ["Path", "Mime/Type", "pii"]
             tableprint.table(explorer.get_tabular(), headers)
-        elif ns.output_format == "json":
+        elif ns.catalog['format'] == "json":
             print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
 
     def __init__(self, path):

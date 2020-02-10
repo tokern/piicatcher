@@ -17,14 +17,12 @@ from piicatcher.catalog.glue import GlueStore
 @click.option("-d", "--staging-dir", required=True, help="S3 Staging Directory for Athena results")
 @click.option("-r", "--region", required=True, help="AWS Region")
 @click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db", "glue"]),
-              default="ascii_table",
-              help="Choose output format type")
+              help="DEPRECATED. Please use --catalog-format")
 @click.option("-c", "--scan-type", default='shallow',
               type=click.Choice(["deep", "shallow"]),
               help="Choose deep(scan data) or shallow(scan column names only)")
 @click.option("-o", "--output", default=None, type=click.File(),
-              help="File path for report. If not specified, "
-                   "then report is printed to sys.stdout")
+              help="DEPRECATED. Please use --catalog-file")
 @click.option("--list-all", default=False, is_flag=True,
               help="List all columns. By default only columns with PII information is listed")
 @click.option("-n", "--schema", multiple=True, help=schema_help_text)
@@ -38,15 +36,23 @@ def cli(cxt, access_key, secret_key, staging_dir, region, output_format, scan_ty
                      secret_key=secret_key,
                      staging_dir=staging_dir,
                      region=region,
-                     output_format=output_format,
                      scan_type=scan_type,
-                     output=output,
                      list_all=list_all,
                      include_schema=schema,
                      exclude_schema=exclude_schema,
                      include_table=table,
                      exclude_table=exclude_table,
                      catalog=cxt.obj['catalog'])
+    if output_format is not None or output is not None:
+        logging.warning("--output-format and --output is deprecated. "
+                        "Please use --catalog-format and --catalog-file")
+
+    if output_format is not None:
+        args.catalog['format'] = output_format
+
+    if output is not None:
+        args.catalog['file'] = output
+
     logging.debug(vars(args))
     AthenaExplorer.dispatch(args)
 
@@ -79,7 +85,7 @@ class AthenaExplorer(Explorer):
 
     @classmethod
     def output(cls, ns, explorer):
-        if ns.output_format == "glue":
+        if ns.catalog['format'] == "glue":
             GlueStore.save_schemas(explorer)
         else:
             super(AthenaExplorer, cls).output(ns, explorer)
