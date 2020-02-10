@@ -123,6 +123,10 @@ region='us-east'
 scan_type='deep'
 secret_key='SSSS'
 staging_dir='s3://dir'
+schema=["schema1", "schema2"]
+exclude_schema=["schema1", "schema2"]
+table=["table1", "table2"]
+exclude_table=["table1", "table2"]
 """)
 
     logging.info("Config File: %s" % config_file)
@@ -141,5 +145,9 @@ staging_dir='s3://dir'
         scan_type='deep',
         secret_key='SSSS',
         staging_dir='s3://dir',
+        include_schema=("schema1", "schema2"),
+        exclude_schema=("schema1", "schema2"),
+        include_table=("table1", "table2"),
+        exclude_table=("table1", "table2"),
         catalog={'host': None, 'port': None, 'user': None, 'password': None}))
 
