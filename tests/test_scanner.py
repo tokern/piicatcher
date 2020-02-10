@@ -101,4 +101,3 @@ class ColumnNameScannerTests(TestCase):
 
     def test_ssn(self):
         self.assertTrue(PiiTypes.SSN in self.parser.scan("ssn"))
-

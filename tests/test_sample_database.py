@@ -45,6 +45,7 @@ def drop_sample_data(connection):
         connection.commit()
 
 
+# pylint: disable=too-few-public-methods
 class CommonSampleDataTestCases:
     class CommonSampleDataTests(ABC, TestCase):
         @classmethod
