@@ -88,6 +88,10 @@ class VanillaMySqlExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
+            include_schema=(),
+            exclude_schema=(),
+            include_table=(),
+            exclude_table=(),
             catalog=None
         )
 
@@ -128,6 +132,10 @@ class VanillaPGExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
             user="piiuser",
             password="p11secret",
             database="piidb",
+            include_schema=(),
+            exclude_schema=(),
+            include_table=(),
+            exclude_table=(),
             catalog=None
         )
 
