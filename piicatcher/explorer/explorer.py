@@ -165,7 +165,7 @@ class Explorer(ABC):
     def _load_catalog(self):
         if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(minutes=10):
             with self._get_context_manager() as cursor:
-                logging.debug("Catalog Query: %s".format(self._get_catalog_query()))
+                logging.debug("Catalog Query: {0}".format(self._get_catalog_query()))
                 cursor.execute(self._get_catalog_query())
                 self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
                 self._database = Database('database')

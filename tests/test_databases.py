@@ -33,6 +33,8 @@ insert into full_pii values ('Chase Ryan', 'Chennai');
 
 class CommonExplorerTestCases:
     class CommonExplorerTests(TestCase, ABC):
+        explorer = None
+
         @abstractmethod
         def get_test_schema(self):
             pass
@@ -61,6 +63,8 @@ create table some_char_columns(vchn varchar(10), txt text, i int)
 
 class CommonDataTypeTestCases:
     class CommonDataTypeTests(TestCase, ABC):
+        explorer = None
+
         @abstractmethod
         def get_test_schema(self):
             pass
@@ -318,7 +322,7 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
         return "public"
 
 
-class SelectQueryTest:
+class SelectQueryTest(TestCase):
     def setUp(self):
         col1 = Column('c1')
         col2 = Column('c2')
@@ -327,39 +331,40 @@ class SelectQueryTest:
         self.schema = Schema('testSchema')
 
         table = Table(self.schema, 't1')
-        table._columns = [col1, col2]
+        table.add_child(col1)
+        table.add_child(col2)
 
-        self.schema.tables = [table]
+        self.schema.add_child(table)
 
     def test_oracle(self):
-        self.assertEqual("select c1, c2 from t1 sample(5)",
+        self.assertEqual("select c1,c2 from t1",
                          OracleExplorer._get_select_query(self.schema,
-                                                          self.schema.get_tables()[0],
-                                                          self.schema.get_tables()[0].get_columns()))
+                                                          self.schema.get_children()[0],
+                                                          self.schema.get_children()[0].get_children()))
 
     def test_sqlite(self):
-        self.assertEqual("select c1, c2 from t1",
+        self.assertEqual("select c1,c2 from t1",
                          SqliteExplorer._get_select_query(self.schema,
-                                                          self.schema.get_tables()[0],
-                                                          self.schema.get_tables()[0].get_columns()))
+                                                          self.schema.get_children()[0],
+                                                          self.schema.get_children()[0].get_children()))
 
     def test_postgres(self):
-        self.assertEqual("select c1, c2 from testSchema.t1",
+        self.assertEqual("select c1,c2 from testSchema.t1",
                          PostgreSQLExplorer._get_select_query(self.schema,
-                                                              self.schema.get_tables()[0],
-                                                              self.schema.get_tables()[0].get_columns()))
+                                                              self.schema.get_children()[0],
+                                                              self.schema.get_children()[0].get_children()))
 
     def test_mysql(self):
-        self.assertEqual("select c1, c2 from testSchema.t1",
+        self.assertEqual("select c1,c2 from testSchema.t1",
                          MySQLExplorer._get_select_query(self.schema,
-                                                         self.schema.get_tables()[0],
-                                                         self.schema.get_tables()[0].get_columns()))
+                                                         self.schema.get_children()[0],
+                                                         self.schema.get_children()[0].get_children()))
 
     def test_mssql(self):
-        self.assertEqual("select c1, c2 from testSchema.t1",
+        self.assertEqual("select c1,c2 from testSchema.t1",
                          MSSQLExplorer._get_select_query(self.schema,
-                                                         self.schema.get_tables()[0],
-                                                         self.schema.get_tables()[0].get_columns()))
+                                                         self.schema.get_children()[0],
+                                                         self.schema.get_children()[0].get_children()))
 
 
 class TestDispatcher(TestCase):
