@@ -44,11 +44,11 @@ class NERScanner(Scanner):
 
     def scan(self, text):
         """Scan the text and return an array of PiiTypes that are found"""
-        logging.debug("Processing '{}'", text)
+        logging.debug("Processing '%s'", text)
         doc = self.nlp(text)
         types = set()
         for ent in doc.ents:
-            logging.debug("Found {}", ent.label_)
+            logging.debug("Found %s", ent.label_)
             if ent.label_ == 'PERSON':
                 types.add(PiiTypes.PERSON)
 
@@ -58,7 +58,7 @@ class NERScanner(Scanner):
             if ent.label_ == 'DATE':
                 types.add(PiiTypes.BIRTH_DATE)
 
-        logging.debug("PiiTypes are {}", list(types))
+        logging.debug("PiiTypes are %s", ','.join(str(x) for x in list(types)))
         return list(types)
 
 
@@ -85,5 +85,5 @@ class ColumnNameScanner(Scanner):
             if self.regex[pii_type].match(text) is not None:
                 types.add(pii_type)
 
-        logging.debug("PiiTypes are {}", list(types))
+        logging.debug("PiiTypes are %s", ','.join(str(x) for x in list(types)))
         return list(types)

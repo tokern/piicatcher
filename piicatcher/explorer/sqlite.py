@@ -93,7 +93,7 @@ class SqliteExplorer(Explorer):
         return SqliteExplorer(ns)
 
     def _open_connection(self):
-        logging.debug("Sqlite connection string '{}'", self.path)
+        logging.debug("Sqlite connection string '%s'", self.path)
         return sqlite3.connect(self.path)
 
     def _get_catalog_query(self):
