@@ -53,7 +53,6 @@ def cli(cxt, access_key, secret_key, staging_dir, region, output_format, scan_ty
     if output is not None:
         args.catalog['file'] = output
 
-    logging.debug(vars(args))
     AthenaExplorer.dispatch(args)
 
 

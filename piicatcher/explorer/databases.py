@@ -100,7 +100,6 @@ def cli(cxt, host, port, user, password, database, connection_type,
     if output is not None:
         ns.catalog['file'] = output
 
-    logging.debug(vars(ns))
     RelDbExplorer.dispatch(ns)
 
 
