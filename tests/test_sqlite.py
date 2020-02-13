@@ -30,7 +30,7 @@ def temp_sqlite(request, tmpdir_factory):
     def finalizer():
         explorer.get_connection().close()
         rmtree(temp_dir)
-        logging.info("Deleted {}", str(temp_dir))
+        logging.info("Deleted %s", str(temp_dir))
 
     request.addfinalizer(finalizer)
 
