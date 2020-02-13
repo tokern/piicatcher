@@ -28,11 +28,7 @@ from piicatcher import __version__
 def cli(ctx, log_level, catalog_format, catalog_file,
         catalog_host, catalog_port, catalog_user, catalog_password):
     logging.basicConfig(level=getattr(logging, log_level.upper()))
-    logging.debug("Catalog - host: {0}, port: {1}, user: {2}, password: {3}".format(
-                  catalog_host,
-                  catalog_port,
-                  catalog_user,
-                  catalog_password))
+    logging.debug("Catalog - host: %s, port: %s, ", catalog_host, catalog_port)
 
     ctx.ensure_object(dict)
 

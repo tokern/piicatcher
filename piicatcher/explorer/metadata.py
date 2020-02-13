@@ -2,10 +2,11 @@ from abc import ABC
 import logging
 import re
 
+from piicatcher.log_mixin import LogMixin
 from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
 
 
-class NamedObject(ABC):
+class NamedObject(ABC, LogMixin):
     def __init__(self, name, include, exclude):
         self._name = name
         self._pii = set()
@@ -14,6 +15,8 @@ class NamedObject(ABC):
         self._exclude_regex = ()
         self.set_include_regex(include)
         self.set_exclude_regex(exclude)
+        self.logger.debug("Name: %s, include: (%s), exclude: (%s)",
+                          name, ",".join(include), ",".join(exclude))
 
     def get_name(self):
         return self._name
@@ -24,6 +27,9 @@ class NamedObject(ABC):
 
     def get_pii_types(self):
         return self._pii
+
+    def get_pii_types_str(self):
+        return ",".join(str(x) for x in self._pii)
 
     def get_children(self):
         matches = self._children
@@ -49,19 +55,21 @@ class NamedObject(ABC):
         self._exclude_regex = [re.compile(exp, re.IGNORECASE) for exp in exclude]
 
     def scan(self, generator):
+        self.logger.debug("Scanning %s" % self.get_name())
         for child in self.get_children():
             child.scan(generator)
-            logging.debug("{} has {}".format(child.get_name(), child.get_pii_types()))
+            self.logger.debug("{} has {}".format(child.get_name(), child.get_pii_types()))
             [self._pii.add(p) for p in child.get_pii_types()]
 
-        logging.debug("{} has {}".format(self, self._pii))
+        self.logger.debug("%s has %s", self.get_name(), self.get_pii_types_str())
 
     def shallow_scan(self):
+        self.logger.debug("Scanning %s" % self.get_name())
         for child in self.get_children():
             child.shallow_scan()
             [self._pii.add(p) for p in child.get_pii_types()]
 
-        logging.debug("{} has {}".format(self, self._pii))
+        self.logger.debug("%s has %s", self.get_name(), self.get_pii_types_str())
 
 
 class Database(NamedObject):
@@ -92,6 +100,7 @@ class Table(NamedObject):
         self._schema = schema
 
     def scan(self, generator):
+        self.logger.debug("Scanning table name %s" % self.get_name())
         scanners = [
             RegexScanner(),
             NERScanner()
@@ -107,12 +116,7 @@ class Table(NamedObject):
         for col in self.get_children():
             [self._pii.add(p) for p in col.get_pii_types()]
 
-        logging.debug(self._pii)
-
-    def shallow_scan(self):
-        for col in self.get_children():
-            col.shallow_scan()
-            [self._pii.add(p) for p in col.get_pii_types()]
+        self.logger.debug("%s has %s", self.get_name(), self.get_pii_types_str())
 
     def get_dict(self):
         dictionary = {
@@ -135,15 +139,16 @@ class Column(NamedObject):
         self._pii.add(pii)
 
     def scan(self, data, scanners):
+        self.logger.debug("Scanning column name %s" % self.get_name())
         if data is not None:
             for scanner in scanners:
                 [self._pii.add(pii) for pii in scanner.scan(data)]
 
-            logging.debug(self._pii)
+            self.logger.debug("%s has %s", self.get_name(), self.get_pii_types_str())
 
     def shallow_scan(self):
-        logging.debug("Scanning column name %s" % self._name)
-        [self._pii.add(pii) for pii in self.column_scanner.scan(self._name)]
+        self.logger.debug("Scanning column name %s" % self.get_name())
+        [self._pii.add(pii) for pii in self.column_scanner.scan(self.get_name())]
 
     def get_dict(self):
         return {

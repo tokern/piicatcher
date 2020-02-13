@@ -34,7 +34,6 @@ def cli(ctx, path, output, output_format):
     if output is not None:
         ns.catalog['file'] = output
 
-    logging.debug(vars(ns))
     FileExplorer.dispatch(ns)
 
 
