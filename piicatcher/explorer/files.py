@@ -1,3 +1,4 @@
+import sys
 from argparse import Namespace
 
 import click
@@ -7,6 +8,7 @@ import logging
 import os
 import magic
 
+from piicatcher.catalog.file import FileStore
 from piicatcher.explorer.metadata import NamedObject
 from piicatcher.piitypes import PiiTypes, PiiTypeEncoder
 from piicatcher.scanner import NERScanner, RegexScanner
@@ -74,7 +76,7 @@ class FileExplorer:
             headers = ["Path", "Mime/Type", "pii"]
             tableprint.table(explorer.get_tabular(), headers)
         elif ns.catalog['format'] == "json":
-            print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
+            FileStore.save_schemas(explorer)
 
     def __init__(self, path):
         self._path = path

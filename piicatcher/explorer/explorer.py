@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 import tableprint
 
+from piicatcher.catalog.file import FileStore
 from piicatcher.explorer.metadata import Schema, Table, Column, Database
 from piicatcher.catalog.db import DbStore
 from piicatcher.piitypes import PiiTypeEncoder
@@ -67,7 +68,7 @@ class Explorer(ABC):
             headers = ["schema", "table", "column", "has_pii"]
             tableprint.table(explorer.get_tabular(ns.list_all), headers)
         elif ns.catalog['format'] == "json":
-            print(json.dumps(explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
+            FileStore.save_schemas(explorer)
         elif ns.catalog['format'] == "db":
             DbStore.save_schemas(explorer)
 
