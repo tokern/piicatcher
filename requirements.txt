@@ -4,8 +4,6 @@ commonregex
 spacy
 tableprint
 pymysql
-#Cython is required to compile pymssql in MacOs
-Cython;platform_system == 'Darwin' or python_version >= "3.8"
 pymssql<3.0
 cx_Oracle
 psycopg2-binary

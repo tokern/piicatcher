@@ -76,6 +76,7 @@ jobs:
             mkdir -p .venv
             python -m venv .venv
             source .venv/bin/activate
+            pip install Cython
             pip install -r dev-requirements.txt
             python -m spacy download en_core_web_sm
 
