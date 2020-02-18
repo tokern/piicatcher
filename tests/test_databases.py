@@ -8,7 +8,7 @@ import logging
 import pytest
 
 from piicatcher.explorer.databases import MySQLExplorer, PostgreSQLExplorer, OracleExplorer, \
-    MSSQLExplorer, RelDbExplorer
+    RelDbExplorer
 from piicatcher.explorer.sqlite import SqliteExplorer
 from piicatcher.explorer.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
@@ -357,12 +357,6 @@ class SelectQueryTest(TestCase):
     def test_mysql(self):
         self.assertEqual("select c1,c2 from testSchema.t1",
                          MySQLExplorer._get_select_query(self.schema,
-                                                         self.schema.get_children()[0],
-                                                         self.schema.get_children()[0].get_children()))
-
-    def test_mssql(self):
-        self.assertEqual("select c1,c2 from testSchema.t1",
-                         MSSQLExplorer._get_select_query(self.schema,
                                                          self.schema.get_children()[0],
                                                          self.schema.get_children()[0].get_children()))
 
