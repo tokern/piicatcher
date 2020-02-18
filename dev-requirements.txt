@@ -6,3 +6,4 @@ codecov
 pytest-pylint
 twine
 pytest-mock
+wheel
