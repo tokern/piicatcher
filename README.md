@@ -22,10 +22,6 @@ To install use pip:
 
     python3 -m venv .env
     source .env/bin/activate
-    # Cython is required on MacOS and python_version >= "3.8"
-    # Refer to https://github.com/tokern/piicatcher/issues/72 
-    #   and https://github.com/tokern/piicatcher/issues/29 
-    pip install Cython 
     pip install piicatcher
 
     # Install Spacy English package
