@@ -1,0 +1,8 @@
+-r requirements.txt
+pytest
+coverage
+pytest-cov
+codecov
+pytest-pylint
+twine
+pytest-mock

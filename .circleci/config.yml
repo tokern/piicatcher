@@ -32,6 +32,7 @@ jobs:
       - image: circleci/python:3.7.3
         environment:
           PIPENV_VENV_IN_PROJECT: true
+          PYVERSION: "3.7.3"
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -66,17 +67,19 @@ jobs:
 
       # Download and cache dependencies
       - restore_cache:
-          key: deps9-{{ checksum "Pipfile.lock" }}
+          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
 
-      - run:
+      - run: &install-deps
           name: install dependencies
           command: |
-            sudo pip install pipenv
-            pipenv install --dev
-            pipenv run python -m spacy download en_core_web_sm
+            mkdir -p .venv
+            pythom -m venv .venv
+            source .venv/bin/activate
+            pip install -r dev-requirements.txt
+            python -m spacy download en_core_web_sm
 
       - save_cache:
-          key: deps9-{{ checksum "Pipfile.lock" }}
+          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
           paths:
             - ".venv"
 
@@ -84,7 +87,8 @@ jobs:
       - run:
           name: run tests
           command: |
-            pipenv run pytest -m "not dbtest" --pylint --pylint-error-types=EF --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
+            source .venv/bin/activate
+            pytest -m "not dbtest" --pylint --pylint-error-types=EF --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
       
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results
@@ -102,6 +106,7 @@ jobs:
       - image: circleci/python:3.8.1
         environment:
           PIPENV_VENV_IN_PROJECT: true
+          PYVERSION: "3.8.1"
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -121,24 +126,30 @@ jobs:
   deploy:
     docker:
       - image: tokern/python:3.7.5-buster
+        environment:
+          PYVERSION: "3.7.3"
     steps:
       - checkout
       - restore_cache:
-          key: deps9-{{ checksum "Pipfile.lock" }}
+          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
       - run:
           name: install dependencies
           command: |
-            sudo pip install pipenv
-            pipenv install --dev
+            mkdir -p .venv
+            pythom -m venv .venv
+            source .venv/bin/activate
+            pip install -r dev-requirements.txt
+            python -m spacy download en_core_web_sm
+
       - save_cache:
-          key: deps9-{{ checksum "Pipfile.lock" }}
+          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
           paths:
             - ".venv"
 
       - run:
           name: verify git tag vs. version
           command: |
-            pipenv run python setup.py verify
+            python setup.py verify
 
       - run:
           name: init .pypirc
@@ -149,12 +160,12 @@ jobs:
       - run:
           name: create packages
           command: |
-            pipenv run python setup.py sdist bdist_wheel
+            python setup.py sdist bdist_wheel
 
       - run:
           name: upload to pypi
           command: |
-            pipenv run twine upload dist/*
+            twine upload dist/*
 
       - run:
           name: install git release utilities
