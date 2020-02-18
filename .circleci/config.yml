@@ -12,9 +12,14 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - build3.8:
+          filters:
+            tags:
+              only: /.*/
       - deploy:
           requires:
             - build
+            - build3.8
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
@@ -22,7 +27,7 @@ workflows:
               ignore: /.*/
 
 jobs:
-  build:
+  build: &test-template
     docker:
       - image: circleci/python:3.7.3
         environment: # environment variables for primary container
@@ -90,6 +95,11 @@ jobs:
 
       - codecov/upload:
           file: coverage.xml
+
+  build3.8:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8.1
 
   deploy:
     docker:
