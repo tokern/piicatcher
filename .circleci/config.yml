@@ -81,6 +81,7 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/python:3.8.1
+        environment:
           PIPENV_VENV_IN_PROJECT: true
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -102,6 +103,7 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/python:3.7.3
+        environment:
           PIPENV_VENV_IN_PROJECT: true
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
