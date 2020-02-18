@@ -8,7 +8,7 @@ orbs:
 workflows:
   build_and_deploy:
     jobs:
-      - build37:
+      - build:
           filters:
             tags:
               only: /.*/
@@ -18,7 +18,7 @@ workflows:
               only: /.*/
       - deploy:
           requires:
-            - build37
+            - build
             - build38
           filters:
             tags:
@@ -28,6 +28,25 @@ workflows:
 
 jobs:
   build: &test-template
+    docker:
+      - image: circleci/python:3.7.3
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/postgres:12.0-alpine-ram
+        environment:
+          POSTGRES_USER: piiuser
+          POSTGRES_PASSWORD: p11secret
+          POSTGRES_DB: piidb
+
+      - image: circleci/mysql:8.0.18-ram
+        environment:
+          MYSQL_USER: piiuser
+          MYSQL_PASSWORD: p11secret
+          MYSQL_DATABASE: piidb
+          MYSQL_RANDOM_ROOT_PASSWORD: yes
     working_directory: ~/repo
 
     steps:
@@ -81,28 +100,6 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/python:3.8.1
-        environment:
-          PIPENV_VENV_IN_PROJECT: true
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/postgres:12.0-alpine-ram
-        environment:
-          POSTGRES_USER: piiuser
-          POSTGRES_PASSWORD: p11secret
-          POSTGRES_DB: piidb
-
-      - image: circleci/mysql:8.0.18-ram
-        environment:
-          MYSQL_USER: piiuser
-          MYSQL_PASSWORD: p11secret
-          MYSQL_DATABASE: piidb
-          MYSQL_RANDOM_ROOT_PASSWORD: yes
-
-  build37:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.7.3
         environment:
           PIPENV_VENV_IN_PROJECT: true
       # Specify service dependencies here if necessary
