@@ -28,11 +28,12 @@ workflows:
 
 jobs:
   build: &test-template
+    environment:
+      PYVERSION: "3.7.3"
     docker:
       - image: circleci/python:3.7.3
         environment:
           PIPENV_VENV_IN_PROJECT: true
-          PYVERSION: "3.7.3"
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -101,12 +102,13 @@ jobs:
           file: coverage.xml
 
   build38:
+    environment:
+      PYVERSION: "3.8.1"
     <<: *test-template
     docker:
       - image: circleci/python:3.8.1
         environment:
           PIPENV_VENV_IN_PROJECT: true
-          PYVERSION: "3.8.1"
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -124,6 +126,8 @@ jobs:
           MYSQL_RANDOM_ROOT_PASSWORD: yes
 
   deploy:
+    environment:
+      PYVERSION: "3.7.3"
     docker:
       - image: tokern/python:3.7.5-buster
         environment:
