@@ -1,12 +1,10 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5a9d549b61d07370aec51729a54042d5713ca8ed42e345c2b1ea07f3390cce4a"
+            "sha256": "52328a3ebd5e71da12193eb51d441f639778e37fd4bb0b2161c435ab8df174a2"
         },
         "pipfile-spec": 6,
-        "requires": {
-            "python_version": "3.7"
-        },
+        "requires": {},
         "sources": [
             {
                 "name": "pypi",
@@ -566,7 +564,6 @@
                 "sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc",
                 "sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc"
             ],
-            "markers": "python_version != '3.4'",
             "version": "==1.25.8"
         },
         "wasabi": {
@@ -896,6 +893,7 @@
                 "sha256:0ba6d8c597e9bef1ebd18aaec595f942a264e25c1a48f164d46120eacaa2e9bb",
                 "sha256:6f45dce1125cf6c58a1c88123d3831f36a789f9204fbad3172eac15f8ccd08d0"
             ],
+            "markers": "sys_platform == 'linux'",
             "version": "==0.4.2"
         },
         "jmespath": {
@@ -1403,7 +1401,6 @@
                 "sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc",
                 "sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc"
             ],
-            "markers": "python_version != '3.4'",
             "version": "==1.25.8"
         },
         "wasabi": {
