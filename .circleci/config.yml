@@ -28,21 +28,7 @@ workflows:
 
 jobs:
   build: &test-template
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/postgres:12.0-alpine-ram
-        environment:
-          POSTGRES_USER: piiuser
-          POSTGRES_PASSWORD: p11secret
-          POSTGRES_DB: piidb
-
-      - image: circleci/mysql:8.0.18-ram
-        environment:
-          MYSQL_USER: piiuser
-          MYSQL_PASSWORD: p11secret
-          MYSQL_DATABASE: piidb
-          MYSQL_RANDOM_ROOT_PASSWORD: yes
+    docker:
 
     working_directory: ~/repo
 
@@ -98,11 +84,43 @@ jobs:
     docker:
       - image: circleci/python:3.8.1
           PIPENV_VENV_IN_PROJECT: true
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/postgres:12.0-alpine-ram
+        environment:
+          POSTGRES_USER: piiuser
+          POSTGRES_PASSWORD: p11secret
+          POSTGRES_DB: piidb
+
+      - image: circleci/mysql:8.0.18-ram
+        environment:
+          MYSQL_USER: piiuser
+          MYSQL_PASSWORD: p11secret
+          MYSQL_DATABASE: piidb
+          MYSQL_RANDOM_ROOT_PASSWORD: yes
+
   build37:
     <<: *test-template
     docker:
       - image: circleci/python:3.7.3
           PIPENV_VENV_IN_PROJECT: true
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/postgres:12.0-alpine-ram
+        environment:
+          POSTGRES_USER: piiuser
+          POSTGRES_PASSWORD: p11secret
+          POSTGRES_DB: piidb
+
+      - image: circleci/mysql:8.0.18-ram
+        environment:
+          MYSQL_USER: piiuser
+          MYSQL_PASSWORD: p11secret
+          MYSQL_DATABASE: piidb
+          MYSQL_RANDOM_ROOT_PASSWORD: yes
+
   deploy:
     docker:
       - image: tokern/python:3.7.5-buster
