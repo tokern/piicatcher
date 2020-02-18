@@ -28,8 +28,6 @@ workflows:
 
 jobs:
   build: &test-template
-    docker:
-
     working_directory: ~/repo
 
     steps:
