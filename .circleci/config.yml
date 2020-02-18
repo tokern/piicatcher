@@ -12,7 +12,7 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - build3.8:
+      - build38:
           filters:
             tags:
               only: /.*/
@@ -96,7 +96,7 @@ jobs:
       - codecov/upload:
           file: coverage.xml
 
-  build3.8:
+  build38:
     <<: *test-template
     docker:
       - image: circleci/python:3.8.1
