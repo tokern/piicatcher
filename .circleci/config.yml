@@ -8,7 +8,7 @@ orbs:
 workflows:
   build_and_deploy:
     jobs:
-      - build:
+      - build37:
           filters:
             tags:
               only: /.*/
@@ -18,7 +18,7 @@ workflows:
               only: /.*/
       - deploy:
           requires:
-            - build
+            - build37
             - build38
           filters:
             tags:
@@ -28,11 +28,6 @@ workflows:
 
 jobs:
   build: &test-template
-    docker:
-      - image: circleci/python:3.7.3
-        environment: # environment variables for primary container
-          PIPENV_VENV_IN_PROJECT: true
-
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -62,7 +57,9 @@ jobs:
 
       - run:
           name: Wait for db
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+          command: |
+            dockerize -wait tcp://localhost:5432 -timeout 1m
+            dockerize -wait tcp://localhost:3306 -timeout 1m
 
       # Download and cache dependencies
       - restore_cache:
@@ -100,7 +97,12 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/python:3.8.1
-
+          PIPENV_VENV_IN_PROJECT: true
+  build37:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7.3
+          PIPENV_VENV_IN_PROJECT: true
   deploy:
     docker:
       - image: tokern/python:3.7.5-buster
