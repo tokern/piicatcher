@@ -12,9 +12,14 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - build38:
+          filters:
+            tags:
+              only: /.*/
       - deploy:
           requires:
             - build
+            - build38
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
@@ -22,12 +27,88 @@ workflows:
               ignore: /.*/
 
 jobs:
-  build:
+  build: &test-template
+    environment:
+      PYVERSION: "3.7.3"
     docker:
       - image: circleci/python:3.7.3
-        environment: # environment variables for primary container
+        environment:
           PIPENV_VENV_IN_PROJECT: true
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/postgres:12.0-alpine-ram
+        environment:
+          POSTGRES_USER: piiuser
+          POSTGRES_PASSWORD: p11secret
+          POSTGRES_DB: piidb
 
+      - image: circleci/mysql:8.0.18-ram
+        environment:
+          MYSQL_USER: piiuser
+          MYSQL_PASSWORD: p11secret
+          MYSQL_DATABASE: piidb
+          MYSQL_RANDOM_ROOT_PASSWORD: yes
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+
+      - run:
+          name: Wait for db
+          command: |
+            dockerize -wait tcp://localhost:5432 -timeout 1m
+            dockerize -wait tcp://localhost:3306 -timeout 1m
+
+      # Download and cache dependencies
+      - restore_cache:
+          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
+
+      - run: &install-deps
+          name: install dependencies
+          command: |
+            mkdir -p .venv
+            python -m venv .venv
+            source .venv/bin/activate
+            pip install -r dev-requirements.txt
+            python -m spacy download en_core_web_sm
+
+      - save_cache:
+          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
+          paths:
+            - ".venv"
+
+      # run tests!
+      - run:
+          name: run tests
+          command: |
+            source .venv/bin/activate
+            pytest -m "not dbtest" --pylint --pylint-error-types=EF --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
+      
+      - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: test-results
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+      - codecov/upload:
+          file: coverage.xml
+
+  build38:
+    environment:
+      PYVERSION: "3.8.1"
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.8.1
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -44,74 +125,35 @@ jobs:
           MYSQL_DATABASE: piidb
           MYSQL_RANDOM_ROOT_PASSWORD: yes
 
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - run:
-          name: install dockerize
-          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-          environment:
-            DOCKERIZE_VERSION: v0.3.0
-
-      - run:
-          name: Wait for db
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
-
-      # Download and cache dependencies
-      - restore_cache:
-          key: deps9-{{ checksum "Pipfile.lock" }}
-
-      - run:
-          name: install dependencies
-          command: |
-            sudo pip install pipenv
-            pipenv install --dev
-            pipenv run python -m spacy download en_core_web_sm
-
-      - save_cache:
-          key: deps9-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ".venv"
-
-      # run tests!
-      - run:
-          name: run tests
-          command: |
-            pipenv run pytest -m "not dbtest" --pylint --pylint-error-types=EF --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
-      
-      - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
-          path: test-results
-
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
-
-      - codecov/upload:
-          file: coverage.xml
-
   deploy:
+    environment:
+      PYVERSION: "3.7.3"
     docker:
       - image: tokern/python:3.7.5-buster
+        environment:
+          PYVERSION: "3.7.3"
     steps:
       - checkout
       - restore_cache:
-          key: deps9-{{ checksum "Pipfile.lock" }}
+          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
       - run:
           name: install dependencies
           command: |
-            sudo pip install pipenv
-            pipenv install --dev
+            mkdir -p .venv
+            pythom -m venv .venv
+            source .venv/bin/activate
+            pip install -r dev-requirements.txt
+            python -m spacy download en_core_web_sm
+
       - save_cache:
-          key: deps9-{{ checksum "Pipfile.lock" }}
+          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
           paths:
             - ".venv"
 
       - run:
           name: verify git tag vs. version
           command: |
-            pipenv run python setup.py verify
+            python setup.py verify
 
       - run:
           name: init .pypirc
@@ -122,12 +164,12 @@ jobs:
       - run:
           name: create packages
           command: |
-            pipenv run python setup.py sdist bdist_wheel
+            python setup.py sdist bdist_wheel
 
       - run:
           name: upload to pypi
           command: |
-            pipenv run twine upload dist/*
+            twine upload dist/*
 
       - run:
           name: install git release utilities
