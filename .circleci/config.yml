@@ -73,7 +73,7 @@ jobs:
           name: install dependencies
           command: |
             mkdir -p .venv
-            pythom -m venv .venv
+            python -m venv .venv
             source .venv/bin/activate
             pip install -r dev-requirements.txt
             python -m spacy download en_core_web_sm
