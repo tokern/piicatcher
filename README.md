@@ -4,11 +4,11 @@
 [![image](https://img.shields.io/pypi/l/piicatcher.svg)](https://pypi.org/project/piicatcher/)
 [![image](https://img.shields.io/pypi/pyversions/piicatcher.svg)](https://pypi.org/project/piicatcher/)
 
-# Pii Catcher for Files and Databases
+# PII Catcher for Files and Databases
 
 ## Overview
 
-PiiCatcher is a data catalog and scanner for PII and PHI information. It finds PII data in your databases and file systems
+PIICatcher is a data catalog and scanner for PII and PHI information. It finds PII data in your databases and file systems
 and tracks critical data. The data catalog can be used as a foundation to build governance, compliance and security
 applications.
 
@@ -16,7 +16,7 @@ Check out [AWS Glue & Lake Formation Privilege Analyzer](https://tokern.io/blog/
 
 ## Quick Start
 
-PiiCatcher is available as a command-line application.
+PIICatcher is available as a command-line application.
 
 To install use pip:
 
@@ -43,13 +43,13 @@ To install use pip:
 
 ## Supported Technologies
 
-PiiCatcher supports the following filesystems:
+PIICatcher supports the following filesystems:
 * POSIX
 * AWS S3 (for files that are part of tables in AWS Glue and AWS Athena)
 * Google Cloud Storage _(Coming Soon)_
 * ADLS _(Coming Soon)_
 
-PiiCatcher supports the following databases:
+PIICatcher supports the following databases:
 1. **Sqlite3** v3.24.0 or greater
 2. **MySQL** 5.6 or greater
 3. **PostgreSQL** 9.4 or greater

@@ -46,7 +46,7 @@ setup(
     description='Find PII data in databases',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/tokern/piicatcher',
+    url='https://tokern.io/piicatcher',
     download_url='https://github.com/tokern/piicatcher/tarball/' + __version__,
     license='Apache 2.0',
     classifiers=[
@@ -63,7 +63,7 @@ setup(
     keywords='',
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
-    author='Rajat Venkatesh',
+    author='Tokern',
     install_requires=install_requires,
     dependency_links=dependency_links,
     author_email='piicatcher@tokern.io',
