@@ -4,7 +4,6 @@ from argparse import Namespace
 import click
 import pymysql
 import psycopg2
-import pymssql
 import cx_Oracle
 
 import logging
@@ -213,50 +212,6 @@ class PostgreSQLExplorer(RelDbExplorer):
     @classmethod
     def _get_sample_query(cls, schema_name, table_name, column_list):
         return cls.query_template.format(
-            column_list=",".join([col.get_name() for col in column_list]),
-            schema_name=schema_name.get_name(),
-            table_name=table_name.get_name()
-        )
-
-
-class MSSQLExplorer(RelDbExplorer):
-    _catalog_query = """
-        SELECT
-            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE
-        FROM
-            INFORMATION_SCHEMA.COLUMNS
-        WHERE
-            DATA_TYPE LIKE '%char%'
-        ORDER BY TABLE_SCHEMA, table_name, ordinal_position
-    """
-
-    _sample_query_template = "SELECT TOP 10 * FROM {schema_name}.{table_name} TABLESAMPLE (1000 ROWS)"
-
-    def __init__(self, ns):
-        super(MSSQLExplorer, self).__init__(ns)
-        self._mssql_database = self._mssql_database if ns.database is None else ns.database
-
-    @property
-    def default_database(self):
-        return "public"
-
-    @property
-    def default_port(self):
-        return 1433
-
-    def _open_connection(self):
-        return pymssql.connect(host=self.host,
-                               port=self.port,
-                               user=self.user,
-                               password=self.password,
-                               database=self._mssql_database)
-
-    def _get_catalog_query(self):
-        return self._catalog_query
-
-    @classmethod
-    def _get_sample_query(cls, schema_name, table_name, column_list):
-        return cls._sample_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
             schema_name=schema_name.get_name(),
             table_name=table_name.get_name()

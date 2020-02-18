@@ -54,9 +54,8 @@ PiiCatcher supports the following databases:
 2. **MySQL** 5.6 or greater
 3. **PostgreSQL** 9.4 or greater
 4. **AWS Redshift**
-5. **SQL Server**
-6. **Oracle**
-7. **AWS Glue/AWS Athena**
+5. **Oracle**
+6. **AWS Glue/AWS Athena**
 
 ## Documentation
 
