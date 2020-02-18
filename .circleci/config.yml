@@ -153,6 +153,7 @@ jobs:
       - run:
           name: verify git tag vs. version
           command: |
+            source .venv/bin/activate
             python setup.py verify
 
       - run:
@@ -164,11 +165,13 @@ jobs:
       - run:
           name: create packages
           command: |
+            source .venv/bin/activate
             python setup.py sdist bdist_wheel
 
       - run:
           name: upload to pypi
           command: |
+            source .venv/bin/activate
             twine upload dist/*
 
       - run:
