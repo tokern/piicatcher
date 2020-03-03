@@ -69,7 +69,7 @@ class FileExplorer:
     @classmethod
     def dispatch(cls, ns):
         logging.debug("File Dispatch entered")
-        explorer = FileExplorer(ns.path)
+        explorer = cls(ns)
         explorer.scan()
 
         if ns.catalog['format'] == "ascii_table":
@@ -78,9 +78,10 @@ class FileExplorer:
         elif ns.catalog['format'] == "json":
             FileStore.save_schemas(explorer)
 
-    def __init__(self, path):
-        self._path = path
+    def __init__(self, ns):
+        self._path = ns.path
         self._files = []
+        self.catalog = ns.catalog
 
     def scan(self):
         logging.debug("Scanning %s" % self._path)

@@ -8,7 +8,6 @@ import tableprint
 from piicatcher.catalog.file import FileStore
 from piicatcher.explorer.metadata import Schema, Table, Column, Database
 from piicatcher.catalog.db import DbStore
-from piicatcher.piitypes import PiiTypeEncoder
 
 
 class Explorer(ABC):
