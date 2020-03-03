@@ -1,5 +1,11 @@
+import json
+import logging
+import os
+from shutil import rmtree
 from unittest import TestCase, mock
 from argparse import Namespace
+
+import pytest
 
 from piicatcher.explorer.files import File, FileExplorer
 from piicatcher.piitypes import PiiTypes
@@ -18,35 +24,6 @@ class TestDispatcher(TestCase):
                     MockTablePrint.table.assert_called_once()
 
 
-class TestExplorer(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.explorer = FileExplorer("/tmp")
-        f1 = File("/tmp/1", "text/plain")
-        f1._pii.add(PiiTypes.BIRTH_DATE)
-
-        f2 = File("/tmp/2", "application/pdf")
-        f2._pii.add(PiiTypes.UNSUPPORTED)
-
-        cls.explorer._files.append(f1)
-        cls.explorer._files.append(f2)
-
-    def test_tabular(self):
-        self.assertEqual([
-            ['/tmp/1', 'text/plain', '[{"__enum__": "PiiTypes.BIRTH_DATE"}]'],
-            ['/tmp/2', 'application/pdf', '[{"__enum__": "PiiTypes.UNSUPPORTED"}]']
-        ], self.explorer.get_tabular())
-
-    def test_json(self):
-        self.assertEqual({
-            'files': [
-                {'Mime/Type': 'text/plain', 'path': '/tmp/1', 'pii': [PiiTypes.BIRTH_DATE]},
-                {'Mime/Type': 'application/pdf', 'path': '/tmp/2',  'pii': [PiiTypes.UNSUPPORTED]}
-            ]
-        }, self.explorer.get_dict())
-
-
 class TestWalker(TestCase):
 
     def _check(self, result):
@@ -56,14 +33,89 @@ class TestWalker(TestCase):
         self.assertEqual(len(result['files'][0]['pii']), 5)
 
     def testDirectory(self):
-        explorer = FileExplorer("tests/samples")
+        explorer = FileExplorer(Namespace(path="tests/samples",
+                                          catalog={
+                                              'format': 'ascii_table'
+                                          }))
         explorer.scan()
         result = explorer.get_dict()
         self._check(result)
 
     def testFile(self):
-        explorer = FileExplorer("tests/samples/sample-data.csv")
+        explorer = FileExplorer(Namespace(path="tests/samples/sample-data.csv",
+                                          catalog={
+                                              'format': 'ascii_table'
+                                          }))
         explorer.scan()
         result = explorer.get_dict()
         self._check(result)
 
+
+class MockFileExplorer(FileExplorer):
+    def scan(self):
+        f1 = File("/tmp/1", "text/plain")
+        f1._pii.add(PiiTypes.BIRTH_DATE)
+
+        f2 = File("/tmp/2", "application/pdf")
+        f2._pii.add(PiiTypes.UNSUPPORTED)
+
+        self._files.append(f1)
+        self._files.append(f2)
+
+
+@pytest.fixture(scope="module")
+def namespace(request, tmpdir_factory):
+    temp_dir = tmpdir_factory.mktemp("file_explorer_test")
+    output_path = temp_dir.join("output.json")
+
+    def finalizer():
+        rmtree(temp_dir)
+        logging.info("Deleted {}", str(temp_dir))
+
+    request.addfinalizer(finalizer)
+
+    return Namespace(path=temp_dir,
+                     catalog={
+                         'format': 'json',
+                         'file': output_path
+                     })
+
+
+def test_tabular(namespace):
+    explorer = MockFileExplorer(namespace)
+    explorer.scan()
+    assert([
+        ['/tmp/1', 'text/plain', '[{"__enum__": "PiiTypes.BIRTH_DATE"}]'],
+        ['/tmp/2', 'application/pdf', '[{"__enum__": "PiiTypes.UNSUPPORTED"}]']
+    ] == explorer.get_tabular())
+
+
+def test_dict(namespace):
+    explorer = MockFileExplorer(namespace)
+    explorer.scan()
+    assert({
+        'files': [
+            {'Mime/Type': 'text/plain', 'path': '/tmp/1', 'pii': [PiiTypes.BIRTH_DATE]},
+            {'Mime/Type': 'application/pdf', 'path': '/tmp/2',  'pii': [PiiTypes.UNSUPPORTED]}
+        ]
+    }, explorer.get_dict())
+
+
+def test_output_json(request, namespace):
+    MockFileExplorer.dispatch(namespace)
+    assert os.path.isfile(namespace.catalog['file'])
+    with open(namespace.catalog['file'], 'r') as output:
+        obj = json.load(output)
+        assert obj == {
+            'files': [
+                {
+                    'Mime/Type': 'text/plain',
+                    'path': '/tmp/1',
+                    'pii': [{'__enum__': 'PiiTypes.BIRTH_DATE'}]
+                }, {
+                    'Mime/Type': 'application/pdf',
+                    'path': '/tmp/2',
+                    'pii': [{'__enum__': 'PiiTypes.UNSUPPORTED'}]
+                }
+            ]
+        }
