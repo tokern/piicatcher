@@ -1,4 +1,3 @@
-import json
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
@@ -168,7 +167,6 @@ class Explorer(ABC):
                 logging.debug("Catalog Query: {0}".format(self._get_catalog_query()))
                 cursor.execute(self._get_catalog_query())
                 self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
-                self._database = Database('database')
 
                 row = cursor.fetchone()
 
