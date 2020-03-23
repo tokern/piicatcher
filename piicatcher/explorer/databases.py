@@ -57,7 +57,7 @@ tables matching -T are excluded from what is otherwise a normal dump.
 @click.option("-u", "--user", help="Username to connect database")
 @click.option("-p", "--password", help="Password of the user")
 @click.option("-d", "--database", default='', help="Name of the database")
-@click.option("-t", "--connection-type", default="mysql",
+@click.option("--connection-type", default="mysql",
               type=click.Choice(["mysql", "postgres", "redshift", "oracle", "sqlserver"]),
               help="Type of database")
 @click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db"]),
