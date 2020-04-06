@@ -48,7 +48,7 @@ jobs:
           MYSQL_USER: piiuser
           MYSQL_PASSWORD: p11secret
           MYSQL_DATABASE: piidb
-          MYSQL_ROOT_PASSWORD: r00tPassw0rd
+          MYSQL_ROOT_PASSWORD: r00tPa33w0rd
     working_directory: ~/repo
 
     steps:
