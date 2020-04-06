@@ -36,13 +36,6 @@ class DbFile(BaseModel):
     pii_types = PiiTypeField()
 
 
-def init_test(path):
-    database = SqliteDatabase(path)
-    database_proxy.initialize(database)
-    database_proxy.connect()
-    database_proxy.create_tables([DbSchemas, DbTables, DbColumns])
-
-
 def model_db_close():
     database_proxy.close()
 

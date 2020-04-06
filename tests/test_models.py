@@ -1,7 +1,8 @@
 from argparse import Namespace
 from unittest import TestCase
 import logging
-import sqlite3
+
+import pymysql
 import pytest
 
 from piicatcher.catalog.db import *
@@ -14,12 +15,19 @@ from piicatcher.catalog.db import DbStore
 logging.basicConfig(level=logging.DEBUG)
 
 
+catalog = {
+    'host': '127.0.0.1',
+    'port': 3307,
+    'user': 'catalog_user',
+    'password': 'catal0g_passw0rd',
+    'format': 'db'
+}
+
+
 @pytest.mark.skip
 class TestCreateTables(TestCase):
-    sqlite_conn = 'file::memory:?cache=shared'
-
     def setUp(self):
-        init_test(str(self.sqlite_conn))
+        DbStore.setup_database(catalog=catalog)
         self.explorer = SqliteExplorer(str(self.sqlite_conn))
 
     def tearDown(self):
@@ -95,48 +103,46 @@ class MockExplorer(Explorer):
 
 
 class TestStore(TestCase):
-    sqlite_path = 'file::memory:?cache=shared'
-
     @classmethod
     def setUpClass(cls):
-        init_test(cls.sqlite_path)
-
-        explorer = MockExplorer(Namespace(catalog=None,
-                                          include_schema=(),
-                                          exclude_schema=(),
-                                          include_table=(),
-                                          exclude_table=()
-                                          ))
-
-        DbStore.save_schemas(explorer)
+        ns = Namespace(catalog=catalog,
+                       include_schema=(),
+                       exclude_schema=(),
+                       include_table=(),
+                       exclude_table=()
+                       )
+        explorer = MockExplorer(ns)
+        MockExplorer.output(ns, explorer)
 
     @classmethod
     def tearDownClass(cls):
         model_db_close()
 
+    @staticmethod
+    def get_cursor():
+        return pymysql.connect(host=catalog['host'],
+                               port=catalog['port'],
+                               user=catalog['user'],
+                               password=catalog['password'],
+                               database='tokern').cursor()
+
     def test_schema(self):
-        conn = sqlite3.connect(self.sqlite_path)
-        c = conn.cursor()
-        c.execute('select * from dbschemas')
-        self.assertEqual([(1, 'test_store')], list(c.fetchall()))
-        c.close()
+        with self.get_cursor() as c:
+            c.execute('select * from dbschemas')
+            self.assertEqual([(1, 'test_store')], list(c.fetchall()))
 
     def test_tables(self):
-        conn = sqlite3.connect(self.sqlite_path)
-        c = conn.cursor()
-        c.execute('select * from dbtables order by id')
-        self.assertEqual([(1, 'no_pii', 1), (2, 'partial_pii', 1), (3, 'full_pii', 1)],
-                         list(c.fetchall()))
-        c.close()
+        with self.get_cursor() as c:
+            c.execute('select * from dbtables order by id')
+            self.assertEqual([(1, 'no_pii', 1), (2, 'partial_pii', 1), (3, 'full_pii', 1)],
+                             list(c.fetchall()))
 
     def test_columns(self):
-        conn = sqlite3.connect(self.sqlite_path)
-        c = conn.cursor()
-        c.execute('select * from dbcolumns where table_id in (1,2) order by id')
-        self.assertEqual(
-            [(1, 'a', '[]', 1),
-             (2, 'b', '[]', 1),
-             (3, 'a', '[{"__enum__": "PiiTypes.PHONE"}]', 2),
-             (4, 'b', '[]', 2)], list(c.fetchall()))
-        c.close()
+        with self.get_cursor() as c:
+            c.execute('select * from dbcolumns where table_id in (1,2) order by id')
+            self.assertEqual(
+                [(1, 'a', '[]', 1),
+                 (2, 'b', '[]', 1),
+                 (3, 'a', '[{"__enum__": "PiiTypes.PHONE"}]', 2),
+                 (4, 'b', '[]', 2)], list(c.fetchall()))
 
