@@ -1,47 +1,36 @@
 from argparse import Namespace
-from unittest import TestCase
 import logging
 
 import pymysql
 import pytest
 
 from piicatcher.catalog.db import *
-from piicatcher.explorer.sqlite import SqliteExplorer
 from piicatcher.explorer.explorer import Explorer
 from piicatcher.explorer.metadata import Schema, Table, Column, Database as mdDatabase
 from piicatcher.piitypes import PiiTypes
-from piicatcher.catalog.db import DbStore
 
 logging.basicConfig(level=logging.DEBUG)
 
 
 catalog = {
     'host': '127.0.0.1',
-    'port': 3307,
+    'port': 3306,
     'user': 'catalog_user',
     'password': 'catal0g_passw0rd',
     'format': 'db'
 }
 
 
-@pytest.mark.skip
-class TestCreateTables(TestCase):
-    def setUp(self):
-        DbStore.setup_database(catalog=catalog)
-        self.explorer = SqliteExplorer(str(self.sqlite_conn))
-
-    def tearDown(self):
-        self.explorer.close_connection()
-        model_db_close()
-
-    def test_schemas_exist(self):
-        self.assertEqual(1, len(self.explorer.get_schemas()))
-
-    def test_tables_exist(self):
-        schema = self.explorer.get_schemas()[0]
-
-        self.assertEqual(["dbcolumns", "dbschemas", "dbtables"],
-                         [t.get_name() for t in schema.get_tables()])
+@pytest.fixture(scope="module")
+def setup_catalog():
+    with pymysql.connect(host=catalog['host'],
+                         port=catalog['port'],
+                         user='root',
+                         password='r00tPa33w0rd',
+                         database='piidb').cursor() as c:
+        c.execute("CREATE USER catalog_user IDENTIFIED BY 'catal0g_passw0rd'")
+        c.execute("CREATE DATABASE tokern")
+        c.execute("GRANT ALL ON tokern.* TO 'catalog_user'@'%'")
 
 
 class MockExplorer(Explorer):
@@ -102,47 +91,49 @@ class MockExplorer(Explorer):
         self._database.add_child(schema)
 
 
-class TestStore(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        ns = Namespace(catalog=catalog,
-                       include_schema=(),
-                       exclude_schema=(),
-                       include_table=(),
-                       exclude_table=()
-                       )
-        explorer = MockExplorer(ns)
-        MockExplorer.output(ns, explorer)
+@pytest.fixture(scope="module")
+def setup_explorer(request, setup_catalog):
+    ns = Namespace(catalog=catalog,
+                   include_schema=(),
+                   exclude_schema=(),
+                   include_table=(),
+                   exclude_table=()
+                   )
+    explorer = MockExplorer(ns)
+    MockExplorer.output(ns, explorer)
 
-    @classmethod
-    def tearDownClass(cls):
+    def finalizer():
         model_db_close()
 
-    @staticmethod
-    def get_cursor():
-        return pymysql.connect(host=catalog['host'],
-                               port=catalog['port'],
-                               user=catalog['user'],
-                               password=catalog['password'],
-                               database='tokern').cursor()
+    request.addfinalizer(finalizer)
 
-    def test_schema(self):
-        with self.get_cursor() as c:
-            c.execute('select * from dbschemas')
-            self.assertEqual([(1, 'test_store')], list(c.fetchall()))
 
-    def test_tables(self):
-        with self.get_cursor() as c:
-            c.execute('select * from dbtables order by id')
-            self.assertEqual([(1, 'no_pii', 1), (2, 'partial_pii', 1), (3, 'full_pii', 1)],
-                             list(c.fetchall()))
+def get_cursor():
+    return pymysql.connect(host=catalog['host'],
+                           port=catalog['port'],
+                           user=catalog['user'],
+                           password=catalog['password'],
+                           database='tokern').cursor()
 
-    def test_columns(self):
-        with self.get_cursor() as c:
-            c.execute('select * from dbcolumns where table_id in (1,2) order by id')
-            self.assertEqual(
-                [(1, 'a', '[]', 1),
-                 (2, 'b', '[]', 1),
-                 (3, 'a', '[{"__enum__": "PiiTypes.PHONE"}]', 2),
-                 (4, 'b', '[]', 2)], list(c.fetchall()))
+
+def test_schema(setup_explorer):
+    with get_cursor() as c:
+        c.execute('select * from dbschemas')
+        assert([(1, 'test_store')] == list(c.fetchall()))
+
+
+def test_tables(setup_explorer):
+    with get_cursor() as c:
+        c.execute('select * from dbtables order by id')
+        assert([(1, 'no_pii', 1), (2, 'partial_pii', 1), (3, 'full_pii', 1)] == list(c.fetchall()))
+
+
+def test_columns(setup_explorer):
+    with get_cursor() as c:
+        c.execute('select * from dbcolumns where table_id in (1,2) order by id')
+        assert(
+            [(1, 'a', '[]', 1),
+             (2, 'b', '[]', 1),
+             (3, 'a', '[{"__enum__": "PiiTypes.PHONE"}]', 2),
+             (4, 'b', '[]', 2)] == list(c.fetchall()))
 

@@ -48,16 +48,7 @@ jobs:
           MYSQL_USER: piiuser
           MYSQL_PASSWORD: p11secret
           MYSQL_DATABASE: piidb
-          MYSQL_RANDOM_ROOT_PASSWORD: yes
-
-      - image: circleci/mysql:8.0.18-ram
-        environment:
-          MYSQL_USER: catalog_user
-          MYSQL_PASSWORD: catal0g_pa33w0rd
-          MYSQL_DATABASE: tokern
-          MYSQL_PORT: 3307
-          MYSQL_RANDOM_ROOT_PASSWORD: yes
-
+          MYSQL_ROOT_PASSWORD: r00tPassw0rd
     working_directory: ~/repo
 
     steps:
@@ -74,7 +65,6 @@ jobs:
           command: |
             dockerize -wait tcp://localhost:5432 -timeout 1m
             dockerize -wait tcp://localhost:3306 -timeout 1m
-            dockerize -wait tcp://localhost:3307 -timeout 1m
 
       # Download and cache dependencies
       - restore_cache:
