@@ -48,7 +48,7 @@ jobs:
           MYSQL_USER: piiuser
           MYSQL_PASSWORD: p11secret
           MYSQL_DATABASE: piidb
-          MYSQL_RANDOM_ROOT_PASSWORD: yes
+          MYSQL_ROOT_PASSWORD: r00tPa33w0rd
     working_directory: ~/repo
 
     steps:
@@ -123,7 +123,7 @@ jobs:
           MYSQL_USER: piiuser
           MYSQL_PASSWORD: p11secret
           MYSQL_DATABASE: piidb
-          MYSQL_RANDOM_ROOT_PASSWORD: yes
+          MYSQL_ROOT_PASSWORD: r00tPa33w0rd
 
   deploy:
     environment:
