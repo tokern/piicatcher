@@ -61,6 +61,11 @@ PIICatcher supports the following databases:
 
 For advanced usage refer documentation [PIICatcher Documentation](https://tokern.io/docs/piicatcher).
 
+## Survey
+
+Please take this [survey](https://forms.gle/Ns6QSNvfj3Pr2s9s6) if you are a user or considering using PIICatcher. 
+The responses will help to prioritize improvements to the project.
+
 ## Contributing
 
 For Contribution guidelines, [PIICatcher Developer documentation](https://tokern.io/docs/piicatcher/development). 
