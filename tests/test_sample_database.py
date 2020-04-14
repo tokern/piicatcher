@@ -48,6 +48,14 @@ def drop_sample_data(connection):
 # pylint: disable=too-few-public-methods
 class CommonSampleDataTestCases:
     class CommonSampleDataTests(ABC, TestCase):
+        @property
+        def shallow_scan_result(self):
+            raise NotImplementedError
+
+        @property
+        def deep_scan_result(self):
+            raise NotImplementedError
+
         @classmethod
         @abstractmethod
         def get_connection(cls):
@@ -76,12 +84,56 @@ class CommonSampleDataTestCases:
                 explorer.scan()
             finally:
                 explorer.close_connection()
-            print(explorer.get_tabular(True))
-            schema = explorer.get_schemas()[0]
-            self.assertTrue(schema.has_pii())
+            self.assertListEqual(explorer.get_tabular(True), self.deep_scan_result)
+
+        def test_shallow_scan(self):
+            explorer = self.explorer
+            try:
+                explorer.shallow_scan()
+            finally:
+                explorer.close_connection()
+            self.assertListEqual(explorer.get_tabular(True), self.shallow_scan_result)
 
 
 class VanillaMySqlExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
+    @property
+    def deep_scan_result(self):
+        return [
+            ['piidb', 'SAMPLE', 'address', True],
+            ['piidb', 'SAMPLE', 'cc_cvc', False],
+            ['piidb', 'SAMPLE', 'cc_number', True],
+            ['piidb', 'SAMPLE', 'cc_type', False],
+            ['piidb', 'SAMPLE', 'city', True],
+            ['piidb', 'SAMPLE', 'email', True],
+            ['piidb', 'SAMPLE', 'fname', True],
+            ['piidb', 'SAMPLE', 'gender', False],
+            ['piidb', 'SAMPLE', 'id', True],
+            ['piidb', 'SAMPLE', 'lname', True],
+            ['piidb', 'SAMPLE', 'maiden_name', True],
+            ['piidb', 'SAMPLE', 'phone', True],
+            ['piidb', 'SAMPLE', 'state', True],
+            ['piidb', 'SAMPLE', 'zip', True]
+        ]
+    
+    @property
+    def shallow_scan_result(self):
+        return [
+            ['piidb', 'SAMPLE', 'address', True],
+            ['piidb', 'SAMPLE', 'cc_cvc', False],
+            ['piidb', 'SAMPLE', 'cc_number', False],
+            ['piidb', 'SAMPLE', 'cc_type', False],
+            ['piidb', 'SAMPLE', 'city', True],
+            ['piidb', 'SAMPLE', 'email', True],
+            ['piidb', 'SAMPLE', 'fname', True],
+            ['piidb', 'SAMPLE', 'gender', True],
+            ['piidb', 'SAMPLE', 'id', False],
+            ['piidb', 'SAMPLE', 'lname', True],
+            ['piidb', 'SAMPLE', 'maiden_name', True],
+            ['piidb', 'SAMPLE', 'phone', False],
+            ['piidb', 'SAMPLE', 'state', True],
+            ['piidb', 'SAMPLE', 'zip', False]
+        ]
+
     @property
     def namespace(self):
         return Namespace(
@@ -110,10 +162,6 @@ class VanillaMySqlExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
 
 
 class SmallSampleMysqlExplorer(MySQLExplorer):
-    @classmethod
-    def _get_sample_query(cls, schema_name, table_name, column_list):
-        raise NotImplementedError
-
     @property
     def small_table_max(self):
         return 5
@@ -126,6 +174,44 @@ class SmallSampleMySqlExplorerTest(VanillaMySqlExplorerTest):
 
 
 class VanillaPGExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
+    @property
+    def deep_scan_result(self):
+        return [
+            ['public', 'sample', 'address', True],
+            ['public', 'sample', 'cc_cvc', False],
+            ['public', 'sample', 'cc_number', True],
+            ['public', 'sample', 'cc_type', False],
+            ['public', 'sample', 'city', True],
+            ['public', 'sample', 'email', True],
+            ['public', 'sample', 'fname', True],
+            ['public', 'sample', 'gender', False],
+            ['public', 'sample', 'id', True],
+            ['public', 'sample', 'lname', True],
+            ['public', 'sample', 'maiden_name', True],
+            ['public', 'sample', 'phone', True],
+            ['public', 'sample', 'state', True],
+            ['public', 'sample', 'zip', True]
+        ]
+
+    @property
+    def shallow_scan_result(self):
+        return [
+            ['public', 'sample', 'address', True],
+            ['public', 'sample', 'cc_cvc', False],
+            ['public', 'sample', 'cc_number', False],
+            ['public', 'sample', 'cc_type', False],
+            ['public', 'sample', 'city', True],
+            ['public', 'sample', 'email', True],
+            ['public', 'sample', 'fname', True],
+            ['public', 'sample', 'gender', True],
+            ['public', 'sample', 'id', False],
+            ['public', 'sample', 'lname', True],
+            ['public', 'sample', 'maiden_name', True],
+            ['public', 'sample', 'phone', False],
+            ['public', 'sample', 'state', True],
+            ['public', 'sample', 'zip', False]
+        ]
+
     @property
     def namespace(self):
         return Namespace(
@@ -153,17 +239,13 @@ class VanillaPGExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
         return PostgreSQLExplorer(self.namespace)
 
 
-class SmallSamplePGExplorer(MySQLExplorer):
-    @classmethod
-    def _get_sample_query(cls, schema_name, table_name, column_list):
-        raise NotImplementedError
-
+class SmallSamplePGExplorer(PostgreSQLExplorer):
     @property
     def small_table_max(self):
         return 5
 
 
-class SmallSamplePGExplorerTest(VanillaMySqlExplorerTest):
+class SmallSamplePGExplorerTest(VanillaPGExplorerTest):
     @property
     def explorer(self):
-        return SmallSampleMysqlExplorer(self.namespace)
+        return SmallSamplePGExplorer(self.namespace)
