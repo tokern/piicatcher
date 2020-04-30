@@ -146,6 +146,8 @@ class Column(NamedObject):
 
             self.logger.debug("%s has %s", self.get_name(), self.get_pii_types_str())
 
+        self.shallow_scan()
+
     def shallow_scan(self):
         self.logger.debug("Scanning column name %s" % self.get_name())
         [self._pii.add(pii) for pii in self.column_scanner.scan(self.get_name())]
