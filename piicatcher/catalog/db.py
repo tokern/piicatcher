@@ -59,11 +59,15 @@ class DbStore(Store):
         with database_proxy.atomic():
             schemas = explorer.get_schemas()
             for s in schemas:
-                schema_model = DbSchemas.create(name=s.get_name())
-
+                schema_model, schema_created = DbSchemas.get_or_create(name=s.get_name())
+                print(schema_model)
                 for t in s.get_children():
-                    tbl_model = DbTables.create(schema_id=schema_model, name=t.get_name())
+                    tbl_model, tbl_created = DbTables.get_or_create(schema_id=schema_model.id,
+                                                                    name=t.get_name())
 
                     for c in t.get_children():
-                        DbColumns.create(table_id=tbl_model, name=c.get_name(),
-                                         pii_type=c.get_pii_types())
+                        col_model, col_created = DbColumns.get_or_create(table_id=tbl_model.id,
+                                                                         name=c.get_name())
+                        if col_created:
+                            col_model.pii_type = c.get_pii_types()
+                            col_model.save()
