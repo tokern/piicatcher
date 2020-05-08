@@ -317,7 +317,7 @@ class TestSnowflakeParser(TestCase):
         runner = CliRunner()
         result = runner.invoke(cli, ["snowflake", "--user", "snowflake_user", "--password", "snowflake_password",
                                      "--account", "snowflake_account", "--warehouse", "snowflake_warehouse",
-                                     "--database", "snowflake_database", "--schema", "snowflake_schema"])
+                                     "--database", "snowflake_database"])
         self.assertEqual("", result.stdout)
         self.assertEqual(0, result.exit_code)
         explorer.dispatch.assert_called_once_with(Namespace(
@@ -342,7 +342,6 @@ class TestSnowflakeParser(TestCase):
             okta_account_name=None,
             password='snowflake_password',
             scan_type='shallow',
-            schema='snowflake_schema',
             user='snowflake_user',
             warehouse='snowflake_warehouse',
         ))

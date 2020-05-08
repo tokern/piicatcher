@@ -229,7 +229,6 @@ password='snowflake_password'
 account='snowflake_account'
 warehouse='snowflake_warehouse'
 database='snowflake_database'
-schema='snowflake_schema'
 """)
 
     logging.info("Config File: %s" % config_file)
@@ -261,7 +260,6 @@ schema='snowflake_schema'
         okta_account_name=None,
         password='snowflake_password',
         scan_type='shallow',
-        schema='snowflake_schema',
         user='snowflake_user',
         warehouse='snowflake_warehouse',
     ))
@@ -276,7 +274,6 @@ authenticator='externalbrowser'
 account='snowflake_account'
 warehouse='snowflake_warehouse'
 database='snowflake_database'
-schema='snowflake_schema'
 """)
 
     logging.info("Config File: %s" % config_file)
@@ -308,7 +305,6 @@ schema='snowflake_schema'
         okta_account_name=None,
         password=None,
         scan_type='shallow',
-        schema='snowflake_schema',
         user=None,
         warehouse='snowflake_warehouse',
     ))
@@ -326,7 +322,6 @@ user='snowflake_user'
 account='snowflake_account'
 warehouse='snowflake_warehouse'
 database='snowflake_database'
-schema='snowflake_schema'
 """)
 
     logging.info("Config File: %s" % config_file)
@@ -358,7 +353,6 @@ schema='snowflake_schema'
         okta_account_name=None,
         password=None,
         scan_type='shallow',
-        schema='snowflake_schema',
         user='snowflake_user',
         warehouse='snowflake_warehouse',
     ))
@@ -376,7 +370,6 @@ okta_account_name='oan'
 account='snowflake_account'
 warehouse='snowflake_warehouse'
 database='snowflake_database'
-schema='snowflake_schema'
 """)
 
     logging.info("Config File: %s" % config_file)
@@ -408,7 +401,6 @@ schema='snowflake_schema'
         okta_account_name='oan',
         password='snowflake_password',
         scan_type='shallow',
-        schema='snowflake_schema',
         user='snowflake_user',
         warehouse='snowflake_warehouse',
     ))
