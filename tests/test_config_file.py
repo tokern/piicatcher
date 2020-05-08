@@ -217,3 +217,190 @@ exclude_table=["table1", "table2"]
             'format': 'db',
             'file': None
         }))
+
+
+def test_snowflake_userpasswd(tmp_path, mocker, caplog):
+    caplog.set_level(logging.DEBUG)
+    config_file = tmp_path / "db_host.ini"
+    config_file.write_text("""
+[snowflake]
+user='snowflake_user'
+password='snowflake_password'
+account='snowflake_account'
+warehouse='snowflake_warehouse'
+database='snowflake_database'
+""")
+
+    logging.info("Config File: %s" % config_file)
+    explorer = mocker.patch("piicatcher.explorer.snowflake.SnowflakeExplorer")
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--config", str(config_file), "snowflake"])
+    assert "" == result.stdout
+    assert result.exception is None
+    assert 0 == result.exit_code
+    explorer.dispatch.assert_called_once_with(Namespace(
+        account='snowflake_account',
+        authenticator='userpasswd',
+        catalog={
+            'host': None,
+            'port': None,
+            'user': None,
+            'password': None,
+            'format': 'ascii_table',
+            'file': None
+        },
+        database='snowflake_database',
+        exclude_schema=(),
+        exclude_table=(),
+        include_schema=(),
+        include_table=(),
+        list_all=False,
+        oauth_host=None,
+        oauth_token=None,
+        okta_account_name=None,
+        password='snowflake_password',
+        scan_type='shallow',
+        user='snowflake_user',
+        warehouse='snowflake_warehouse',
+    ))
+
+
+def test_snowflake_externalbrowser(tmp_path, mocker, caplog):
+    caplog.set_level(logging.DEBUG)
+    config_file = tmp_path / "db_host.ini"
+    config_file.write_text("""
+[snowflake]
+authenticator='externalbrowser'
+account='snowflake_account'
+warehouse='snowflake_warehouse'
+database='snowflake_database'
+""")
+
+    logging.info("Config File: %s" % config_file)
+    explorer = mocker.patch("piicatcher.explorer.snowflake.SnowflakeExplorer")
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--config", str(config_file), "snowflake"])
+    assert "" == result.stdout
+    assert result.exception is None
+    assert 0 == result.exit_code
+    explorer.dispatch.assert_called_once_with(Namespace(
+        account='snowflake_account',
+        authenticator='externalbrowser',
+        catalog={
+            'host': None,
+            'port': None,
+            'user': None,
+            'password': None,
+            'format': 'ascii_table',
+            'file': None
+        },
+        database='snowflake_database',
+        exclude_schema=(),
+        exclude_table=(),
+        include_schema=(),
+        include_table=(),
+        list_all=False,
+        oauth_host=None,
+        oauth_token=None,
+        okta_account_name=None,
+        password=None,
+        scan_type='shallow',
+        user=None,
+        warehouse='snowflake_warehouse',
+    ))
+
+
+def test_snowflake_oauth(tmp_path, mocker, caplog):
+    caplog.set_level(logging.DEBUG)
+    config_file = tmp_path / "db_host.ini"
+    config_file.write_text("""
+[snowflake]
+authenticator='oauth'
+oauth_host='host'
+oauth_token='token'
+user='snowflake_user'
+account='snowflake_account'
+warehouse='snowflake_warehouse'
+database='snowflake_database'
+""")
+
+    logging.info("Config File: %s" % config_file)
+    explorer = mocker.patch("piicatcher.explorer.snowflake.SnowflakeExplorer")
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--config", str(config_file), "snowflake"])
+    assert "" == result.stdout
+    assert result.exception is None
+    assert 0 == result.exit_code
+    explorer.dispatch.assert_called_once_with(Namespace(
+        account='snowflake_account',
+        authenticator='oauth',
+        catalog={
+            'host': None,
+            'port': None,
+            'user': None,
+            'password': None,
+            'format': 'ascii_table',
+            'file': None
+        },
+        database='snowflake_database',
+        exclude_schema=(),
+        exclude_table=(),
+        include_schema=(),
+        include_table=(),
+        list_all=False,
+        oauth_host='host',
+        oauth_token='token',
+        okta_account_name=None,
+        password=None,
+        scan_type='shallow',
+        user='snowflake_user',
+        warehouse='snowflake_warehouse',
+    ))
+
+
+def test_snowflake_okta(tmp_path, mocker, caplog):
+    caplog.set_level(logging.DEBUG)
+    config_file = tmp_path / "db_host.ini"
+    config_file.write_text("""
+[snowflake]
+user='snowflake_user'
+password='snowflake_password'
+authenticator='okta'
+okta_account_name='oan'
+account='snowflake_account'
+warehouse='snowflake_warehouse'
+database='snowflake_database'
+""")
+
+    logging.info("Config File: %s" % config_file)
+    explorer = mocker.patch("piicatcher.explorer.snowflake.SnowflakeExplorer")
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--config", str(config_file), "snowflake"])
+    assert "" == result.stdout
+    assert result.exception is None
+    assert 0 == result.exit_code
+    explorer.dispatch.assert_called_once_with(Namespace(
+        account='snowflake_account',
+        authenticator='okta',
+        catalog={
+            'host': None,
+            'port': None,
+            'user': None,
+            'password': None,
+            'format': 'ascii_table',
+            'file': None
+        },
+        database='snowflake_database',
+        exclude_schema=(),
+        exclude_table=(),
+        include_schema=(),
+        include_table=(),
+        list_all=False,
+        oauth_host=None,
+        oauth_token=None,
+        okta_account_name='oan',
+        password='snowflake_password',
+        scan_type='shallow',
+        user='snowflake_user',
+        warehouse='snowflake_warehouse',
+    ))

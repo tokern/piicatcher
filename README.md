@@ -56,6 +56,7 @@ PIICatcher supports the following databases:
 4. **AWS Redshift**
 5. **Oracle**
 6. **AWS Glue/AWS Athena**
+7. **Snowflake**
 
 ## Documentation
 
