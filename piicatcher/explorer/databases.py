@@ -58,7 +58,7 @@ tables matching -T are excluded from what is otherwise a normal dump.
 @click.option("-p", "--password", help="Password of the user")
 @click.option("-d", "--database", default='', help="Name of the database")
 @click.option("--connection-type", default="mysql",
-              type=click.Choice(["mysql", "postgres", "redshift", "oracle", "sqlserver"]),
+              type=click.Choice(["mysql", "postgres", "redshift", "oracle"]),
               help="Type of database")
 @click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db"]),
               help="DEPRECATED. Please use --catalog-format")
@@ -123,8 +123,6 @@ class RelDbExplorer(Explorer):
             explorer = MySQLExplorer(ns)
         elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
             explorer = PostgreSQLExplorer(ns)
-        elif ns.connection_type == "sqlserver":
-            explorer = MSSQLExplorer(ns)
         elif ns.connection_type == "oracle":
             explorer = OracleExplorer(ns)
         assert (explorer is not None)

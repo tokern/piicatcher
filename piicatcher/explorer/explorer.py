@@ -137,11 +137,14 @@ class Explorer(ABC):
 
     def _get_query(self, schema_name, table_name, column_list):
         count = self._get_table_count(schema_name, table_name)
+        logging.debug("No. of rows in {}.{} is {}".format(schema_name, table_name, count))
         if count < self.small_table_max:
+            logging.debug("Choosing a SELECT query as table size is small")
             query = self._get_select_query(schema_name, table_name, column_list)
         else:
             try:
                 query = self._get_sample_query(schema_name, table_name, column_list)
+                logging.debug("Choosing a SAMPLE query as table size is big")
             except NotImplementedError:
                 logging.warning("Sample Row is not implemented for %s" % self.__class__.__name__)
                 query = self._get_select_query(schema_name, table_name, column_list)

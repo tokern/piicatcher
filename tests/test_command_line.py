@@ -309,3 +309,40 @@ class TestAWSParser(TestCase):
                      'format': 'json',
                      'file': None}))
 
+
+class TestSnowflakeParser(TestCase):
+
+    @patch('piicatcher.explorer.snowflake.SnowflakeExplorer')
+    def test_user_password(self, explorer):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["snowflake", "--user", "snowflake_user", "--password", "snowflake_password",
+                                     "--account", "snowflake_account", "--warehouse", "snowflake_warehouse",
+                                     "--database", "snowflake_database", "--schema", "snowflake_schema"])
+        self.assertEqual("", result.stdout)
+        self.assertEqual(0, result.exit_code)
+        explorer.dispatch.assert_called_once_with(Namespace(
+            account='snowflake_account',
+            authenticator='userpasswd',
+            catalog={
+                'host': None,
+                'port': None,
+                'user': None,
+                'password': None,
+                'format': 'ascii_table',
+                'file': None
+            },
+            database='snowflake_database',
+            exclude_schema=(),
+            exclude_table=(),
+            include_schema=(),
+            include_table=(),
+            list_all=False,
+            oauth_host=None,
+            oauth_token=None,
+            okta_account_name=None,
+            password='snowflake_password',
+            scan_type='shallow',
+            schema='snowflake_schema',
+            user='snowflake_user',
+            warehouse='snowflake_warehouse',
+        ))
