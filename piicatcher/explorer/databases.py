@@ -164,7 +164,7 @@ class MySQLExplorer(RelDbExplorer):
 
     @classmethod
     def _get_sample_query(cls, schema_name, table_name, column_list):
-        return cls.query_template.format(
+        return cls._sample_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
             schema_name=schema_name.get_name(),
             table_name=table_name.get_name()
@@ -209,7 +209,7 @@ class PostgreSQLExplorer(RelDbExplorer):
 
     @classmethod
     def _get_sample_query(cls, schema_name, table_name, column_list):
-        return cls.query_template.format(
+        return cls._sample_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
             schema_name=schema_name.get_name(),
             table_name=table_name.get_name()
