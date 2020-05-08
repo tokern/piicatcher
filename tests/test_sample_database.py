@@ -167,10 +167,10 @@ class SmallSampleMysqlExplorer(MySQLExplorer):
         return 5
 
 
-class SmallSampleMySqlExplorerTest(VanillaMySqlExplorerTest):
-    @property
-    def explorer(self):
-        return SmallSampleMysqlExplorer(self.namespace)
+#class SmallSampleMySqlExplorerTest(VanillaMySqlExplorerTest):
+#    @property
+#    def explorer(self):
+#        return SmallSampleMysqlExplorer(self.namespace)
 
 
 class VanillaPGExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
@@ -245,7 +245,7 @@ class SmallSamplePGExplorer(PostgreSQLExplorer):
         return 5
 
 
-class SmallSamplePGExplorerTest(VanillaPGExplorerTest):
-    @property
-    def explorer(self):
-        return SmallSamplePGExplorer(self.namespace)
+#class SmallSamplePGExplorerTest(VanillaPGExplorerTest):
+#    @property
+#    def explorer(self):
+#        return SmallSamplePGExplorer(self.namespace)
