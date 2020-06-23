@@ -12,14 +12,9 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - build38:
-          filters:
-            tags:
-              only: /.*/
       - deploy:
           requires:
             - build
-            - build38
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
@@ -29,7 +24,7 @@ workflows:
 jobs:
   build: &test-template
     docker:
-      - image: circleci/python:3.7.3
+      - image: circleci/python:3.8.1
         environment:
           PIPENV_VENV_IN_PROJECT: true
       # Specify service dependencies here if necessary
@@ -94,28 +89,6 @@ jobs:
 
       - codecov/upload:
           file: coverage.xml
-
-  build38:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.8.1
-        environment:
-          PIPENV_VENV_IN_PROJECT: true
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/postgres:12.0-alpine-ram
-        environment:
-          POSTGRES_USER: piiuser
-          POSTGRES_PASSWORD: p11secret
-          POSTGRES_DB: piidb
-
-      - image: circleci/mysql:8.0.18-ram
-        environment:
-          MYSQL_USER: piiuser
-          MYSQL_PASSWORD: p11secret
-          MYSQL_DATABASE: piidb
-          MYSQL_ROOT_PASSWORD: r00tPa33w0rd
 
   deploy:
     environment:
