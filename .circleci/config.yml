@@ -28,8 +28,6 @@ workflows:
 
 jobs:
   build: &test-template
-    environment:
-      PYVERSION: "3.7.3"
     docker:
       - image: circleci/python:3.7.3
         environment:
@@ -68,7 +66,7 @@ jobs:
 
       # Download and cache dependencies
       - restore_cache:
-          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.PYVERSION }}
+          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
 
       - run: &install-deps
           name: install dependencies
@@ -77,7 +75,7 @@ jobs:
             pipenv run python -m spacy download en_core_web_sm
 
       - save_cache:
-          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.PYVERSION }}
+          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
           paths:
             - ".venv"
 
@@ -98,8 +96,6 @@ jobs:
           file: coverage.xml
 
   build38:
-    environment:
-      PYVERSION: "3.8.1"
     <<: *test-template
     docker:
       - image: circleci/python:3.8.1
