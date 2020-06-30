@@ -5,6 +5,7 @@ import click
 import pymysql
 import psycopg2
 import cx_Oracle
+import pymssql
 
 import logging
 
@@ -58,7 +59,7 @@ tables matching -T are excluded from what is otherwise a normal dump.
 @click.option("-p", "--password", help="Password of the user")
 @click.option("-d", "--database", default='', help="Name of the database")
 @click.option("--connection-type", default="mysql",
-              type=click.Choice(["mysql", "postgres", "redshift", "oracle"]),
+              type=click.Choice(["mssql", "mysql", "postgres", "redshift", "oracle"]),
               help="Type of database")
 @click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db"]),
               help="DEPRECATED. Please use --catalog-format")
@@ -125,6 +126,8 @@ class RelDbExplorer(Explorer):
             explorer = PostgreSQLExplorer(ns)
         elif ns.connection_type == "oracle":
             explorer = OracleExplorer(ns)
+        elif ns.connection_type == "mssql":
+            explorer = MSSQLExplorer(ns)
         assert (explorer is not None)
 
         return explorer
@@ -158,6 +161,46 @@ class MySQLExplorer(RelDbExplorer):
                                user=self.user,
                                password=self.password,
                                database=self._mysql_database)
+
+    def _get_catalog_query(self):
+        return self._catalog_query
+
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return cls._sample_query_template.format(
+            column_list=",".join([col.get_name() for col in column_list]),
+            schema_name=schema_name.get_name(),
+            table_name=table_name.get_name()
+        )
+
+
+class MSSQLExplorer(RelDbExplorer):
+    _catalog_query = """
+        SELECT
+            TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE
+        FROM
+            INFORMATION_SCHEMA.COLUMNS
+        WHERE
+            TABLE_SCHEMA NOT IN ('information_schema', 'performance_schema', 'sys', 'mssql')
+        ORDER BY table_schema, table_name, column_name
+    """
+# AND DATA_TYPE RLIKE 'char.*|varchar.*|text'
+    _sample_query_template = "select {column_list} from {schema_name}.{table_name} limit 10"
+
+    def __init__(self, ns):
+        super(MSSQLExplorer, self).__init__(ns)
+        self._mssql_database = ns.database if 'database' in vars(ns) and ns.database is not None else None
+
+    @property
+    def default_port(self):
+        return 3306
+
+    def _open_connection(self):
+        return pymssql.connect(host=self.host,
+                               port=self.port,
+                               user=self.user,
+                               password=self.password,
+                               database=self._mssql_database)
 
     def _get_catalog_query(self):
         return self._catalog_query
