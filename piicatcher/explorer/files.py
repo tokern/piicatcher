@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import sys
 from argparse import Namespace
 
 import click

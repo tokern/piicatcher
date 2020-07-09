@@ -14,10 +14,10 @@ def load_sample_data(connection):
     create_table = """
         CREATE TABLE SAMPLE(
             id VARCHAR(255), gender VARCHAR(255), birthdate DATE, maiden_name VARCHAR(255), lname VARCHAR(255),
-            fname VARCHAR(255), address VARCHAR(255), city VARCHAR(255), state VARCHAR(255), zip VARCHAR(255), 
+            fname VARCHAR(255), address VARCHAR(255), city VARCHAR(255), state VARCHAR(255), zip VARCHAR(255),
             phone VARCHAR(255), email VARCHAR(255), cc_type VARCHAR(255), cc_number VARCHAR(255), cc_cvc VARCHAR(255),
             cc_expiredate DATE
-        )   
+        )
     """
 
     sql = """

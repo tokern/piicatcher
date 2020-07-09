@@ -1,4 +1,11 @@
-from peewee import *
+from peewee import (
+    AutoField,
+    CharField,
+    DatabaseProxy,
+    ForeignKeyField,
+    Model,
+    MySQLDatabase,
+)
 
 from piicatcher.catalog import Store
 from piicatcher.catalog.pii_type_field import PiiTypeField
