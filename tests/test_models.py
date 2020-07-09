@@ -4,7 +4,7 @@ from argparse import Namespace
 import pymysql
 import pytest
 
-from piicatcher.catalog.db import *
+from piicatcher.catalog.db import DbStore, model_db_close
 from piicatcher.explorer.explorer import Explorer
 from piicatcher.explorer.metadata import Column
 from piicatcher.explorer.metadata import Database as mdDatabase
@@ -172,7 +172,7 @@ def test_out_of_band_update(setup_explorer):
         c.execute(
             """
             update dbcolumns set pii_type='[{{"__enum__": "PiiTypes.CREDIT_CARD"}}]'
-            where table_id = {0} and name = 'b' 
+            where table_id = {0} and name = 'b'
             """.format(
                 table_id
             )

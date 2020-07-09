@@ -98,13 +98,13 @@ def cli(
 
 class AthenaExplorer(Explorer):
     _catalog_query = """
-            SELECT 
-                table_schema, table_name, column_name  
-            FROM 
+            SELECT
+                table_schema, table_name, column_name
+            FROM
                 information_schema.columns
-            WHERE data_type LIKE '%char%' AND 
+            WHERE data_type LIKE '%char%' AND
                 table_schema != 'information_schema'
-            ORDER BY table_schema, table_name, ordinal_position 
+            ORDER BY table_schema, table_name, ordinal_position
         """
 
     _sample_query_template = "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI(5) limit 10"

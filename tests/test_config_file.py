@@ -2,7 +2,6 @@ import logging
 from argparse import Namespace
 
 from click.testing import CliRunner
-from pytest_mock import mocker
 
 from piicatcher.command_line import cli
 

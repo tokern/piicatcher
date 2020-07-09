@@ -88,7 +88,7 @@ class UpdateParameters(unittest.TestCase):
 
     def test_param_update(self):
         columns = [
-            {"Name": "locationid", "Type": "bigint",},
+            {"Name": "locationid", "Type": "bigint", },
             {"Name": "borough", "Type": "string", "Parameters": {"a": "b"}},
         ]
 
