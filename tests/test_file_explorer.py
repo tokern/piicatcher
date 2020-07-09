@@ -98,7 +98,7 @@ def test_dict(namespace):
             {'Mime/Type': 'text/plain', 'path': '/tmp/1', 'pii': [PiiTypes.BIRTH_DATE]},
             {'Mime/Type': 'application/pdf', 'path': '/tmp/2',  'pii': [PiiTypes.UNSUPPORTED]}
         ]
-    }, explorer.get_dict())
+    } == explorer.get_dict())
 
 
 def test_output_json(request, namespace):
