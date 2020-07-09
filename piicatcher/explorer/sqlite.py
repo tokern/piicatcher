@@ -52,19 +52,19 @@ def cli(cxt, path, output_format, scan_type, output, list_all,
 
 class SqliteExplorer(Explorer):
     _catalog_query = """
-            SELECT 
+            SELECT
                 "" as schema_name,
-                m.name as table_name, 
+                m.name as table_name,
                 p.name as column_name,
                 p.type as data_type
-            FROM 
+            FROM
                 sqlite_master AS m
-            JOIN 
+            JOIN
                 pragma_table_info(m.name) AS p
             WHERE
                 p.type like 'text' or p.type like 'varchar%' or p.type like 'char%'
-            ORDER BY 
-                m.name, 
+            ORDER BY
+                m.name,
                 p.name
     """
 
@@ -105,6 +105,6 @@ class SqliteExplorer(Explorer):
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
         return cls._query_template.format(
-            column_list=",".join([col.get_name() for col in column_list]),
+            column_list='"{0}"'.format('","'.join(col.get_name() for col in column_list)),
             table_name=table_name.get_name()
         )
