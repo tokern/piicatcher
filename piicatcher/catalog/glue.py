@@ -12,11 +12,11 @@ class GlueStore(Store):
         is_table_updated = False
 
         for col in column_parameters:
-            if col['Name'] in pii_table:
-                if 'Parameters' not in col or col['Parameters'] is None:
-                    col['Parameters'] = {}
+            if col["Name"] in pii_table:
+                if "Parameters" not in col or col["Parameters"] is None:
+                    col["Parameters"] = {}
 
-                col['Parameters']['PII'] = pii_table[col['Name']][0]
+                col["Parameters"]["PII"] = pii_table[col["Name"]][0]
                 is_table_updated = True
             updated_columns.append(col)
 
@@ -35,13 +35,24 @@ class GlueStore(Store):
     @staticmethod
     def update_table_params(table_params, column_params):
         updated_params = {}
-        for param in ['Name', 'Description', 'Owner', 'LastAccessTime', 'LastAnalyzedTime',
-                      'Retention','StorageDescriptor', 'PartitionKeys', 'ViewOriginalText',
-                      'ViewExpandedText', 'TableType', 'Parameters']:
+        for param in [
+            "Name",
+            "Description",
+            "Owner",
+            "LastAccessTime",
+            "LastAnalyzedTime",
+            "Retention",
+            "StorageDescriptor",
+            "PartitionKeys",
+            "ViewOriginalText",
+            "ViewExpandedText",
+            "TableType",
+            "Parameters",
+        ]:
             if param in table_params:
                 updated_params[param] = table_params[param]
 
-        updated_params['StorageDescriptor']['Columns'] = column_params
+        updated_params["StorageDescriptor"]["Columns"] = column_params
 
         logging.debug("Updated parameters are :")
         logging.debug(updated_params)
@@ -50,10 +61,12 @@ class GlueStore(Store):
     @classmethod
     def save_schemas(cls, explorer):
         schemas = explorer.get_schemas()
-        client = boto3.client("glue",
-                              region_name=explorer.config.region,
-                              aws_access_key_id=explorer.config.access_key,
-                              aws_secret_access_key=explorer.config.secret_key)
+        client = boto3.client(
+            "glue",
+            region_name=explorer.config.region,
+            aws_access_key_id=explorer.config.access_key,
+            aws_secret_access_key=explorer.config.secret_key,
+        )
 
         logging.debug(client)
         for schema in schemas:
@@ -61,21 +74,19 @@ class GlueStore(Store):
             for table in schema.get_tables():
                 field_value = GlueStore.get_pii_table(table)
                 table_info = client.get_table(
-                    DatabaseName=schema.get_name(),
-                    Name=table.get_name()
+                    DatabaseName=schema.get_name(), Name=table.get_name()
                 )
 
                 logging.debug(table_info)
 
                 updated_columns, is_table_updated = GlueStore.update_column_parameters(
-                    table_info['Table']['StorageDescriptor']['Columns'], field_value
+                    table_info["Table"]["StorageDescriptor"]["Columns"], field_value
                 )
 
                 if is_table_updated:
                     updated_params = GlueStore.update_table_params(
-                        table_info['Table'],
-                        updated_columns)
+                        table_info["Table"], updated_columns
+                    )
                     client.update_table(
-                        DatabaseName=schema.get_name(),
-                        TableInput=updated_params
+                        DatabaseName=schema.get_name(), TableInput=updated_params
                     )

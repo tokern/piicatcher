@@ -10,10 +10,20 @@ class RegexTestCase(TestCase):
         self.parser = RegexScanner()
 
     def test_phones(self):
-        matching = ["12345678900", "1234567890", "+1 234 567 8900", "234-567-8900",
-                    "1-234-567-8900", "1.234.567.8900", "5678900", "567-8900",
-                    "(123) 456 7890", "+41 22 730 5989", "(+41) 22 730 5989",
-                    "+442345678900"]
+        matching = [
+            "12345678900",
+            "1234567890",
+            "+1 234 567 8900",
+            "234-567-8900",
+            "1-234-567-8900",
+            "1.234.567.8900",
+            "5678900",
+            "567-8900",
+            "(123) 456 7890",
+            "+41 22 730 5989",
+            "(+41) 22 730 5989",
+            "+442345678900",
+        ]
         for text in matching:
             self.assertEqual(self.parser.scan(text), [PiiTypes.PHONE])
 
@@ -26,15 +36,22 @@ class RegexTestCase(TestCase):
             self.assertEqual(self.parser.scan(text), [])
 
     def test_credit_cards(self):
-        matching = ["0000-0000-0000-0000", "0123456789012345",
-                    "0000 0000 0000 0000", "012345678901234"]
+        matching = [
+            "0000-0000-0000-0000",
+            "0123456789012345",
+            "0000 0000 0000 0000",
+            "012345678901234",
+        ]
         for text in matching:
             self.assertTrue(PiiTypes.CREDIT_CARD in self.parser.scan(text))
 
     def test_street_addresses(self):
-        matching = ["checkout the new place at 101 main st.",
-                    "504 parkwood drive", "3 elm boulevard",
-                    "500 elm street "]
+        matching = [
+            "checkout the new place at 101 main st.",
+            "504 parkwood drive",
+            "3 elm boulevard",
+            "500 elm street ",
+        ]
         non_matching = ["101 main straight"]
 
         for text in matching:

@@ -5,6 +5,7 @@ from enum import Enum, auto
 
 class PiiTypes(Enum):
     """PiiTypes enumerates the different types of PII data"""
+
     NONE = auto()
     UNSUPPORTED = auto()
     PHONE = auto()

@@ -20,13 +20,16 @@ def temp_sqlite(request, tmpdir_factory):
     temp_dir = tmpdir_factory.mktemp("sqlite_test")
     sqlite_path = temp_dir.join("sqldb")
 
-    explorer = SqliteExplorer(Namespace(
-        path=sqlite_path, catalog=None,
-        include_schema=(),
-        exclude_schema=(),
-        include_table=(),
-        exclude_table=()
-    ))
+    explorer = SqliteExplorer(
+        Namespace(
+            path=sqlite_path,
+            catalog=None,
+            include_schema=(),
+            exclude_schema=(),
+            include_table=(),
+            exclude_table=(),
+        )
+    )
 
     request.cls.explorer = explorer
     request.cls.path = str(sqlite_path)
@@ -53,7 +56,7 @@ class SqliteExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
     def test_schema(self):
         # pylint: disable=no-member
         names = [sch.get_name() for sch in self.explorer.get_schemas()]
-        self.assertEqual([''], names)
+        self.assertEqual([""], names)
 
     def get_test_schema(self):
         return ""
@@ -76,22 +79,27 @@ class SqliteDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
 
 class TestDispatcher(TestCase):
     def test_sqlite_dispatch(self):
-        with mock.patch('piicatcher.explorer.sqlite.SqliteExplorer.scan', autospec=True) \
-                as mock_scan_method:
-            with mock.patch('piicatcher.explorer.sqlite.SqliteExplorer.get_tabular',
-                            autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.explorer.explorer.tableprint', autospec=True) \
-                        as mock_table_print:
-                    SqliteExplorer.dispatch(Namespace(path='connection', list_all=None,
-                                                      catalog={
-                                                          'format': 'ascii_table'
-                                                      },
-                                                      scan_type=None,
-                                                      include_schema=(),
-                                                      exclude_schema=(),
-                                                      include_table=(),
-                                                      exclude_table=()
-                                                      ))
+        with mock.patch(
+            "piicatcher.explorer.sqlite.SqliteExplorer.scan", autospec=True
+        ) as mock_scan_method:
+            with mock.patch(
+                "piicatcher.explorer.sqlite.SqliteExplorer.get_tabular", autospec=True
+            ) as mock_tabular_method:
+                with mock.patch(
+                    "piicatcher.explorer.explorer.tableprint", autospec=True
+                ) as mock_table_print:
+                    SqliteExplorer.dispatch(
+                        Namespace(
+                            path="connection",
+                            list_all=None,
+                            catalog={"format": "ascii_table"},
+                            scan_type=None,
+                            include_schema=(),
+                            exclude_schema=(),
+                            include_table=(),
+                            exclude_table=(),
+                        )
+                    )
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     mock_table_print.table.assert_called_once()

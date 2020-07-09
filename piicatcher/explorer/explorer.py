@@ -21,7 +21,9 @@ class Explorer(ABC):
         self._exclude_schema = ns.exclude_schema
         self._include_table = ns.include_table
         self._exclude_table = ns.exclude_table
-        self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
+        self._database = Database(
+            "database", include=self._include_schema, exclude=self._exclude_schema
+        )
 
     def __enter__(self):
         return self
@@ -62,12 +64,12 @@ class Explorer(ABC):
 
     @classmethod
     def output(cls, ns, explorer):
-        if ns.catalog['format'] == "ascii_table":
+        if ns.catalog["format"] == "ascii_table":
             headers = ["schema", "table", "column", "has_pii"]
             tableprint.table(explorer.get_tabular(ns.list_all), headers)
-        elif ns.catalog['format'] == "json":
+        elif ns.catalog["format"] == "json":
             FileStore.save_schemas(explorer)
-        elif ns.catalog['format'] == "db":
+        elif ns.catalog["format"] == "db":
             DbStore.save_schemas(explorer)
 
     def get_connection(self):
@@ -94,8 +96,14 @@ class Explorer(ABC):
             for table in schema.get_children():
                 for column in table.get_children():
                     if list_all or column.has_pii():
-                        tabular.append([schema.get_name(), table.get_name(),
-                                       column.get_name(), column.has_pii()])
+                        tabular.append(
+                            [
+                                schema.get_name(),
+                                table.get_name(),
+                                column.get_name(),
+                                column.has_pii(),
+                            ]
+                        )
 
         return tabular
 
@@ -109,16 +117,17 @@ class Explorer(ABC):
     @classmethod
     def _get_count_query(cls, schema_name, table_name):
         return cls._count_query.format(
-            schema_name=schema_name.get_name(),
-            table_name=table_name.get_name()
+            schema_name=schema_name.get_name(), table_name=table_name.get_name()
         )
 
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
         return cls.query_template.format(
-            column_list='"{0}"'.format('","'.join(col.get_name() for col in column_list)),
+            column_list='"{0}"'.format(
+                '","'.join(col.get_name() for col in column_list)
+            ),
             schema_name=schema_name.get_name(),
-            table_name=table_name.get_name()
+            table_name=table_name.get_name(),
         )
 
     @classmethod
@@ -137,7 +146,9 @@ class Explorer(ABC):
 
     def _get_query(self, schema_name, table_name, column_list):
         count = self._get_table_count(schema_name, table_name)
-        logging.debug("No. of rows in {}.{} is {}".format(schema_name, table_name, count))
+        logging.debug(
+            "No. of rows in {}.{} is {}".format(schema_name, table_name, count)
+        )
         if count < self.small_table_max:
             logging.debug("Choosing a SELECT query as table size is small")
             query = self._get_select_query(schema_name, table_name, column_list)
@@ -146,7 +157,9 @@ class Explorer(ABC):
                 query = self._get_sample_query(schema_name, table_name, column_list)
                 logging.debug("Choosing a SAMPLE query as table size is big")
             except NotImplementedError:
-                logging.warning("Sample Row is not implemented for %s" % self.__class__.__name__)
+                logging.warning(
+                    "Sample Row is not implemented for %s" % self.__class__.__name__
+                )
                 query = self._get_select_query(schema_name, table_name, column_list)
 
         return query
@@ -165,11 +178,17 @@ class Explorer(ABC):
         return self.get_connection().cursor()
 
     def _load_catalog(self):
-        if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(minutes=10):
+        if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(
+            minutes=10
+        ):
             with self._get_context_manager() as cursor:
                 logging.debug("Catalog Query: {0}".format(self._get_catalog_query()))
                 cursor.execute(self._get_catalog_query())
-                self._database = Database('database', include=self._include_schema, exclude=self._exclude_schema)
+                self._database = Database(
+                    "database",
+                    include=self._include_schema,
+                    exclude=self._exclude_schema,
+                )
 
                 row = cursor.fetchone()
 
@@ -177,18 +196,20 @@ class Explorer(ABC):
                 current_table = None
 
                 if row is not None:
-                    current_schema = Schema(row[0],
-                                            include=self._include_table,
-                                            exclude=self._exclude_table)
+                    current_schema = Schema(
+                        row[0], include=self._include_table, exclude=self._exclude_table
+                    )
                     current_table = Table(current_schema, row[1])
 
                 while row is not None:
                     if current_schema.get_name() != row[0]:
                         current_schema.add_child(current_table)
                         self._database.add_child(current_schema)
-                        current_schema = Schema(row[0],
-                                                include=self._include_table,
-                                                exclude=self._exclude_table)
+                        current_schema = Schema(
+                            row[0],
+                            include=self._include_table,
+                            exclude=self._exclude_table,
+                        )
                         current_table = Table(current_schema, row[1])
                     elif current_table.get_name() != row[1]:
                         current_schema.add_child(current_table)

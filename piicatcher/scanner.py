@@ -20,6 +20,7 @@ class Scanner(ABC):
 
 class RegexScanner(Scanner):
     """A scanner that uses common regular expressions to find PII"""
+
     def scan(self, text):
         """Scan the text and return an array of PiiTypes that are found"""
         regex_result = CommonRegex(text)
@@ -39,8 +40,9 @@ class RegexScanner(Scanner):
 
 class NERScanner(Scanner):
     """A scanner that uses Spacy NER for entity recognition"""
+
     def __init__(self):
-        self.nlp = spacy.load('en_core_web_sm')
+        self.nlp = spacy.load("en_core_web_sm")
 
     def scan(self, text):
         """Scan the text and return an array of PiiTypes that are found"""
@@ -49,34 +51,42 @@ class NERScanner(Scanner):
         types = set()
         for ent in doc.ents:
             logging.debug("Found %s", ent.label_)
-            if ent.label_ == 'PERSON':
+            if ent.label_ == "PERSON":
                 types.add(PiiTypes.PERSON)
 
-            if ent.label_ == 'GPE':
+            if ent.label_ == "GPE":
                 types.add(PiiTypes.LOCATION)
 
-            if ent.label_ == 'DATE':
+            if ent.label_ == "DATE":
                 types.add(PiiTypes.BIRTH_DATE)
 
-        logging.debug("PiiTypes are %s", ','.join(str(x) for x in list(types)))
+        logging.debug("PiiTypes are %s", ",".join(str(x) for x in list(types)))
         return list(types)
 
 
 class ColumnNameScanner(Scanner):
     regex = {
-        PiiTypes.PERSON: re.compile("^.*(firstname|fname|lastname|lname|"
-                                    "fullname|maidenname|_name|"
-                                    "nickname|name_suffix|name).*$", re.IGNORECASE),
+        PiiTypes.PERSON: re.compile(
+            "^.*(firstname|fname|lastname|lname|"
+            "fullname|maidenname|_name|"
+            "nickname|name_suffix|name).*$",
+            re.IGNORECASE,
+        ),
         PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
-        PiiTypes.BIRTH_DATE: re.compile("^.*(date_of_birth|dateofbirth|dob|"
-                                        "birthday|date_of_death|dateofdeath).*$", re.IGNORECASE),
+        PiiTypes.BIRTH_DATE: re.compile(
+            "^.*(date_of_birth|dateofbirth|dob|"
+            "birthday|date_of_death|dateofdeath).*$",
+            re.IGNORECASE,
+        ),
         PiiTypes.GENDER: re.compile("^.*(gender).*$", re.IGNORECASE),
         PiiTypes.NATIONALITY: re.compile("^.*(nationality).*$", re.IGNORECASE),
-        PiiTypes.ADDRESS: re.compile("^.*(address|city|state|county|country|"
-                                     "zipcode|postal|zone|borough).*$", re.IGNORECASE),
+        PiiTypes.ADDRESS: re.compile(
+            "^.*(address|city|state|county|country|" "zipcode|postal|zone|borough).*$",
+            re.IGNORECASE,
+        ),
         PiiTypes.USER_NAME: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
         PiiTypes.PASSWORD: re.compile("^.*pass.*$", re.IGNORECASE),
-        PiiTypes.SSN: re.compile("^.*(ssn|social).*$", re.IGNORECASE)
+        PiiTypes.SSN: re.compile("^.*(ssn|social).*$", re.IGNORECASE),
     }
 
     def scan(self, text):
@@ -85,5 +95,5 @@ class ColumnNameScanner(Scanner):
             if self.regex[pii_type].match(text) is not None:
                 types.add(pii_type)
 
-        logging.debug("PiiTypes are %s", ','.join(str(x) for x in list(types)))
+        logging.debug("PiiTypes are %s", ",".join(str(x) for x in list(types)))
         return list(types)

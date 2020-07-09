@@ -24,41 +24,46 @@ class MockExplorer(Explorer):
 
 class ExplorerTest(TestCase):
     def setUp(self):
-        self.explorer = MockExplorer(Namespace(host="mock_connection",
-                                               include_schema=(),
-                                               exclude_schema=(),
-                                               include_table=(),
-                                               exclude_table=(),
-                                               catalog=None))
+        self.explorer = MockExplorer(
+            Namespace(
+                host="mock_connection",
+                include_schema=(),
+                exclude_schema=(),
+                include_table=(),
+                exclude_table=(),
+                catalog=None,
+            )
+        )
 
-        col1 = Column('c1')
-        col2 = Column('c2')
+        col1 = Column("c1")
+        col2 = Column("c2")
         col2._pii = [PiiTypes.LOCATION]
 
-        schema = Schema('s1')
-        table = Table(schema, 't1')
+        schema = Schema("s1")
+        table = Table(schema, "t1")
         table.add_child(col1)
         table.add_child(col2)
 
-        schema = Schema('testSchema')
+        schema = Schema("testSchema")
         schema.add_child(table)
 
-        self.explorer._database = Database('database')
+        self.explorer._database = Database("database")
         self.explorer._database.add_child(schema)
 
     def test_tabular_all(self):
-        self.assertEqual([
-            ['testSchema', 't1', 'c1', False],
-            ['testSchema', 't1', 'c2', True]
-        ], self.explorer.get_tabular(True))
+        self.assertEqual(
+            [["testSchema", "t1", "c1", False], ["testSchema", "t1", "c2", True]],
+            self.explorer.get_tabular(True),
+        )
 
     def test_tabular_pii(self):
-        self.assertEqual([
-            ['testSchema', 't1', 'c2', True]
-        ], self.explorer.get_tabular(False))
+        self.assertEqual(
+            [["testSchema", "t1", "c2", True]], self.explorer.get_tabular(False)
+        )
 
     def test_json(self):
-        self.assertEqual('''[
+        self.assertEqual(
+            """[
   {
     "has_pii": false,
     "name": "testSchema",
@@ -83,5 +88,8 @@ class ExplorerTest(TestCase):
       }
     ]
   }
-]''',
-                         json.dumps(self.explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder))
+]""",
+            json.dumps(
+                self.explorer.get_dict(), sort_keys=True, indent=2, cls=PiiTypeEncoder
+            ),
+        )
