@@ -47,4 +47,3 @@ def test_stdout(capsys):
     assert len(obj) > 0
     assert obj[0]['name'] == 'test_store'
     assert len(obj[0]['tables']) == 3
-

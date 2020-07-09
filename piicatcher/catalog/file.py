@@ -13,4 +13,3 @@ class FileStore(Store):
                 json.dump(explorer.get_dict(), fh, sort_keys=True, indent=2, cls=PiiTypeEncoder)
         else:
             json.dump(explorer.get_dict(), sys.stdout, sort_keys=True, indent=2, cls=PiiTypeEncoder)
-

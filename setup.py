@@ -1,10 +1,11 @@
-from setuptools import setup, find_packages
-from setuptools.command.install import install
-from codecs import open
-from os import path, getenv
 import ast
-import sys
 import re
+import sys
+from codecs import open
+from os import getenv, path
+
+from setuptools import find_packages, setup
+from setuptools.command.install import install
 
 _version_re = re.compile(r'__version__\s*=\s*(.*)')
 

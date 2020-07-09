@@ -1,16 +1,20 @@
+import logging
 from abc import ABC, abstractmethod
+from argparse import Namespace
 from unittest import TestCase, mock
 
-from argparse import Namespace
-import pymysql
 import psycopg2
-import logging
+import pymysql
 import pytest
 
-from piicatcher.explorer.databases import MySQLExplorer, PostgreSQLExplorer, OracleExplorer, \
-    RelDbExplorer
+from piicatcher.explorer.databases import (
+    MySQLExplorer,
+    OracleExplorer,
+    PostgreSQLExplorer,
+    RelDbExplorer,
+)
+from piicatcher.explorer.metadata import Column, Schema, Table
 from piicatcher.explorer.sqlite import SqliteExplorer
-from piicatcher.explorer.metadata import Schema, Table, Column
 from piicatcher.piitypes import PiiTypes
 
 logging.basicConfig(level=logging.DEBUG)
@@ -471,4 +475,3 @@ class SampleQueryTest(TestCase):
                          MySQLExplorer._get_sample_query(self.schema,
                                                          self.schema.get_children()[0],
                                                          self.schema.get_children()[0].get_children()))
-

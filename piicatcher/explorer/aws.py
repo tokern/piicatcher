@@ -4,10 +4,14 @@ from argparse import Namespace
 import click
 import pyathena
 
-from piicatcher.explorer.databases import schema_help_text, exclude_schema_help_text, \
-    table_help_text, exclude_table_help_text
-from piicatcher.explorer.explorer import Explorer
 from piicatcher.catalog.glue import GlueStore
+from piicatcher.explorer.databases import (
+    exclude_schema_help_text,
+    exclude_table_help_text,
+    schema_help_text,
+    table_help_text,
+)
+from piicatcher.explorer.explorer import Explorer
 
 
 @click.command('aws')

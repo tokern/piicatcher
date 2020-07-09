@@ -1,9 +1,9 @@
 import json
 import logging
 import os
+from argparse import Namespace
 from shutil import rmtree
 from unittest import TestCase, mock
-from argparse import Namespace
 
 import pytest
 

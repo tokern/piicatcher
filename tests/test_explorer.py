@@ -3,8 +3,8 @@ from argparse import Namespace
 from unittest import TestCase
 
 from piicatcher.explorer.explorer import Explorer
-from piicatcher.explorer.metadata import Column, Schema, Table, Database
-from piicatcher.piitypes import PiiTypes, PiiTypeEncoder
+from piicatcher.explorer.metadata import Column, Database, Schema, Table
+from piicatcher.piitypes import PiiTypeEncoder, PiiTypes
 
 
 class MockExplorer(Explorer):

@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 
 import tableprint
 
-from piicatcher.catalog.file import FileStore
-from piicatcher.explorer.metadata import Schema, Table, Column, Database
 from piicatcher.catalog.db import DbStore
+from piicatcher.catalog.file import FileStore
+from piicatcher.explorer.metadata import Column, Database, Schema, Table
 
 
 class Explorer(ABC):

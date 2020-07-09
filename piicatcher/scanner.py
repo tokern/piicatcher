@@ -1,9 +1,9 @@
 """Different types of scanners for PII data"""
-from abc import ABC, abstractmethod
 import logging
 import re
-import spacy
+from abc import ABC, abstractmethod
 
+import spacy
 from commonregex import CommonRegex
 
 from piicatcher.piitypes import PiiTypes

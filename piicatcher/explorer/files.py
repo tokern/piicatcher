@@ -1,16 +1,16 @@
+import json
+import logging
+import os
 import sys
 from argparse import Namespace
 
 import click
-import tableprint
-import json
-import logging
-import os
 import magic
+import tableprint
 
 from piicatcher.catalog.file import FileStore
 from piicatcher.explorer.metadata import NamedObject
-from piicatcher.piitypes import PiiTypes, PiiTypeEncoder
+from piicatcher.piitypes import PiiTypeEncoder, PiiTypes
 from piicatcher.scanner import NERScanner, RegexScanner
 from piicatcher.tokenizer import Tokenizer
 

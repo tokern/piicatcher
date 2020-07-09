@@ -1,8 +1,9 @@
+from argparse import Namespace
 from unittest import TestCase
 from unittest.mock import patch
 
-from argparse import Namespace
 from click.testing import CliRunner
+
 from piicatcher.command_line import cli
 
 
