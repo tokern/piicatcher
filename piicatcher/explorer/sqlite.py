@@ -13,43 +13,74 @@ from piicatcher.explorer.databases import (
 from piicatcher.explorer.explorer import Explorer
 
 
-@click.command('sqlite')
+@click.command("sqlite")
 @click.pass_context
 @click.option("-s", "--path", required=True, help="File path to SQLite database")
-@click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db"]),
-              help="DEPRECATED. Please use --catalog-format")
-@click.option("-c", "--scan-type", default='shallow',
-              type=click.Choice(["deep", "shallow"]),
-              help="Choose deep(scan data) or shallow(scan column names only)")
-@click.option("-o", "--output", default=None, type=click.File(),
-              help="DEPRECATED. Please use --catalog-file")
-@click.option("--list-all", default=False, is_flag=True,
-              help="List all columns. By default only columns with PII information is listed")
+@click.option(
+    "-f",
+    "--output-format",
+    type=click.Choice(["ascii_table", "json", "db"]),
+    help="DEPRECATED. Please use --catalog-format",
+)
+@click.option(
+    "-c",
+    "--scan-type",
+    default="shallow",
+    type=click.Choice(["deep", "shallow"]),
+    help="Choose deep(scan data) or shallow(scan column names only)",
+)
+@click.option(
+    "-o",
+    "--output",
+    default=None,
+    type=click.File(),
+    help="DEPRECATED. Please use --catalog-file",
+)
+@click.option(
+    "--list-all",
+    default=False,
+    is_flag=True,
+    help="List all columns. By default only columns with PII information is listed",
+)
 @click.option("-n", "--schema", multiple=True, help=schema_help_text)
 @click.option("-N", "--exclude-schema", multiple=True, help=exclude_schema_help_text)
 @click.option("-t", "--table", multiple=True, help=table_help_text)
 @click.option("-T", "--exclude-table", multiple=True, help=exclude_table_help_text)
 # pylint: disable=too-many-arguments
-def cli(cxt, path, output_format, scan_type, output, list_all,
-        schema, exclude_schema, table, exclude_table):
-    args = Namespace(path=path,
-                     scan_type=scan_type,
-                     list_all=list_all,
-                     catalog=cxt.obj['catalog'],
-                     include_schema=schema,
-                     exclude_schema=exclude_schema,
-                     include_table=table,
-                     exclude_table=exclude_table)
+def cli(
+    cxt,
+    path,
+    output_format,
+    scan_type,
+    output,
+    list_all,
+    schema,
+    exclude_schema,
+    table,
+    exclude_table,
+):
+    args = Namespace(
+        path=path,
+        scan_type=scan_type,
+        list_all=list_all,
+        catalog=cxt.obj["catalog"],
+        include_schema=schema,
+        exclude_schema=exclude_schema,
+        include_table=table,
+        exclude_table=exclude_table,
+    )
 
     if output_format is not None or output is not None:
-        logging.warning("--output-format and --output is deprecated. "
-                        "Please use --catalog-format and --catalog-file")
+        logging.warning(
+            "--output-format and --output is deprecated. "
+            "Please use --catalog-format and --catalog-file"
+        )
 
     if output_format is not None:
-        args.catalog['format'] = output_format
+        args.catalog["format"] = output_format
 
     if output is not None:
-        args.catalog['file'] = output
+        args.catalog["file"] = output
 
     SqliteExplorer.dispatch(args)
 
@@ -109,6 +140,8 @@ class SqliteExplorer(Explorer):
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
         return cls._query_template.format(
-            column_list='"{0}"'.format('","'.join(col.get_name() for col in column_list)),
-            table_name=table_name.get_name()
+            column_list='"{0}"'.format(
+                '","'.join(col.get_name() for col in column_list)
+            ),
+            table_name=table_name.get_name(),
         )

@@ -13,39 +13,44 @@ from piicatcher.piitypes import PiiTypes
 
 class TestDispatcher(TestCase):
     def test_file_dispatch(self):
-        with mock.patch('piicatcher.explorer.files.FileExplorer.scan', autospec=True) as mock_scan_method:
-            with mock.patch('piicatcher.explorer.files.FileExplorer.get_tabular', autospec=True) as mock_tabular_method:
-                with mock.patch('piicatcher.explorer.files.tableprint', autospec=True) as MockTablePrint:
-                    FileExplorer.dispatch(Namespace(path='/a/b/c', catalog={
-                        'format': 'ascii_table'
-                    }))
+        with mock.patch(
+            "piicatcher.explorer.files.FileExplorer.scan", autospec=True
+        ) as mock_scan_method:
+            with mock.patch(
+                "piicatcher.explorer.files.FileExplorer.get_tabular", autospec=True
+            ) as mock_tabular_method:
+                with mock.patch(
+                    "piicatcher.explorer.files.tableprint", autospec=True
+                ) as MockTablePrint:
+                    FileExplorer.dispatch(
+                        Namespace(path="/a/b/c", catalog={"format": "ascii_table"})
+                    )
                     mock_scan_method.assert_called_once()
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
 
 
 class TestWalker(TestCase):
-
     def _check(self, result):
-        self.assertEqual(len(result['files']), 1)
-        self.assertEqual(result['files'][0]['Mime/Type'], 'text/plain')
-        self.assertEqual(result['files'][0]['path'], 'tests/samples/sample-data.csv')
-        self.assertEqual(len(result['files'][0]['pii']), 5)
+        self.assertEqual(len(result["files"]), 1)
+        self.assertEqual(result["files"][0]["Mime/Type"], "text/plain")
+        self.assertEqual(result["files"][0]["path"], "tests/samples/sample-data.csv")
+        self.assertEqual(len(result["files"][0]["pii"]), 5)
 
     def testDirectory(self):
-        explorer = FileExplorer(Namespace(path="tests/samples",
-                                          catalog={
-                                              'format': 'ascii_table'
-                                          }))
+        explorer = FileExplorer(
+            Namespace(path="tests/samples", catalog={"format": "ascii_table"})
+        )
         explorer.scan()
         result = explorer.get_dict()
         self._check(result)
 
     def testFile(self):
-        explorer = FileExplorer(Namespace(path="tests/samples/sample-data.csv",
-                                          catalog={
-                                              'format': 'ascii_table'
-                                          }))
+        explorer = FileExplorer(
+            Namespace(
+                path="tests/samples/sample-data.csv", catalog={"format": "ascii_table"}
+            )
+        )
         explorer.scan()
         result = explorer.get_dict()
         self._check(result)
@@ -74,48 +79,49 @@ def namespace(request, tmpdir_factory):
 
     request.addfinalizer(finalizer)
 
-    return Namespace(path=temp_dir,
-                     catalog={
-                         'format': 'json',
-                         'file': output_path
-                     })
+    return Namespace(path=temp_dir, catalog={"format": "json", "file": output_path})
 
 
 def test_tabular(namespace):
     explorer = MockFileExplorer(namespace)
     explorer.scan()
-    assert([
-        ['/tmp/1', 'text/plain', '[{"__enum__": "PiiTypes.BIRTH_DATE"}]'],
-        ['/tmp/2', 'application/pdf', '[{"__enum__": "PiiTypes.UNSUPPORTED"}]']
-    ] == explorer.get_tabular())
+    assert [
+        ["/tmp/1", "text/plain", '[{"__enum__": "PiiTypes.BIRTH_DATE"}]'],
+        ["/tmp/2", "application/pdf", '[{"__enum__": "PiiTypes.UNSUPPORTED"}]'],
+    ] == explorer.get_tabular()
 
 
 def test_dict(namespace):
     explorer = MockFileExplorer(namespace)
     explorer.scan()
-    assert({
-        'files': [
-            {'Mime/Type': 'text/plain', 'path': '/tmp/1', 'pii': [PiiTypes.BIRTH_DATE]},
-            {'Mime/Type': 'application/pdf', 'path': '/tmp/2',  'pii': [PiiTypes.UNSUPPORTED]}
+    assert {
+        "files": [
+            {"Mime/Type": "text/plain", "path": "/tmp/1", "pii": [PiiTypes.BIRTH_DATE]},
+            {
+                "Mime/Type": "application/pdf",
+                "path": "/tmp/2",
+                "pii": [PiiTypes.UNSUPPORTED],
+            },
         ]
-    } == explorer.get_dict())
+    } == explorer.get_dict()
 
 
 def test_output_json(request, namespace):
     MockFileExplorer.dispatch(namespace)
-    assert os.path.isfile(namespace.catalog['file'])
-    with open(namespace.catalog['file'], 'r') as output:
+    assert os.path.isfile(namespace.catalog["file"])
+    with open(namespace.catalog["file"], "r") as output:
         obj = json.load(output)
         assert obj == {
-            'files': [
+            "files": [
                 {
-                    'Mime/Type': 'text/plain',
-                    'path': '/tmp/1',
-                    'pii': [{'__enum__': 'PiiTypes.BIRTH_DATE'}]
-                }, {
-                    'Mime/Type': 'application/pdf',
-                    'path': '/tmp/2',
-                    'pii': [{'__enum__': 'PiiTypes.UNSUPPORTED'}]
-                }
+                    "Mime/Type": "text/plain",
+                    "path": "/tmp/1",
+                    "pii": [{"__enum__": "PiiTypes.BIRTH_DATE"}],
+                },
+                {
+                    "Mime/Type": "application/pdf",
+                    "path": "/tmp/2",
+                    "pii": [{"__enum__": "PiiTypes.UNSUPPORTED"}],
+                },
             ]
         }

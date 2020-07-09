@@ -25,7 +25,7 @@ def load_sample_data(connection):
                                   %s,%s,%s,%s,%s,%s,%s,%s)
     """
     # Get  Data
-    with open('tests/samples/sample-data.csv') as csv_file:
+    with open("tests/samples/sample-data.csv") as csv_file:
         reader = csv.reader(csv_file)
 
         with connection.cursor() as cursor:
@@ -101,39 +101,39 @@ class VanillaMySqlExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
     @property
     def deep_scan_result(self):
         return [
-            ['piidb', 'SAMPLE', 'address', True],
-            ['piidb', 'SAMPLE', 'cc_cvc', False],
-            ['piidb', 'SAMPLE', 'cc_number', True],
-            ['piidb', 'SAMPLE', 'cc_type', False],
-            ['piidb', 'SAMPLE', 'city', True],
-            ['piidb', 'SAMPLE', 'email', True],
-            ['piidb', 'SAMPLE', 'fname', True],
-            ['piidb', 'SAMPLE', 'gender', True],
-            ['piidb', 'SAMPLE', 'id', True],
-            ['piidb', 'SAMPLE', 'lname', True],
-            ['piidb', 'SAMPLE', 'maiden_name', True],
-            ['piidb', 'SAMPLE', 'phone', True],
-            ['piidb', 'SAMPLE', 'state', True],
-            ['piidb', 'SAMPLE', 'zip', True]
+            ["piidb", "SAMPLE", "address", True],
+            ["piidb", "SAMPLE", "cc_cvc", False],
+            ["piidb", "SAMPLE", "cc_number", True],
+            ["piidb", "SAMPLE", "cc_type", False],
+            ["piidb", "SAMPLE", "city", True],
+            ["piidb", "SAMPLE", "email", True],
+            ["piidb", "SAMPLE", "fname", True],
+            ["piidb", "SAMPLE", "gender", True],
+            ["piidb", "SAMPLE", "id", True],
+            ["piidb", "SAMPLE", "lname", True],
+            ["piidb", "SAMPLE", "maiden_name", True],
+            ["piidb", "SAMPLE", "phone", True],
+            ["piidb", "SAMPLE", "state", True],
+            ["piidb", "SAMPLE", "zip", True],
         ]
-    
+
     @property
     def shallow_scan_result(self):
         return [
-            ['piidb', 'SAMPLE', 'address', True],
-            ['piidb', 'SAMPLE', 'cc_cvc', False],
-            ['piidb', 'SAMPLE', 'cc_number', False],
-            ['piidb', 'SAMPLE', 'cc_type', False],
-            ['piidb', 'SAMPLE', 'city', True],
-            ['piidb', 'SAMPLE', 'email', True],
-            ['piidb', 'SAMPLE', 'fname', True],
-            ['piidb', 'SAMPLE', 'gender', True],
-            ['piidb', 'SAMPLE', 'id', False],
-            ['piidb', 'SAMPLE', 'lname', True],
-            ['piidb', 'SAMPLE', 'maiden_name', True],
-            ['piidb', 'SAMPLE', 'phone', False],
-            ['piidb', 'SAMPLE', 'state', True],
-            ['piidb', 'SAMPLE', 'zip', False]
+            ["piidb", "SAMPLE", "address", True],
+            ["piidb", "SAMPLE", "cc_cvc", False],
+            ["piidb", "SAMPLE", "cc_number", False],
+            ["piidb", "SAMPLE", "cc_type", False],
+            ["piidb", "SAMPLE", "city", True],
+            ["piidb", "SAMPLE", "email", True],
+            ["piidb", "SAMPLE", "fname", True],
+            ["piidb", "SAMPLE", "gender", True],
+            ["piidb", "SAMPLE", "id", False],
+            ["piidb", "SAMPLE", "lname", True],
+            ["piidb", "SAMPLE", "maiden_name", True],
+            ["piidb", "SAMPLE", "phone", False],
+            ["piidb", "SAMPLE", "state", True],
+            ["piidb", "SAMPLE", "zip", False],
         ]
 
     @property
@@ -147,16 +147,14 @@ class VanillaMySqlExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
             exclude_schema=(),
             include_table=(),
             exclude_table=(),
-            catalog=None
+            catalog=None,
         )
 
     @classmethod
     def get_connection(cls):
-        return pymysql.connect(host="127.0.0.1",
-                               user="piiuser",
-                               password="p11secret",
-                               database="piidb"
-                               )
+        return pymysql.connect(
+            host="127.0.0.1", user="piiuser", password="p11secret", database="piidb"
+        )
 
     @property
     def explorer(self):
@@ -179,39 +177,39 @@ class VanillaPGExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
     @property
     def deep_scan_result(self):
         return [
-            ['public', 'sample', 'address', True],
-            ['public', 'sample', 'cc_cvc', False],
-            ['public', 'sample', 'cc_number', True],
-            ['public', 'sample', 'cc_type', False],
-            ['public', 'sample', 'city', True],
-            ['public', 'sample', 'email', True],
-            ['public', 'sample', 'fname', True],
-            ['public', 'sample', 'gender', True],
-            ['public', 'sample', 'id', True],
-            ['public', 'sample', 'lname', True],
-            ['public', 'sample', 'maiden_name', True],
-            ['public', 'sample', 'phone', True],
-            ['public', 'sample', 'state', True],
-            ['public', 'sample', 'zip', True]
+            ["public", "sample", "address", True],
+            ["public", "sample", "cc_cvc", False],
+            ["public", "sample", "cc_number", True],
+            ["public", "sample", "cc_type", False],
+            ["public", "sample", "city", True],
+            ["public", "sample", "email", True],
+            ["public", "sample", "fname", True],
+            ["public", "sample", "gender", True],
+            ["public", "sample", "id", True],
+            ["public", "sample", "lname", True],
+            ["public", "sample", "maiden_name", True],
+            ["public", "sample", "phone", True],
+            ["public", "sample", "state", True],
+            ["public", "sample", "zip", True],
         ]
 
     @property
     def shallow_scan_result(self):
         return [
-            ['public', 'sample', 'address', True],
-            ['public', 'sample', 'cc_cvc', False],
-            ['public', 'sample', 'cc_number', False],
-            ['public', 'sample', 'cc_type', False],
-            ['public', 'sample', 'city', True],
-            ['public', 'sample', 'email', True],
-            ['public', 'sample', 'fname', True],
-            ['public', 'sample', 'gender', True],
-            ['public', 'sample', 'id', False],
-            ['public', 'sample', 'lname', True],
-            ['public', 'sample', 'maiden_name', True],
-            ['public', 'sample', 'phone', False],
-            ['public', 'sample', 'state', True],
-            ['public', 'sample', 'zip', False]
+            ["public", "sample", "address", True],
+            ["public", "sample", "cc_cvc", False],
+            ["public", "sample", "cc_number", False],
+            ["public", "sample", "cc_type", False],
+            ["public", "sample", "city", True],
+            ["public", "sample", "email", True],
+            ["public", "sample", "fname", True],
+            ["public", "sample", "gender", True],
+            ["public", "sample", "id", False],
+            ["public", "sample", "lname", True],
+            ["public", "sample", "maiden_name", True],
+            ["public", "sample", "phone", False],
+            ["public", "sample", "state", True],
+            ["public", "sample", "zip", False],
         ]
 
     @property
@@ -225,16 +223,14 @@ class VanillaPGExplorerTest(CommonSampleDataTestCases.CommonSampleDataTests):
             exclude_schema=(),
             include_table=(),
             exclude_table=(),
-            catalog=None
+            catalog=None,
         )
 
     @classmethod
     def get_connection(cls):
-        return psycopg2.connect(host="127.0.0.1",
-                                user="piiuser",
-                                password="p11secret",
-                                database="piidb"
-                                )
+        return psycopg2.connect(
+            host="127.0.0.1", user="piiuser", password="p11secret", database="piidb"
+        )
 
     @property
     def explorer(self):

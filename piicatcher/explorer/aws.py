@@ -14,48 +14,84 @@ from piicatcher.explorer.databases import (
 from piicatcher.explorer.explorer import Explorer
 
 
-@click.command('aws')
+@click.command("aws")
 @click.pass_context
 @click.option("-a", "--access-key", required=True, help="AWS Access Key ")
 @click.option("-s", "--secret-key", required=True, help="AWS Secret Key")
-@click.option("-d", "--staging-dir", required=True, help="S3 Staging Directory for Athena results")
+@click.option(
+    "-d", "--staging-dir", required=True, help="S3 Staging Directory for Athena results"
+)
 @click.option("-r", "--region", required=True, help="AWS Region")
-@click.option("-f", "--output-format", type=click.Choice(["ascii_table", "json", "db", "glue"]),
-              help="DEPRECATED. Please use --catalog-format")
-@click.option("-c", "--scan-type", default='shallow',
-              type=click.Choice(["deep", "shallow"]),
-              help="Choose deep(scan data) or shallow(scan column names only)")
-@click.option("-o", "--output", default=None, type=click.File(),
-              help="DEPRECATED. Please use --catalog-file")
-@click.option("--list-all", default=False, is_flag=True,
-              help="List all columns. By default only columns with PII information is listed")
+@click.option(
+    "-f",
+    "--output-format",
+    type=click.Choice(["ascii_table", "json", "db", "glue"]),
+    help="DEPRECATED. Please use --catalog-format",
+)
+@click.option(
+    "-c",
+    "--scan-type",
+    default="shallow",
+    type=click.Choice(["deep", "shallow"]),
+    help="Choose deep(scan data) or shallow(scan column names only)",
+)
+@click.option(
+    "-o",
+    "--output",
+    default=None,
+    type=click.File(),
+    help="DEPRECATED. Please use --catalog-file",
+)
+@click.option(
+    "--list-all",
+    default=False,
+    is_flag=True,
+    help="List all columns. By default only columns with PII information is listed",
+)
 @click.option("-n", "--schema", multiple=True, help=schema_help_text)
 @click.option("-N", "--exclude-schema", multiple=True, help=exclude_schema_help_text)
 @click.option("-t", "--table", multiple=True, help=table_help_text)
 @click.option("-T", "--exclude-table", multiple=True, help=exclude_table_help_text)
 # pylint: disable=too-many-arguments
-def cli(cxt, access_key, secret_key, staging_dir, region, output_format, scan_type, output,
-        list_all, schema, exclude_schema, table, exclude_table):
-    args = Namespace(access_key=access_key,
-                     secret_key=secret_key,
-                     staging_dir=staging_dir,
-                     region=region,
-                     scan_type=scan_type,
-                     list_all=list_all,
-                     include_schema=schema,
-                     exclude_schema=exclude_schema,
-                     include_table=table,
-                     exclude_table=exclude_table,
-                     catalog=cxt.obj['catalog'])
+def cli(
+    cxt,
+    access_key,
+    secret_key,
+    staging_dir,
+    region,
+    output_format,
+    scan_type,
+    output,
+    list_all,
+    schema,
+    exclude_schema,
+    table,
+    exclude_table,
+):
+    args = Namespace(
+        access_key=access_key,
+        secret_key=secret_key,
+        staging_dir=staging_dir,
+        region=region,
+        scan_type=scan_type,
+        list_all=list_all,
+        include_schema=schema,
+        exclude_schema=exclude_schema,
+        include_table=table,
+        exclude_table=exclude_table,
+        catalog=cxt.obj["catalog"],
+    )
     if output_format is not None or output is not None:
-        logging.warning("--output-format and --output is deprecated. "
-                        "Please use --catalog-format and --catalog-file")
+        logging.warning(
+            "--output-format and --output is deprecated. "
+            "Please use --catalog-format and --catalog-file"
+        )
 
     if output_format is not None:
-        args.catalog['format'] = output_format
+        args.catalog["format"] = output_format
 
     if output is not None:
-        args.catalog['file'] = output
+        args.catalog["file"] = output
 
     AthenaExplorer.dispatch(args)
 
@@ -71,9 +107,10 @@ class AthenaExplorer(Explorer):
             ORDER BY table_schema, table_name, ordinal_position 
         """
 
-    _sample_query_template = \
-        "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI(5) limit 10"
-    _select_query_template = "select {column_list} from {schema_name}.{table_name} limit 10"
+    _sample_query_template = "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI(5) limit 10"
+    _select_query_template = (
+        "select {column_list} from {schema_name}.{table_name} limit 10"
+    )
     _count_query = "select count(*) from {schema_name}.{table_name}"
 
     def __init__(self, ns):
@@ -88,16 +125,18 @@ class AthenaExplorer(Explorer):
 
     @classmethod
     def output(cls, ns, explorer):
-        if ns.catalog['format'] == "glue":
+        if ns.catalog["format"] == "glue":
             GlueStore.save_schemas(explorer)
         else:
             super(AthenaExplorer, cls).output(ns, explorer)
 
     def _open_connection(self):
-        return pyathena.connect(aws_access_key_id=self.config.access_key,
-                                aws_secret_access_key=self.config.secret_key,
-                                s3_staging_dir=self.config.staging_dir,
-                                region_name=self.config.region)
+        return pyathena.connect(
+            aws_access_key_id=self.config.access_key,
+            aws_secret_access_key=self.config.secret_key,
+            s3_staging_dir=self.config.staging_dir,
+            region_name=self.config.region,
+        )
 
     def _get_catalog_query(self):
         return self._catalog_query
@@ -107,7 +146,7 @@ class AthenaExplorer(Explorer):
         return cls._select_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
             table_name=table_name.get_name(),
-            schema_name=schema_name.get_name()
+            schema_name=schema_name.get_name(),
         )
 
     @classmethod
@@ -115,12 +154,11 @@ class AthenaExplorer(Explorer):
         return cls._sample_query_template.format(
             column_list=",".join([col.get_name() for col in column_list]),
             table_name=table_name.get_name(),
-            schema_name=schema_name.get_name()
+            schema_name=schema_name.get_name(),
         )
 
     @classmethod
     def _get_count_query(cls, schema_name, table_name):
         return cls._count_query.format(
-            table_name=table_name.get_name(),
-            schema_name=schema_name.get_name()
+            table_name=table_name.get_name(), schema_name=schema_name.get_name()
         )

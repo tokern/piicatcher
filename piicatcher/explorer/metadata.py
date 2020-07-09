@@ -15,8 +15,12 @@ class NamedObject(ABC, LogMixin):
         self._exclude_regex = ()
         self.set_include_regex(include)
         self.set_exclude_regex(exclude)
-        self.logger.debug("Name: %s, include: (%s), exclude: (%s)",
-                          name, ",".join(include), ",".join(exclude))
+        self.logger.debug(
+            "Name: %s, include: (%s), exclude: (%s)",
+            name,
+            ",".join(include),
+            ",".join(exclude),
+        )
 
     def get_name(self):
         return self._name
@@ -36,12 +40,21 @@ class NamedObject(ABC, LogMixin):
         if len(self._include_regex) > 0:
             matched_set = set()
             for regex in self._include_regex:
-                matched_set |= set(list(filter(lambda m: regex.search(m.get_name()) is not None, self._children)))
+                matched_set |= set(
+                    list(
+                        filter(
+                            lambda m: regex.search(m.get_name()) is not None,
+                            self._children,
+                        )
+                    )
+                )
 
             matches = list(matched_set)
 
         for regex in self._exclude_regex:
-            matches = list(filter(lambda m: regex.search(m.get_name()) is None, matches))
+            matches = list(
+                filter(lambda m: regex.search(m.get_name()) is None, matches)
+            )
 
         return matches
 
@@ -58,7 +71,9 @@ class NamedObject(ABC, LogMixin):
         self.logger.debug("Scanning %s" % self.get_name())
         for child in self.get_children():
             child.scan(generator)
-            self.logger.debug("{} has {}".format(child.get_name(), child.get_pii_types()))
+            self.logger.debug(
+                "{} has {}".format(child.get_name(), child.get_pii_types())
+            )
             [self._pii.add(p) for p in child.get_pii_types()]
 
         self.logger.debug("%s has %s", self.get_name(), self.get_pii_types_str())
@@ -82,14 +97,10 @@ class Schema(NamedObject):
         super(Schema, self).__init__(name, include, exclude)
 
     def get_dict(self):
-        dictionary = {
-            'has_pii': self.has_pii(),
-            'name': self._name,
-            'tables': []
-        }
+        dictionary = {"has_pii": self.has_pii(), "name": self._name, "tables": []}
 
         for table in self.get_children():
-            dictionary['tables'].append(table.get_dict())
+            dictionary["tables"].append(table.get_dict())
 
         return dictionary
 
@@ -101,14 +112,9 @@ class Table(NamedObject):
 
     def scan(self, generator):
         self.logger.debug("Scanning table name %s" % self.get_name())
-        scanners = [
-            RegexScanner(),
-            NERScanner()
-        ]
+        scanners = [RegexScanner(), NERScanner()]
         for row in generator(
-            column_list=self.get_children(),
-            schema_name=self._schema,
-            table_name=self
+            column_list=self.get_children(), schema_name=self._schema, table_name=self
         ):
             for col, val in zip(self.get_children(), row):
                 col.scan(val, scanners)
@@ -119,14 +125,10 @@ class Table(NamedObject):
         self.logger.debug("%s has %s", self.get_name(), self.get_pii_types_str())
 
     def get_dict(self):
-        dictionary = {
-            'has_pii': self.has_pii(),
-            'name': self.get_name(),
-            'columns': []
-        }
+        dictionary = {"has_pii": self.has_pii(), "name": self.get_name(), "columns": []}
 
         for col in self.get_children():
-            dictionary['columns'].append(col.get_dict())
+            dictionary["columns"].append(col.get_dict())
         return dictionary
 
 
@@ -153,7 +155,4 @@ class Column(NamedObject):
         [self._pii.add(pii) for pii in self.column_scanner.scan(self.get_name())]
 
     def get_dict(self):
-        return {
-            'pii_types': list(self.get_pii_types()),
-            'name': self.get_name()
-        }
+        return {"pii_types": list(self.get_pii_types()), "name": self.get_name()}
