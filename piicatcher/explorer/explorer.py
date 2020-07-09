@@ -116,7 +116,7 @@ class Explorer(ABC):
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
         return cls.query_template.format(
-            column_list=",".join([col.get_name() for col in column_list]),
+            column_list='"{0}"'.format('","'.join(col.get_name() for col in column_list)),
             schema_name=schema_name.get_name(),
             table_name=table_name.get_name()
         )
