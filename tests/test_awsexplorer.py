@@ -1,5 +1,5 @@
-from unittest import mock
 from argparse import Namespace
+from unittest import mock
 
 from piicatcher.explorer.aws import AthenaExplorer
 

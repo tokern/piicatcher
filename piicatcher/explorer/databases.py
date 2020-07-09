@@ -1,12 +1,11 @@
+import logging
 from abc import abstractmethod
 from argparse import Namespace
 
 import click
-import pymysql
-import psycopg2
 import cx_Oracle
-
-import logging
+import psycopg2
+import pymysql
 
 from piicatcher.explorer.explorer import Explorer
 

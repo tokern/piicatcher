@@ -1,9 +1,9 @@
-from abc import ABC
 import logging
 import re
+from abc import ABC
 
 from piicatcher.log_mixin import LogMixin
-from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
+from piicatcher.scanner import ColumnNameScanner, NERScanner, RegexScanner
 
 
 class NamedObject(ABC, LogMixin):

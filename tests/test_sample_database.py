@@ -1,5 +1,5 @@
 import csv
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from argparse import Namespace
 from unittest import TestCase
 

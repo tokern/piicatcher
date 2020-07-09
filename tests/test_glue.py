@@ -1,5 +1,5 @@
-import unittest
 import datetime
+import unittest
 
 from dateutil.tz import tzlocal
 

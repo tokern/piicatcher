@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from piicatcher.scanner import RegexScanner, NERScanner, ColumnNameScanner
 from piicatcher.piitypes import PiiTypes
+from piicatcher.scanner import ColumnNameScanner, NERScanner, RegexScanner
 from piicatcher.tokenizer import Tokenizer
 
 

@@ -7,8 +7,12 @@ from unittest import TestCase, mock
 import pytest
 
 from piicatcher.explorer.sqlite import SqliteExplorer
-from tests.test_databases import CommonExplorerTestCases, CommonDataTypeTestCases, \
-    pii_data_script, char_data_types
+from tests.test_databases import (
+    CommonDataTypeTestCases,
+    CommonExplorerTestCases,
+    char_data_types,
+    pii_data_script,
+)
 
 
 @pytest.fixture(scope="class")

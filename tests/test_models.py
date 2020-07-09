@@ -1,12 +1,14 @@
-from argparse import Namespace
 import logging
+from argparse import Namespace
 
 import pymysql
 import pytest
 
 from piicatcher.catalog.db import *
 from piicatcher.explorer.explorer import Explorer
-from piicatcher.explorer.metadata import Schema, Table, Column, Database as mdDatabase
+from piicatcher.explorer.metadata import Column
+from piicatcher.explorer.metadata import Database as mdDatabase
+from piicatcher.explorer.metadata import Schema, Table
 from piicatcher.piitypes import PiiTypes
 
 logging.basicConfig(level=logging.DEBUG)
@@ -201,4 +203,3 @@ def test_update(setup_explorer):
         assert(
              [('a', '[{"__enum__": "PiiTypes.PHONE"}]'),
               ('b', '[{"__enum__": "PiiTypes.CREDIT_CARD"}]')] == list(c.fetchall()))
-
