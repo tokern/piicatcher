@@ -72,6 +72,6 @@ setup(
     install_requires=install_requires,
     dependency_links=dependency_links,
     author_email="piicatcher@tokern.io",
-    entry_points={"console_scripts": ["piicatcher=piicatcher.command_line:cli"], },
-    cmdclass={"verify": VerifyVersionCommand, },
+    entry_points={"console_scripts": ["piicatcher=piicatcher.command_line:cli"],},
+    cmdclass={"verify": VerifyVersionCommand,},
 )
