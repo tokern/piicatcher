@@ -9,14 +9,13 @@ class FileStore(Store):
     @classmethod
     def save_schemas(cls, explorer):
         if explorer.catalog["file"] is not None:
-            with open(explorer.catalog["file"], "w") as fh:
-                json.dump(
-                    explorer.get_dict(),
-                    fh,
-                    sort_keys=True,
-                    indent=2,
-                    cls=PiiTypeEncoder,
-                )
+            json.dump(
+                explorer.get_dict(),
+                explorer.catalog["file"],
+                sort_keys=True,
+                indent=2,
+                cls=PiiTypeEncoder,
+            )
         else:
             json.dump(
                 explorer.get_dict(),

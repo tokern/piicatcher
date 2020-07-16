@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 from argparse import Namespace
 from shutil import rmtree
 from unittest import TestCase, mock
@@ -72,6 +71,7 @@ class MockFileExplorer(FileExplorer):
 def namespace(request, tmpdir_factory):
     temp_dir = tmpdir_factory.mktemp("file_explorer_test")
     output_path = temp_dir.join("output.json")
+    fh = open(output_path, "w")
 
     def finalizer():
         rmtree(temp_dir)
@@ -79,7 +79,9 @@ def namespace(request, tmpdir_factory):
 
     request.addfinalizer(finalizer)
 
-    return Namespace(path=temp_dir, catalog={"format": "json", "file": output_path})
+    return Namespace(
+        path=temp_dir, catalog={"format": "json", "file": fh}, output_path=output_path
+    )
 
 
 def test_tabular(namespace):
@@ -108,20 +110,20 @@ def test_dict(namespace):
 
 def test_output_json(request, namespace):
     MockFileExplorer.dispatch(namespace)
-    assert os.path.isfile(namespace.catalog["file"])
-    with open(namespace.catalog["file"], "r") as output:
-        obj = json.load(output)
-        assert obj == {
-            "files": [
-                {
-                    "Mime/Type": "text/plain",
-                    "path": "/tmp/1",
-                    "pii": [{"__enum__": "PiiTypes.BIRTH_DATE"}],
-                },
-                {
-                    "Mime/Type": "application/pdf",
-                    "path": "/tmp/2",
-                    "pii": [{"__enum__": "PiiTypes.UNSUPPORTED"}],
-                },
-            ]
-        }
+    namespace.catalog["file"].close()
+
+    obj = json.load(namespace.output_path)
+    assert obj == {
+        "files": [
+            {
+                "Mime/Type": "text/plain",
+                "path": "/tmp/1",
+                "pii": [{"__enum__": "PiiTypes.BIRTH_DATE"}],
+            },
+            {
+                "Mime/Type": "application/pdf",
+                "path": "/tmp/2",
+                "pii": [{"__enum__": "PiiTypes.UNSUPPORTED"}],
+            },
+        ]
+    }

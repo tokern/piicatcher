@@ -25,7 +25,7 @@ from piicatcher.explorer.sqlite import cli as sqlite_cli
 @click.option(
     "--catalog-file",
     default=None,
-    type=click.File(),
+    type=click.File("w"),
     help="File path of the catalog if format is json. If not specified, "
     "then report is printed to sys.stdout",
 )

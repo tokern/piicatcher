@@ -7,18 +7,19 @@ from tests.test_models import MockExplorer
 
 def test_file(tmp_path):
     tmp_file = tmp_path / "schema.json"
+    tmp_fh = open(tmp_file, "w")
     explorer = MockExplorer(
         Namespace(
-            catalog={"file": tmp_file, "format": "json"},
+            catalog={"file": tmp_fh, "format": "json"},
             include_schema=(),
             exclude_schema=(),
             include_table=(),
             exclude_table=(),
         )
     )
-
     explorer._load_catalog()
     FileStore.save_schemas(explorer)
+    tmp_fh.close()
     obj = None
     with open(tmp_file, "r") as fh:
         obj = json.load(fh)
