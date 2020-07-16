@@ -17,7 +17,7 @@ def test_file(tmp_path):
             exclude_table=(),
         )
     )
-
+    tmp_fh.close()
     explorer._load_catalog()
     FileStore.save_schemas(explorer)
     obj = None

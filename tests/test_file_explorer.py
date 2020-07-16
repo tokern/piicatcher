@@ -71,6 +71,7 @@ class MockFileExplorer(FileExplorer):
 def namespace(request, tmpdir_factory):
     temp_dir = tmpdir_factory.mktemp("file_explorer_test")
     output_path = temp_dir.join("output.json")
+    fh = open(output_path)
 
     def finalizer():
         rmtree(temp_dir)
@@ -78,7 +79,9 @@ def namespace(request, tmpdir_factory):
 
     request.addfinalizer(finalizer)
 
-    return Namespace(path=temp_dir, catalog={"format": "json", "file": output_path})
+    return Namespace(
+        path=temp_dir, catalog={"format": "json", "file": fh}, output_path=output_path
+    )
 
 
 def test_tabular(namespace):
@@ -107,7 +110,9 @@ def test_dict(namespace):
 
 def test_output_json(request, namespace):
     MockFileExplorer.dispatch(namespace)
-    obj = json.load(namespace.catalog["file"])
+    namespace.catalog["file"].close()
+
+    obj = json.load(namespace.output_path)
     assert obj == {
         "files": [
             {
