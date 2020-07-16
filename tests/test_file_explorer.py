@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 from argparse import Namespace
 from shutil import rmtree
 from unittest import TestCase, mock
@@ -108,20 +107,18 @@ def test_dict(namespace):
 
 def test_output_json(request, namespace):
     MockFileExplorer.dispatch(namespace)
-    assert os.path.isfile(namespace.catalog["file"])
-    with open(namespace.catalog["file"], "r") as output:
-        obj = json.load(output)
-        assert obj == {
-            "files": [
-                {
-                    "Mime/Type": "text/plain",
-                    "path": "/tmp/1",
-                    "pii": [{"__enum__": "PiiTypes.BIRTH_DATE"}],
-                },
-                {
-                    "Mime/Type": "application/pdf",
-                    "path": "/tmp/2",
-                    "pii": [{"__enum__": "PiiTypes.UNSUPPORTED"}],
-                },
-            ]
-        }
+    obj = json.load(namespace.catalog["file"])
+    assert obj == {
+        "files": [
+            {
+                "Mime/Type": "text/plain",
+                "path": "/tmp/1",
+                "pii": [{"__enum__": "PiiTypes.BIRTH_DATE"}],
+            },
+            {
+                "Mime/Type": "application/pdf",
+                "path": "/tmp/2",
+                "pii": [{"__enum__": "PiiTypes.UNSUPPORTED"}],
+            },
+        ]
+    }
