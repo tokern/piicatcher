@@ -71,7 +71,7 @@ class MockFileExplorer(FileExplorer):
 def namespace(request, tmpdir_factory):
     temp_dir = tmpdir_factory.mktemp("file_explorer_test")
     output_path = temp_dir.join("output.json")
-    fh = open(output_path)
+    fh = open(output_path, "w")
 
     def finalizer():
         rmtree(temp_dir)

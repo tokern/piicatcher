@@ -17,9 +17,9 @@ def test_file(tmp_path):
             exclude_table=(),
         )
     )
-    tmp_fh.close()
     explorer._load_catalog()
     FileStore.save_schemas(explorer)
+    tmp_fh.close()
     obj = None
     with open(tmp_file, "r") as fh:
         obj = json.load(fh)
