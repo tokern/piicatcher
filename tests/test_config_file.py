@@ -113,7 +113,6 @@ def test_files(tmp_path, mocker, caplog):
         """
 [files]
 path="file path"
-output_format="json"
 """
     )
 
@@ -132,7 +131,7 @@ output_format="json"
                 "port": None,
                 "user": None,
                 "password": None,
-                "format": "json",
+                "format": "ascii_table",
                 "file": None,
             },
         )

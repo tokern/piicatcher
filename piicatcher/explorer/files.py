@@ -17,31 +17,8 @@ from piicatcher.tokenizer import Tokenizer
 @click.command("files")
 @click.pass_context
 @click.option("--path", type=click.Path(), help="Path to file or directory")
-@click.option(
-    "--output",
-    type=click.File(),
-    default=None,
-    help="DEPRECATED. Please use --catalog-file",
-)
-@click.option(
-    "--output-format",
-    type=click.Choice(["ascii_table", "json", "db"]),
-    help="DEPRECATED. Please use --catalog-format",
-)
-def cli(ctx, path, output, output_format):
+def cli(ctx, path):
     ns = Namespace(path=path, catalog=ctx.obj["catalog"])
-
-    if output_format is not None or output is not None:
-        logging.warning(
-            "--output-format and --output is deprecated. "
-            "Please use --catalog-format and --catalog-file"
-        )
-
-    if output_format is not None:
-        ns.catalog["format"] = output_format
-
-    if output is not None:
-        ns.catalog["file"] = output
 
     FileExplorer.dispatch(ns)
 
@@ -59,7 +36,10 @@ class File(NamedObject):
         regex = context["regex"]
         ner = context["ner"]
 
-        if not self._mime_type.startswith("text/"):
+        if (
+            not self._mime_type.startswith("text/")
+            and self._mime_type != "application/csv"
+        ):
             self._pii.add(PiiTypes.UNSUPPORTED)
         else:
             with open(self.get_name(), "r") as f:
