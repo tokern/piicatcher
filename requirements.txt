@@ -6,7 +6,7 @@ tableprint~=0.8.0
 pymysql~=0.9.3
 cx_Oracle
 psycopg2-binary
-cryptography
+cryptography == 2.9.2
 peewee~=3.13.1
 pyyaml
 python-magic~=0.4.15

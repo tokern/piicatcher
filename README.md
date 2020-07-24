@@ -3,6 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/piicatcher.svg)](https://pypi.python.org/pypi/piicatcher)
 [![image](https://img.shields.io/pypi/l/piicatcher.svg)](https://pypi.org/project/piicatcher/)
 [![image](https://img.shields.io/pypi/pyversions/piicatcher.svg)](https://pypi.org/project/piicatcher/)
+[![image](https://img.shields.io/docker/v/tokern/piicatcher)](https://hub.docker.com/r/tokern/piicatcher)
 
 # PII Catcher for Files and Databases
 
@@ -16,8 +17,24 @@ Check out [AWS Glue & Lake Formation Privilege Analyzer](https://tokern.io/blog/
 
 ## Quick Start
 
-PIICatcher is available as a command-line application.
+PIICatcher is available as a docker image or command-line application.
 
+### Docker
+
+    docker run tokern/piicatcher:latest db -c '/db/sqlqb'
+
+    ╭─────────────┬─────────────┬─────────────┬─────────────╮
+    │   schema    │    table    │   column    │   has_pii   │
+    ├─────────────┼─────────────┼─────────────┼─────────────┤
+    │        main │    full_pii │           a │           1 │
+    │        main │    full_pii │           b │           1 │
+    │        main │      no_pii │           a │           0 │
+    │        main │      no_pii │           b │           0 │
+    │        main │ partial_pii │           a │           1 │
+    │        main │ partial_pii │           b │           0 │
+    ╰─────────────┴─────────────┴─────────────┴─────────────╯
+
+### Command-line
 To install use pip:
 
     python3 -m venv .env
