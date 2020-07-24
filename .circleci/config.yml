@@ -154,3 +154,8 @@ jobs:
           command: |
             ~/go/bin/git-chglog $CIRCLE_TAG | ~/go/bin/github-release release --description - --tag $CIRCLE_TAG
 
+      - run:
+          name: build docker and publish
+          command: |
+            ./build_image.sh $CIRCLE_TAG --publish --latest
+
