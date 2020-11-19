@@ -40,11 +40,6 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 with open(path.join(here, "requirements.txt"), encoding="utf-8") as f:
     all_reqs = f.read().split("\n")
 
-install_requires = [x.strip() for x in all_reqs if "git+" not in x]
-dependency_links = [
-    x.strip().replace("git+", "") for x in all_reqs if x.startswith("git+")
-]
-
 setup(
     name="piicatcher",
     version=__version__,
@@ -69,8 +64,26 @@ setup(
     packages=find_packages(exclude=["docs", "tests*"]),
     include_package_data=True,
     author="Tokern",
-    install_requires=install_requires,
-    dependency_links=dependency_links,
+    install_requires=[
+        "pypi-publisher",
+        "commonregex",
+        "spacy",
+        "tableprint",
+        "pymysql",
+        "cx_Oracle",
+        "psycopg2-binary",
+        "cryptography",
+        "peewee",
+        "pyyaml",
+        "python-magic",
+        "pyathena[sqlalchemy]",
+        "boto3",
+        "botocore",
+        "click",
+        "click-config-file",
+        "snowflake-connector-python",
+    ],
+    dependency_links=[],
     author_email="piicatcher@tokern.io",
     entry_points={"console_scripts": ["piicatcher=piicatcher.command_line:cli"],},
     cmdclass={"verify": VerifyVersionCommand,},

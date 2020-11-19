@@ -16,18 +16,23 @@ codecov = "*"
 pytest-pylint = "*"
 twine = "*"
 pytest-mock = "*"
+pipenv-setup = "*"
 
 [packages]
+pypi-publisher = "*"
+commonregex = "*"
+spacy = "*"
+tableprint = "*"
+pymysql = "*"
+cx_Oracle = "*"
+psycopg2-binary = "*"
+cryptography = "*"
+peewee = "*"
+pyyaml = "*"
+python-magic = "*"
+"pyathena[sqlalchemy]" = "*"
+boto3 = "*"
+botocore = "*"
 click = "*"
-
-[dev-packages.e1839a8]
-path = "."
-editable = true
-
-[packages.piicatcher]
-editable = true
-path = "."
-
-[packages.e1839a8]
-path = "."
-editable = true
+click-config-file = "*"
+snowflake-connector-python = "*"
