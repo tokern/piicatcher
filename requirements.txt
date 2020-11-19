@@ -1,18 +1,18 @@
 # Dev/Deployment
 pypi-publisher
-commonregex~=1.5.4
-spacy~=2.2.3
-tableprint~=0.8.0
-pymysql~=0.9.3
+commonregex
+spacy
+tableprint
+pymysql
 cx_Oracle
 psycopg2-binary
-cryptography == 2.9.2
-peewee~=3.13.1
+cryptography
+peewee
 pyyaml
-python-magic~=0.4.15
-pyathena[sqlalchemy]~=1.10.2
-boto3 == 1.12.1
-botocore == 1.15.49
-click == 7.0
-click-config-file == 0.5.0
-snowflake-connector-python == 2.2.7
+python-magic
+pyathena[sqlalchemy]
+boto3
+botocore
+click
+click-config-file
+snowflake-connector-python
