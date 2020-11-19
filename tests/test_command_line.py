@@ -13,7 +13,7 @@ class TestDbParser(TestCase):
         result = runner.invoke(cli, ["db"])
         self.assertNotEqual(0, result.exit_code)
         self.assertEqual(
-            'Usage: cli db [OPTIONS]\nTry "cli db --help" for help.\n\nError: Missing option "-s" / "--host".\n',
+            "Usage: cli db [OPTIONS]\nTry 'cli db --help' for help.\n\nError: Missing option '-s' / '--host'.\n",
             result.stdout,
         )
 
@@ -315,7 +315,7 @@ class TestSqliteParser(TestCase):
         result = runner.invoke(cli, ["sqlite"])
         self.assertNotEqual(0, result.exit_code)
         self.assertEqual(
-            'Usage: cli sqlite [OPTIONS]\nTry "cli sqlite --help" for help.\n\nError: Missing option "-s" / "--path".\n',
+            "Usage: cli sqlite [OPTIONS]\nTry 'cli sqlite --help' for help.\n\nError: Missing option '-s' / '--path'.\n",
             result.stdout,
         )
 
