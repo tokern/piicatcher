@@ -78,7 +78,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            pipenv run isort --check --diff
+            pipenv run isort --check --diff .
             pipenv run black --check .
             pipenv run flake8 piicatcher tests
             pipenv run mypy
