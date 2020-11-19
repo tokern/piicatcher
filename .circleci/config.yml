@@ -24,7 +24,7 @@ workflows:
 jobs:
   build: &test-template
     docker:
-      - image: circleci/python:3.8.1
+      - image: circleci/python:3.8.3
         environment:
           PIPENV_VENV_IN_PROJECT: true
       # Specify service dependencies here if necessary
@@ -96,34 +96,31 @@ jobs:
 
   deploy:
     environment:
-      PYVERSION: "3.7.3"
+      PYVERSION: "3.8.3"
     docker:
-      - image: tokern/python:3.7.5-buster
+      - image: tokern/python:3.8.3-buster
         environment:
-          PYVERSION: "3.7.3"
+          PYVERSION: "3.8.3"
     steps:
       - checkout
       - restore_cache:
-          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
+          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
+
       - run:
           name: install dependencies
           command: |
-            mkdir -p .venv
-            python -m venv .venv
-            source .venv/bin/activate
-            pip install -r dev-requirements.txt
-            python -m spacy download en_core_web_sm
+            pipenv sync --dev
+            pipenv run python -m spacy download en_core_web_sm
 
       - save_cache:
-          key: deps-{{ checksum "requirements.txt" }}-{{ checksum "dev-requirements.txt" }}-{{ .Environment.PYVERSION }}
+          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
           paths:
             - ".venv"
 
       - run:
           name: verify git tag vs. version
           command: |
-            source .venv/bin/activate
-            python setup.py verify
+            pipenv run python setup.py verify
 
       - run:
           name: init .pypirc
@@ -134,14 +131,12 @@ jobs:
       - run:
           name: create packages
           command: |
-            source .venv/bin/activate
-            python setup.py sdist bdist_wheel
+            pipenv run python setup.py sdist bdist_wheel
 
       - run:
           name: upload to pypi
           command: |
-            source .venv/bin/activate
-            twine upload dist/*
+            pipenv run twine upload dist/*
 
       - run:
           name: install git release utilities
