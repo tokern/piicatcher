@@ -48,6 +48,10 @@ match at least one -t switch but no -T switches. If -T appears without -t, then
 tables matching -T are excluded from what is otherwise a normal dump.
 """
 
+exclude_column_help_text = """
+Do not dump any columns matching the table pattern.
+"""
+
 
 @click.command("db")
 @click.pass_context
@@ -92,6 +96,7 @@ tables matching -T are excluded from what is otherwise a normal dump.
 @click.option("-N", "--exclude-schema", multiple=True, help=exclude_schema_help_text)
 @click.option("-t", "--table", multiple=True, help=table_help_text)
 @click.option("-T", "--exclude-table", multiple=True, help=exclude_table_help_text)
+@click.option("-C", "--exclude-column", multiple=True, help=exclude_column_help_text)
 def cli(
     cxt,
     host,
@@ -108,6 +113,7 @@ def cli(
     exclude_schema,
     table,
     exclude_table,
+    exclude_column,
 ):
     ns = Namespace(
         host=host,
@@ -123,6 +129,7 @@ def cli(
         exclude_schema=exclude_schema,
         include_table=table,
         exclude_table=exclude_table,
+        exclude_column=exclude_column,
     )
 
     if output_format is not None or output is not None:

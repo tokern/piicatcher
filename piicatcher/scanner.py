@@ -7,7 +7,7 @@ import spacy
 from commonregex import CommonRegex
 
 from piicatcher.piitypes import PiiTypes
-
+# from piicatcher.explorer.databases import ns
 
 # pylint: disable=too-few-public-methods
 class Scanner(ABC):
@@ -65,6 +65,8 @@ class NERScanner(Scanner):
 
 
 class ColumnNameScanner(Scanner):
+    def __init__(self, exclude=()):
+        self.excluded_column = exclude
     regex = {
         PiiTypes.PERSON: re.compile(
             "^.*(firstname|fname|lastname|lname|"
@@ -91,8 +93,9 @@ class ColumnNameScanner(Scanner):
 
     def scan(self, text):
         types = set()
+        ignore_regex = re.compile(self.excluded_column[0], re.IGNORECASE)
         for pii_type in self.regex:
-            if self.regex[pii_type].match(text) is not None:
+            if self.regex[pii_type].match(text) is not None and ignore_regex.match(text) is None:    # ignore_regex shouldn't match
                 types.add(pii_type)
 
         logging.debug("PiiTypes are %s", ",".join(str(x) for x in list(types)))

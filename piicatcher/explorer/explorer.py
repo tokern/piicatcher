@@ -21,6 +21,7 @@ class Explorer(ABC):
         self._exclude_schema = ns.exclude_schema
         self._include_table = ns.include_table
         self._exclude_table = ns.exclude_table
+        self._exclude_column = ns.exclude_column
         self._database = Database(
             "database", include=self._include_schema, exclude=self._exclude_schema
         )
@@ -214,7 +215,7 @@ class Explorer(ABC):
                     elif current_table.get_name() != row[1]:
                         current_schema.add_child(current_table)
                         current_table = Table(current_schema, row[1])
-                    current_table.add_child(Column(row[2]))
+                    current_table.add_child(Column(row[2], exclude=self._exclude_column))
 
                     row = cursor.fetchone()
 

@@ -133,9 +133,9 @@ class Table(NamedObject):
 
 
 class Column(NamedObject):
-    def __init__(self, name):
+    def __init__(self, name, exclude=()):
         super(Column, self).__init__(name, (), ())
-        self.column_scanner = ColumnNameScanner()
+        self.column_scanner = ColumnNameScanner(exclude)
 
     def add_pii_type(self, pii):
         self._pii.add(pii)
