@@ -11,6 +11,8 @@ def test_db(tmp_path, mocker, caplog):
     config_file = tmp_path / "db_host.ini"
     config_file.write_text(
         """
+catalog_format="json"
+
 [db]
 host="localhost"
 database="db"
@@ -19,7 +21,6 @@ user="user"
 password="password"
 scan_type="deep"
 list_all=True
-output_format="json"
 schema=["schema1", "schema2"]
 exclude_schema=["schema1", "schema2"]
 table=["table1", "table2"]
@@ -66,11 +67,12 @@ def test_sqlite(tmp_path, mocker, caplog):
     config_file = tmp_path / "db_host.ini"
     config_file.write_text(
         """
+catalog_format="json"
+
 [sqlite]
 path="sqlite.db"
 scan_type="deep"
 list_all=True
-output_format="json"
 schema=["schema1", "schema2"]
 exclude_schema=["schema1", "schema2"]
 table=["table1", "table2"]
@@ -143,10 +145,11 @@ def test_aws(tmp_path, mocker, caplog):
     config_file = tmp_path / "db_host.ini"
     config_file.write_text(
         """
+catalog_format='json'
+
 [aws]
 access_key='AAAA'
 list_all=True
-output_format='json'
 region='us-east'
 scan_type='deep'
 secret_key='SSSS'

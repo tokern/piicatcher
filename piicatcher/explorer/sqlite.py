@@ -17,24 +17,11 @@ from piicatcher.explorer.explorer import Explorer
 @click.pass_context
 @click.option("-s", "--path", required=True, help="File path to SQLite database")
 @click.option(
-    "-f",
-    "--output-format",
-    type=click.Choice(["ascii_table", "json", "db"]),
-    help="DEPRECATED. Please use --catalog-format",
-)
-@click.option(
     "-c",
     "--scan-type",
     default="shallow",
     type=click.Choice(["deep", "shallow"]),
     help="Choose deep(scan data) or shallow(scan column names only)",
-)
-@click.option(
-    "-o",
-    "--output",
-    default=None,
-    type=click.File(),
-    help="DEPRECATED. Please use --catalog-file",
 )
 @click.option(
     "--list-all",
@@ -48,16 +35,7 @@ from piicatcher.explorer.explorer import Explorer
 @click.option("-T", "--exclude-table", multiple=True, help=exclude_table_help_text)
 # pylint: disable=too-many-arguments
 def cli(
-    cxt,
-    path,
-    output_format,
-    scan_type,
-    output,
-    list_all,
-    schema,
-    exclude_schema,
-    table,
-    exclude_table,
+    cxt, path, scan_type, list_all, schema, exclude_schema, table, exclude_table,
 ):
     args = Namespace(
         path=path,
@@ -69,18 +47,6 @@ def cli(
         include_table=table,
         exclude_table=exclude_table,
     )
-
-    if output_format is not None or output is not None:
-        logging.warning(
-            "--output-format and --output is deprecated. "
-            "Please use --catalog-format and --catalog-file"
-        )
-
-    if output_format is not None:
-        args.catalog["format"] = output_format
-
-    if output is not None:
-        args.catalog["file"] = output
 
     SqliteExplorer.dispatch(args)
 

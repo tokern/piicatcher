@@ -177,7 +177,7 @@ class TestDbParser(TestCase):
     def test_output_format(self, explorer):
         runner = CliRunner()
         result = runner.invoke(
-            cli, ["db", "-s", "connection_string", "--output-format", "json"]
+            cli, ["--catalog-format", "json", "db", "-s", "connection_string"]
         )
         self.assertEqual("", result.stdout)
         self.assertEqual(0, result.exit_code)
@@ -328,8 +328,6 @@ class TestSqliteParser(TestCase):
                 "sqlite",
                 "-s",
                 "connection_string",
-                "--output-format",
-                "json",
                 "-n",
                 "include_schema",
                 "-N",
@@ -356,7 +354,7 @@ class TestSqliteParser(TestCase):
                     "port": None,
                     "user": None,
                     "password": None,
-                    "format": "json",
+                    "format": "ascii_table",
                     "file": None,
                 },
             )
@@ -445,6 +443,8 @@ class TestAWSParser(TestCase):
         result = runner.invoke(
             cli,
             [
+                "--catalog-format",
+                "json",
                 "aws",
                 "-a",
                 "AAAA",
@@ -454,8 +454,6 @@ class TestAWSParser(TestCase):
                 "s3://dir",
                 "-r",
                 "us-east",
-                "--output-format",
-                "json",
                 "-n",
                 "include_schema",
                 "-n",
