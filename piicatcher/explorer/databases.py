@@ -63,24 +63,11 @@ tables matching -T are excluded from what is otherwise a normal dump.
     help="Type of database",
 )
 @click.option(
-    "-f",
-    "--output-format",
-    type=click.Choice(["ascii_table", "json", "db"]),
-    help="DEPRECATED. Please use --catalog-format",
-)
-@click.option(
     "-c",
     "--scan-type",
     type=click.Choice(["deep", "shallow"]),
     default="shallow",
     help="Choose deep(scan data) or shallow(scan column names only)",
-)
-@click.option(
-    "-o",
-    "--output",
-    default=None,
-    type=click.File(),
-    help="DEPRECATED. Please use --catalog-file",
 )
 @click.option(
     "--list-all",
@@ -100,9 +87,7 @@ def cli(
     password,
     database,
     connection_type,
-    output_format,
     scan_type,
-    output,
     list_all,
     schema,
     exclude_schema,
@@ -124,18 +109,6 @@ def cli(
         include_table=table,
         exclude_table=exclude_table,
     )
-
-    if output_format is not None or output is not None:
-        logging.warning(
-            "--output-format and --output is deprecated. "
-            "Please use --catalog-format and --catalog-file"
-        )
-
-    if output_format is not None:
-        ns.catalog["format"] = output_format
-
-    if output is not None:
-        ns.catalog["file"] = output
 
     RelDbExplorer.dispatch(ns)
 

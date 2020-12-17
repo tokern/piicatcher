@@ -20,7 +20,7 @@ from piicatcher.explorer.sqlite import cli as sqlite_cli
     "--catalog-format",
     type=click.Choice(["ascii_table", "json", "db", "glue"]),
     default="ascii_table",
-    help="Choose output format type",
+    help="Choose catalog format type",
 )
 @click.option(
     "--catalog-file",
@@ -29,12 +29,12 @@ from piicatcher.explorer.sqlite import cli as sqlite_cli
     help="File path of the catalog if format is json. If not specified, "
     "then report is printed to sys.stdout",
 )
-@click.option("--catalog-host", help="Hostname of the database. Use if output is a db")
-@click.option("--catalog-port", help="Port of database. Use if output is a db")
+@click.option("--catalog-host", help="Hostname of the database. Use if catalog is a db")
+@click.option("--catalog-port", help="Port of database. Use if catalog is a db")
 @click.option(
-    "--catalog-user", help="Username to connect database.  Use if output is a db"
+    "--catalog-user", help="Username to connect database.  Use if catalog is a db"
 )
-@click.option("--catalog-password", help="Password of the user. Use if output is a db")
+@click.option("--catalog-password", help="Password of the user. Use if catalog is a db")
 # pylint: disable=too-many-arguments
 def cli(
     ctx,

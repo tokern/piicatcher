@@ -23,24 +23,11 @@ from piicatcher.explorer.explorer import Explorer
 )
 @click.option("-r", "--region", required=True, help="AWS Region")
 @click.option(
-    "-f",
-    "--output-format",
-    type=click.Choice(["ascii_table", "json", "db", "glue"]),
-    help="DEPRECATED. Please use --catalog-format",
-)
-@click.option(
     "-c",
     "--scan-type",
     default="shallow",
     type=click.Choice(["deep", "shallow"]),
     help="Choose deep(scan data) or shallow(scan column names only)",
-)
-@click.option(
-    "-o",
-    "--output",
-    default=None,
-    type=click.File(),
-    help="DEPRECATED. Please use --catalog-file",
 )
 @click.option(
     "--list-all",
@@ -59,9 +46,7 @@ def cli(
     secret_key,
     staging_dir,
     region,
-    output_format,
     scan_type,
-    output,
     list_all,
     schema,
     exclude_schema,
@@ -81,17 +66,6 @@ def cli(
         exclude_table=exclude_table,
         catalog=cxt.obj["catalog"],
     )
-    if output_format is not None or output is not None:
-        logging.warning(
-            "--output-format and --output is deprecated. "
-            "Please use --catalog-format and --catalog-file"
-        )
-
-    if output_format is not None:
-        args.catalog["format"] = output_format
-
-    if output is not None:
-        args.catalog["file"] = output
 
     AthenaExplorer.dispatch(args)
 
