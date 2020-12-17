@@ -165,6 +165,8 @@ class RelDbExplorer(Explorer):
             explorer = MySQLExplorer(ns)
         elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
             explorer = PostgreSQLExplorer(ns)
+        elif ns.connection_type == "redshift":
+            explorer = RedshiftExplorer(ns)
         elif ns.connection_type == "oracle":
             explorer = OracleExplorer(ns)
         assert explorer is not None
@@ -260,6 +262,23 @@ class PostgreSQLExplorer(RelDbExplorer):
 
     def _get_catalog_query(self):
         return self._catalog_query
+
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        return cls._sample_query_template.format(
+            column_list='"{0}"'.format(
+                '","'.join(col.get_name() for col in column_list)
+            ),
+            schema_name=schema_name.get_name(),
+            table_name=table_name.get_name(),
+        )
+
+
+class RedshiftExplorer(PostgreSQLExplorer):
+    _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} ORDER BY random() LIMIT 10"
+
+    def __init__(self, ns):
+        super(RedshiftExplorer, self).__init__(ns)
 
     @classmethod
     def _get_sample_query(cls, schema_name, table_name, column_list):

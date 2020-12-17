@@ -11,6 +11,7 @@ from piicatcher.explorer.databases import (
     MySQLExplorer,
     OracleExplorer,
     PostgreSQLExplorer,
+    RedshiftExplorer,
     RelDbExplorer,
 )
 from piicatcher.explorer.metadata import Column, Schema, Table
@@ -539,6 +540,16 @@ class SampleQueryTest(TestCase):
         self.assertEqual(
             'select "c1","c2" from testSchema.t1 limit 10',
             MySQLExplorer._get_sample_query(
+                self.schema,
+                self.schema.get_children()[0],
+                self.schema.get_children()[0].get_children(),
+            ),
+        )
+
+    def test_redshift(self):
+        self.assertEqual(
+            'SELECT "c1","c2" FROM testSchema.t1 ORDER BY random() LIMIT 10',
+            RedshiftExplorer._get_sample_query(
                 self.schema,
                 self.schema.get_children()[0],
                 self.schema.get_children()[0].get_children(),
