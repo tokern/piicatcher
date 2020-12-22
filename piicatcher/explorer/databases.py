@@ -136,7 +136,7 @@ class RelDbExplorer(Explorer):
         explorer = None
         if ns.connection_type == "mysql":
             explorer = MySQLExplorer(ns)
-        elif ns.connection_type == "postgres" or ns.connection_type == "redshift":
+        elif ns.connection_type == "postgres":
             explorer = PostgreSQLExplorer(ns)
         elif ns.connection_type == "redshift":
             explorer = RedshiftExplorer(ns)
