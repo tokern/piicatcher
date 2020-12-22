@@ -471,6 +471,38 @@ class TestDispatcher(TestCase):
                     mock_tabular_method.assert_called_once()
                     MockTablePrint.table.assert_called_once()
 
+    def test_redshift_dispatch(self):
+        with mock.patch(
+            "piicatcher.explorer.databases.RedshiftExplorer.scan", autospec=True
+        ) as mock_scan_method:
+            with mock.patch(
+                "piicatcher.explorer.databases.RedshiftExplorer.get_tabular",
+                autospec=True,
+            ) as mock_tabular_method:
+                with mock.patch(
+                    "piicatcher.explorer.explorer.tableprint", autospec=True
+                ) as MockTablePrint:
+                    RelDbExplorer.dispatch(
+                        Namespace(
+                            host="connection",
+                            port=None,
+                            list_all=None,
+                            connection_type="redshift",
+                            database="public",
+                            scan_type=None,
+                            catalog={"format": "ascii_table"},
+                            include_schema=(),
+                            exclude_schema=(),
+                            include_table=(),
+                            exclude_table=(),
+                            user="user",
+                            password="pass",
+                        )
+                    )
+                    mock_scan_method.assert_called_once()
+                    mock_tabular_method.assert_called_once()
+                    MockTablePrint.table.assert_called_once()
+
     def test_mysql_shallow_scan(self):
         with mock.patch(
             "piicatcher.explorer.databases.MySQLExplorer.shallow_scan", autospec=True
