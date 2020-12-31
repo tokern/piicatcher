@@ -2,16 +2,17 @@ import json
 import logging
 import os
 from argparse import Namespace
+from typing import Any, Dict, Optional, TextIO
 
 import click
 import magic
 import tableprint
+from spacy.lang.en import English
 
 from piicatcher.catalog.file import FileStore
 from piicatcher.explorer.metadata import NamedObject
 from piicatcher.piitypes import PiiTypeEncoder, PiiTypes
 from piicatcher.scanner import NERScanner, RegexScanner
-from piicatcher.tokenizer import Tokenizer
 
 
 @click.command("files")
@@ -23,19 +24,41 @@ def cli(ctx, path):
     FileExplorer.dispatch(ns)
 
 
-class File(NamedObject):
+class IO(NamedObject):
+    def __init__(self, name: str, fd: Optional[TextIO] = None):
+        super(IO, self).__init__(name, (), ())
+        self.descriptor = fd
+
+    @property
+    def descriptor(self) -> Optional[TextIO]:
+        return self._descriptor
+
+    @descriptor.setter
+    def descriptor(self, fd: TextIO) -> None:
+        self._descriptor = fd
+
+    def scan(self, context: Dict[str, Any]) -> None:
+        tokenizer = context["tokenizer"]
+        regex = context["regex"]
+        ner = context["ner"]
+
+        data = self._descriptor.read()
+        [self._pii.add(pii) for pii in ner.scan(data)]
+        tokens = tokenizer.tokenize(data)
+        for t in tokens:
+            if not t.is_stop:
+                [self._pii.add(pii) for pii in regex.scan(t.text)]
+
+
+class File(IO):
     def __init__(self, name, mime_type):
-        super(File, self).__init__(name, (), ())
+        super(File, self).__init__(name)
         self._mime_type = mime_type
 
     def get_mime_type(self):
         return self._mime_type
 
     def scan(self, context):
-        tokenizer = context["tokenizer"]
-        regex = context["regex"]
-        ner = context["ner"]
-
         if (
             not self._mime_type.startswith("text/")
             and self._mime_type != "application/csv"
@@ -43,12 +66,8 @@ class File(NamedObject):
             self._pii.add(PiiTypes.UNSUPPORTED)
         else:
             with open(self.get_name(), "r") as f:
-                data = f.read()
-                [self._pii.add(pii) for pii in ner.scan(data)]
-                tokens = tokenizer.tokenize(data)
-                for t in tokens:
-                    if not t.is_stop:
-                        [self._pii.add(pii) for pii in regex.scan(t.text)]
+                self.descriptor = f
+                super().scan(context)
 
 
 class FileExplorer:
@@ -122,3 +141,14 @@ class FileExplorer:
             )
 
         return {"files": result}
+
+
+class Tokenizer:
+    def __init__(self):
+        nlp = English()
+        # Create a Tokenizer with the default settings for English
+        # including punctuation rules and exceptions
+        self._tokenizer = nlp.Defaults.create_tokenizer(nlp)
+
+    def tokenize(self, data):
+        return self._tokenizer(data)

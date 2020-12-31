@@ -72,10 +72,19 @@ class Explorer(ABC):
         elif ns.catalog["format"] == "db":
             DbStore.save_schemas(explorer)
 
-    def get_connection(self):
+    @property
+    def connection(self):
         if self._connection is None:
             self._connection = self._open_connection()
         return self._connection
+
+    @connection.setter
+    def connection(self, conn):
+        if self._connection is not None:
+            raise ConnectionError(
+                "Connection is not None. Connection will leak if set to a new value"
+            )
+        self._connection = conn
 
     def close_connection(self):
         if self._connection is not None:
@@ -175,7 +184,7 @@ class Explorer(ABC):
                 row = cursor.fetchone()
 
     def _get_context_manager(self):
-        return self.get_connection().cursor()
+        return self.connection.cursor()
 
     def _load_catalog(self):
         if self._cache_ts is None or self._cache_ts < datetime.now() - timedelta(

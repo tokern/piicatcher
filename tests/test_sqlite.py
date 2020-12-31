@@ -1,12 +1,15 @@
 import logging
 import sqlite3
 from argparse import Namespace
+from contextlib import closing
 from shutil import rmtree
 from unittest import TestCase, mock
 
 import pytest
 
+from piicatcher import scan_database
 from piicatcher.explorer.sqlite import SqliteExplorer
+from piicatcher.piitypes import PiiTypes
 from tests.test_databases import (
     CommonDataTypeTestCases,
     CommonExplorerTestCases,
@@ -31,24 +34,60 @@ def temp_sqlite(request, tmpdir_factory):
         )
     )
 
-    request.cls.explorer = explorer
-    request.cls.path = str(sqlite_path)
+    if request.cls is not None:
+        request.cls.explorer = explorer
+        request.cls.path = str(sqlite_path)
 
-    def finalizer():
-        explorer.get_connection().close()
-        rmtree(temp_dir)
-        logging.info("Deleted {}", str(temp_dir))
+    yield str(sqlite_path)
 
-    request.addfinalizer(finalizer)
+    explorer.connection.close()
+    rmtree(temp_dir)
+    logging.info("Deleted {}", str(temp_dir))
 
 
 @pytest.fixture(scope="class")
 # pylint: disable=redefined-outer-name, unused-argument
-def load_pii(request, temp_sqlite):
-    conn = sqlite3.connect(request.cls.path)
-    conn.executescript(pii_data_script)
-    conn.commit()
-    conn.close()
+def load_pii(temp_sqlite):
+    with closing(sqlite3.connect(temp_sqlite)) as conn:
+        conn.executescript(pii_data_script)
+        conn.commit()
+        yield conn
+
+
+def test_api(load_pii):
+    result = scan_database(load_pii, "sqlite")
+    assert result == [
+        {
+            "has_pii": True,
+            "name": "",
+            "tables": [
+                {
+                    "has_pii": True,
+                    "name": "full_pii",
+                    "columns": [
+                        {"pii_types": [], "name": "location"},
+                        {"pii_types": [PiiTypes.PERSON], "name": "name"},
+                    ],
+                },
+                {
+                    "has_pii": False,
+                    "name": "no_pii",
+                    "columns": [
+                        {"pii_types": [], "name": "a"},
+                        {"pii_types": [], "name": "b"},
+                    ],
+                },
+                {
+                    "has_pii": False,
+                    "name": "partial_pii",
+                    "columns": [
+                        {"pii_types": [], "name": "a"},
+                        {"pii_types": [], "name": "b"},
+                    ],
+                },
+            ],
+        }
+    ]
 
 
 @pytest.mark.usefixtures("load_pii")

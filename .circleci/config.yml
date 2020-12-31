@@ -67,6 +67,7 @@ jobs:
           name: install dependencies
           command: |
             pipenv sync --dev
+            pipenv install -e .
             pipenv run python -m spacy download en_core_web_sm
 
       - save_cache:
