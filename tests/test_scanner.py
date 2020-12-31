@@ -1,8 +1,8 @@
 from unittest import TestCase
 
+from piicatcher.explorer.files import Tokenizer
 from piicatcher.piitypes import PiiTypes
 from piicatcher.scanner import ColumnNameScanner, NERScanner, RegexScanner
-from piicatcher.tokenizer import Tokenizer
 
 
 class RegexTestCase(TestCase):

@@ -6,6 +6,7 @@ from unittest import TestCase, mock
 
 import pytest
 
+from piicatcher import scan_file_object
 from piicatcher.explorer.files import File, FileExplorer
 from piicatcher.piitypes import PiiTypes
 
@@ -127,3 +128,9 @@ def test_output_json(request, namespace):
             },
         ]
     }
+
+
+def test_file_object():
+    with open("tests/samples/sample-data.csv", "r") as fd:
+        pii_types = scan_file_object(fd)
+        assert len(pii_types) == 5

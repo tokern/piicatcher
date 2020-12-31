@@ -101,7 +101,7 @@ class SqliteExplorer(Explorer):
         return self._catalog_query
 
     def _get_context_manager(self):
-        return SqliteExplorer.CursorContextManager(self.get_connection())
+        return SqliteExplorer.CursorContextManager(self.connection)
 
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):

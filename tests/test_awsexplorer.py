@@ -1,6 +1,7 @@
 from argparse import Namespace
 from unittest import mock
 
+from piicatcher import scan_database
 from piicatcher.explorer.aws import AthenaExplorer
 
 
@@ -32,3 +33,11 @@ def test_aws_dispatch():
                 mock_scan_method.assert_called_once()
                 mock_tabular_method.assert_called_once()
                 mock_table_print.table.assert_called_once()
+
+
+def test_aws_api():
+    with mock.patch(
+        "piicatcher.explorer.aws.AthenaExplorer.scan", autospec=True
+    ) as mock_scan_method:
+        scan_database(None, "athena", "deep")
+        mock_scan_method.assert_called_once()

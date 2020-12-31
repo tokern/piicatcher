@@ -1,0 +1,24 @@
+version: "3.6"
+services:
+  mariadb:
+    image: ghcr.io/linuxserver/mariadb
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=ROOT_ACCESS_PASSWORD
+      - TZ=UTC
+      - MYSQL_DATABASE=piidb #optional
+      - MYSQL_USER=piiuser #optional
+      - MYSQL_PASSWORD=p11secret #optional
+    ports:
+      - 3306:3306
+  postgres:
+    container_name: postgres
+    image: "postgres:13"
+    environment:
+      POSTGRES_USER: "piiuser"
+      POSTGRES_PASSWORD: "p11secret"
+      POSTGRES_DB: "piidb"
+    ports:
+      - "5432:5432"

@@ -1,12 +1,14 @@
 import logging
 from abc import ABC, abstractmethod
 from argparse import Namespace
+from contextlib import closing
 from unittest import TestCase, mock
 
 import psycopg2
 import pymysql
 import pytest
 
+from piicatcher import scan_database
 from piicatcher.explorer.databases import (
     MySQLExplorer,
     OracleExplorer,
@@ -34,6 +36,93 @@ insert into full_pii values ('Jonathan Smith', 'Virginia');
 insert into full_pii values ('Chase Ryan', 'Chennai');
 
 """
+
+
+pii_data_load = [
+    "create table no_pii(a text, b text)",
+    "insert into no_pii values ('abc', 'def')",
+    "insert into no_pii values ('xsfr', 'asawe')",
+    "create table partial_pii(a text, b text)",
+    "insert into partial_pii values ('917-908-2234', 'plkj')",
+    "insert into partial_pii values ('215-099-2234', 'sfrf')",
+    "create table full_pii(name text, location text)",
+    "insert into full_pii values ('Jonathan Smith', 'Virginia')",
+    "insert into full_pii values ('Chase Ryan', 'Chennai')",
+]
+
+pii_data_drop = ["DROP TABLE full_pii", "DROP TABLE partial_pii", "DROP TABLE no_pii"]
+
+
+def mysql_conn():
+    return (
+        "mysql",
+        pymysql.connect(
+            host="127.0.0.1", user="piiuser", password="p11secret", database="piidb",
+        ),
+        "piidb",
+    )
+
+
+def pg_conn():
+    return (
+        "postgres",
+        psycopg2.connect(
+            host="127.0.0.1", user="piiuser", password="p11secret", database="piidb"
+        ),
+        "public",
+    )
+
+
+@pytest.fixture(params=[mysql_conn(), pg_conn()])
+def load_data(request):
+    type, connection, db = request.param
+    with closing(connection) as conn:
+        with conn.cursor() as cursor:
+            for statement in pii_data_load:
+                cursor.execute(statement)
+            cursor.execute("commit")
+        yield type, conn, db
+        with conn.cursor() as cursor:
+            for statement in pii_data_drop:
+                cursor.execute(statement)
+            cursor.execute("commit")
+
+
+def test_database_api(load_data):
+    type, connection, db = load_data
+    result = scan_database(connection, type)
+    assert result == [
+        {
+            "has_pii": True,
+            "name": db,
+            "tables": [
+                {
+                    "has_pii": True,
+                    "name": "full_pii",
+                    "columns": [
+                        {"pii_types": [], "name": "location"},
+                        {"pii_types": [PiiTypes.PERSON], "name": "name"},
+                    ],
+                },
+                {
+                    "has_pii": False,
+                    "name": "no_pii",
+                    "columns": [
+                        {"pii_types": [], "name": "a"},
+                        {"pii_types": [], "name": "b"},
+                    ],
+                },
+                {
+                    "has_pii": False,
+                    "name": "partial_pii",
+                    "columns": [
+                        {"pii_types": [], "name": "a"},
+                        {"pii_types": [], "name": "b"},
+                    ],
+                },
+            ],
+        }
+    ]
 
 
 class CommonExplorerTestCases:
@@ -160,7 +249,7 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
         )
 
     def tearDown(self):
-        self.explorer.get_connection().close()
+        self.explorer.connection.close()
 
     def test_schema(self):
         names = [sch.get_name() for sch in self.explorer.get_schemas()]
@@ -221,7 +310,7 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
         )
 
     def tearDown(self):
-        self.explorer.get_connection().close()
+        self.explorer.connection.close()
 
     def get_test_schema(self):
         return "piidb"
@@ -278,7 +367,7 @@ class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
         )
 
     def tearDown(self):
-        self.explorer.get_connection().close()
+        self.explorer.connection.close()
 
     def get_test_schema(self):
         return "public"
@@ -343,7 +432,7 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
         )
 
     def tearDown(self):
-        self.explorer.get_connection().close()
+        self.explorer.connection.close()
 
     def test_schema(self):
         names = [sch.get_name() for sch in self.explorer.get_schemas()]
