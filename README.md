@@ -58,6 +58,13 @@ To install use pip:
     ╰─────────────┴─────────────┴─────────────┴─────────────╯
 
 
+### API
+
+    from piicatcher import scan_file_object, scan_database
+
+    pii_types = scan_file_object(...)
+    catalog = scan_database(...)
+    
 ## Supported Technologies
 
 PIICatcher supports the following filesystems:
