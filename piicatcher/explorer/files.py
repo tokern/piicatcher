@@ -148,7 +148,7 @@ class Tokenizer:
         nlp = English()
         # Create a Tokenizer with the default settings for English
         # including punctuation rules and exceptions
-        self._tokenizer = nlp.Defaults.create_tokenizer(nlp)
+        self._tokenizer = nlp.tokenizer
 
     def tokenize(self, data):
         return self._tokenizer(data)
