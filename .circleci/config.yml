@@ -67,13 +67,16 @@ jobs:
           name: install dependencies
           command: |
             pipenv sync --dev
-            pipenv install -e .
             pipenv run python -m spacy download en_core_web_sm
 
       - save_cache:
           key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
           paths:
             - ".venv"
+
+      - run:
+          name: install piicatcher
+          command: pipenv run python setup.py develop
 
       # run tests!
       - run:
