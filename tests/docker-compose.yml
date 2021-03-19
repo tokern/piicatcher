@@ -20,5 +20,6 @@ services:
       POSTGRES_USER: "piiuser"
       POSTGRES_PASSWORD: "p11secret"
       POSTGRES_DB: "piidb"
+      PGDATA: "/tmp/pg_piicatcher"
     ports:
       - "5432:5432"
