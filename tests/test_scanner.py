@@ -65,7 +65,7 @@ class NERTests(TestCase):
         self.parser = NERScanner()
 
     def test_person(self):
-        types = self.parser.scan("Jonathan is in the office")
+        types = self.parser.scan("Roger is in the office")
         self.assertTrue(PiiTypes.PERSON in types)
 
     def test_location(self):
