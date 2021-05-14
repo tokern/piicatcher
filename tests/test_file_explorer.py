@@ -32,7 +32,6 @@ class TestDispatcher(TestCase):
 
 class TestWalker(TestCase):
     def _check(self, result):
-        self.assertEqual(len(result["files"]), 1)
         self.assertEqual(result["files"][0]["Mime/Type"], "text/plain")
         self.assertEqual(result["files"][0]["path"], "tests/samples/sample-data.csv")
         self.assertEqual(len(result["files"][0]["pii"]), 5)
@@ -43,6 +42,7 @@ class TestWalker(TestCase):
         )
         explorer.scan()
         result = explorer.get_dict()
+        self.assertEqual(len(result["files"]), 2)
         self._check(result)
 
     def testFile(self):
@@ -53,6 +53,7 @@ class TestWalker(TestCase):
         )
         explorer.scan()
         result = explorer.get_dict()
+        self.assertEqual(len(result["files"]), 1)
         self._check(result)
 
 
