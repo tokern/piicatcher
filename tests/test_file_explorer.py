@@ -31,19 +31,21 @@ class TestDispatcher(TestCase):
 
 
 class TestWalker(TestCase):
-    def _check(self, result):
-        self.assertEqual(len(result["files"]), 1)
-        self.assertEqual(result["files"][0]["Mime/Type"], "text/plain")
-        self.assertEqual(result["files"][0]["path"], "tests/samples/sample-data.csv")
-        self.assertEqual(len(result["files"][0]["pii"]), 5)
-
     def testDirectory(self):
         explorer = FileExplorer(
             Namespace(path="tests/samples", catalog={"format": "ascii_table"})
         )
         explorer.scan()
         result = explorer.get_dict()
-        self._check(result)
+        self.assertEqual(len(result["files"]), 2)
+        self.assertEqual(result["files"][0]["Mime/Type"], "application/gzip")
+        self.assertEqual(
+            result["files"][0]["path"], "tests/samples/sample-data-2.csv.gz"
+        )
+        self.assertEqual(len(result["files"][1]["pii"]), 5)
+        self.assertEqual(result["files"][1]["Mime/Type"], "text/plain")
+        self.assertEqual(result["files"][1]["path"], "tests/samples/sample-data.csv")
+        self.assertEqual(len(result["files"][1]["pii"]), 5)
 
     def testFile(self):
         explorer = FileExplorer(
@@ -53,7 +55,10 @@ class TestWalker(TestCase):
         )
         explorer.scan()
         result = explorer.get_dict()
-        self._check(result)
+        self.assertEqual(len(result["files"]), 1)
+        self.assertEqual(result["files"][0]["Mime/Type"], "text/plain")
+        self.assertEqual(result["files"][0]["path"], "tests/samples/sample-data.csv")
+        self.assertEqual(len(result["files"][0]["pii"]), 5)
 
 
 class MockFileExplorer(FileExplorer):

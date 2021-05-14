@@ -86,6 +86,11 @@ class ColumnNameScannerTests(TestCase):
         self.assertTrue(PiiTypes.PERSON in self.parser.scan("full_name"))
         self.assertTrue(PiiTypes.PERSON in self.parser.scan("name"))
 
+    def test_person_upper_case(self):
+        self.assertTrue(PiiTypes.PERSON in self.parser.scan("FNAME"))
+        self.assertTrue(PiiTypes.PERSON in self.parser.scan("FULL_NAME"))
+        self.assertTrue(PiiTypes.PERSON in self.parser.scan("NAME"))
+
     def test_email(self):
         self.assertTrue(PiiTypes.EMAIL in self.parser.scan("email"))
         self.assertTrue(PiiTypes.EMAIL in self.parser.scan("EMAIL"))
