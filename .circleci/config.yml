@@ -5,6 +5,7 @@
 version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.5
+  python: circleci/python@1.4.0
 workflows:
   build_and_deploy:
     jobs:
@@ -13,6 +14,7 @@ workflows:
             tags:
               only: /.*/
       - deploy:
+          context: PyPi
           requires:
             - build
           filters:
@@ -59,34 +61,21 @@ jobs:
             dockerize -wait tcp://localhost:5432 -timeout 1m
             dockerize -wait tcp://localhost:3306 -timeout 1m
 
-      # Download and cache dependencies
-      - restore_cache:
-          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
-
-      - run: &install-deps
-          name: install dependencies
-          command: |
-            pipenv sync --dev
-            pipenv run python -m spacy download en_core_web_sm
-
-      - save_cache:
-          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
-          paths:
-            - ".venv"
-
-      - run:
-          name: install piicatcher
-          command: pipenv run python setup.py develop
+      - python/install-packages:
+          pkg-manager: poetry
+          include-python-in-cache-key: false
+          include-branch-in-cache-key: false
 
       # run tests!
       - run:
           name: run tests
           command: |
-            pipenv run isort --check --diff .
-            pipenv run black --check .
-            pipenv run flake8 piicatcher tests
-            pipenv run mypy
-            pipenv run pytest -m "not dbtest" --pylint --pylint-error-types=EF --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
+            poetry run isort --check --diff .
+            poetry run black --check .
+            poetry run flake8 piicatcher tests
+            poetry run mypy
+            poetry run python -m spacy download en_core_web_sm
+            poetry run pytest -m "not dbtest" --pylint --pylint-error-types=EF --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
       
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results
@@ -107,46 +96,21 @@ jobs:
           PYVERSION: "3.8.3"
     steps:
       - checkout
-      - restore_cache:
-          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
+      - python/install-packages:
+          pkg-manager: poetry
+          include-python-in-cache-key: false
+          include-branch-in-cache-key: false
 
-      - run:
-          name: install dependencies
-          command: |
-            pipenv sync --dev
-            pipenv run python -m spacy download en_core_web_sm
-
-      - save_cache:
-          key: deps-{{ checksum "Pipfile.lock" }}-{{ .Environment.CIRCLE_STAGE }}
-          paths:
-            - ".venv"
-
-      - run:
-          name: verify git tag vs. version
-          command: |
-            pipenv run python setup.py verify
-
-      - run:
-          name: init .pypirc
-          command: |
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
       - run:
           name: create packages
           command: |
-            pipenv run python setup.py sdist bdist_wheel
-
-      - run:
-          name: upload to pypi
-          command: |
-            pipenv run twine upload dist/*
+            poetry publish --build --username "${PYPI_USERNAME}" --password "${PYPI_PASSWORD}"
 
       - run:
           name: install git release utilities
           command: |
             go get github.com/aktau/github-release
-            go get -u github.com/git-chglog/git-chglog/cmd/git-chglog
+            GO111MODULE=on go get -u github.com/git-chglog/git-chglog/cmd/git-chglog
 
       - run:
           name: release
