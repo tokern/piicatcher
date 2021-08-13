@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "piicatcher"
-version = "0.13.0"
+version = "0.14.0"
 description = "Find PII data in databases"
 authors = ["Tokern <info@tokern.io>"]
 license = "Apache 2.0"
