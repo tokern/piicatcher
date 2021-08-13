@@ -108,38 +108,6 @@ exclude_table=["table1", "table2"]
     )
 
 
-def test_files(tmp_path, mocker, caplog):
-    caplog.set_level(logging.DEBUG)
-    config_file = tmp_path / "db_host.ini"
-    config_file.write_text(
-        """
-[files]
-path="file path"
-"""
-    )
-
-    logging.info("Config File: %s" % config_file)
-    explorer = mocker.patch("piicatcher.explorer.files.FileExplorer")
-    runner = CliRunner()
-    result = runner.invoke(cli, ["--config", str(config_file), "files"])
-    assert result.exception is None
-    assert "" == result.stdout
-    assert 0 == result.exit_code
-    explorer.dispatch.assert_called_once_with(
-        Namespace(
-            path="file path",
-            catalog={
-                "host": None,
-                "port": None,
-                "user": None,
-                "password": None,
-                "format": "ascii_table",
-                "file": None,
-            },
-        )
-    )
-
-
 def test_aws(tmp_path, mocker, caplog):
     caplog.set_level(logging.DEBUG)
     config_file = tmp_path / "db_host.ini"

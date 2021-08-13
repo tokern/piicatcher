@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-from piicatcher.explorer.files import Tokenizer
 from piicatcher.piitypes import PiiTypes
 from piicatcher.scanner import ColumnNameScanner, NERScanner, RegexScanner
 
@@ -124,10 +123,3 @@ class ColumnNameScannerTests(TestCase):
 
     def test_ssn(self):
         self.assertTrue(PiiTypes.SSN in self.parser.scan("ssn"))
-
-
-class TestTokenizer(TestCase):
-    def test_tokenization(self):
-        tok = Tokenizer()
-        tokens = tok.tokenize("Jonathan is in Bangalore")
-        self.assertEqual(4, len(tokens))
