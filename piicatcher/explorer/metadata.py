@@ -5,6 +5,16 @@ from abc import ABC
 from piicatcher.log_mixin import LogMixin
 from piicatcher.scanner import ColumnNameScanner, NERScanner, RegexScanner
 
+data_logger = logging.getLogger("piicatcher.data")
+data_logger.propagate = False
+data_logger.setLevel(logging.INFO)
+data_logger.addHandler(logging.NullHandler())
+
+scan_logger = logging.getLogger("piicatcher.scan")
+scan_logger.propagate = False
+scan_logger.setLevel(logging.INFO)
+scan_logger.addHandler(logging.NullHandler())
+
 
 class NamedObject(ABC, LogMixin):
     def __init__(self, name, include, exclude):
@@ -148,11 +158,29 @@ class Column(NamedObject):
 
             self.logger.debug("%s has %s", self.get_name(), self.get_pii_types_str())
 
-        self.shallow_scan()
+        [self._pii.add(pii) for pii in self.column_scanner.scan(self.get_name())]
+
+        scan_logger.info(
+            "deep_scan",
+            extra={"column": self.get_name(), "pii_types": list(self.get_pii_types())},
+        )
+        data_logger.info(
+            "deep_scan",
+            extra={
+                "column": self.get_name(),
+                "data": data,
+                "pii_types": list(self.get_pii_types()),
+            },
+        )
 
     def shallow_scan(self):
         self.logger.debug("Scanning column name %s" % self.get_name())
         [self._pii.add(pii) for pii in self.column_scanner.scan(self.get_name())]
+
+        scan_logger.info(
+            "shallow_scan",
+            extra={"column": self.get_name(), "pii_types": list(self.get_pii_types())},
+        )
 
     def get_dict(self):
         return {"pii_types": list(self.get_pii_types()), "name": self.get_name()}

@@ -2,11 +2,13 @@ import logging
 
 import click
 import click_config_file
+from pythonjsonlogger import jsonlogger
 
 from piicatcher import __version__
 from piicatcher.explorer.aws import cli as aws_cli
 from piicatcher.explorer.databases import cli as db_cli
 from piicatcher.explorer.files import cli as files_cli
+from piicatcher.explorer.metadata import data_logger, scan_logger
 from piicatcher.explorer.snowflake import cli as snowflake_cli
 from piicatcher.explorer.sqlite import cli as sqlite_cli
 
@@ -21,6 +23,15 @@ from piicatcher.explorer.sqlite import cli as sqlite_cli
     type=click.Choice(["ascii_table", "json", "db", "glue"]),
     default="ascii_table",
     help="Choose catalog format type",
+)
+@click.option(
+    "--log-data", default=False, is_flag=True, help="Log data that was scanned"
+)
+@click.option(
+    "--log-scan",
+    default=False,
+    is_flag=True,
+    help="Log scan events with column names and PII types",
 )
 @click.option(
     "--catalog-file",
@@ -39,6 +50,8 @@ from piicatcher.explorer.sqlite import cli as sqlite_cli
 def cli(
     ctx,
     log_level,
+    log_data,
+    log_scan,
     catalog_format,
     catalog_file,
     catalog_host,
@@ -48,6 +61,18 @@ def cli(
 ):
     logging.basicConfig(level=getattr(logging, log_level.upper()))
     logging.debug("Catalog - host: %s, port: %s, ", catalog_host, catalog_port)
+
+    if log_scan:
+        handler = logging.StreamHandler()
+        handler.setFormatter(jsonlogger.JsonFormatter())
+        handler.setLevel(logging.INFO)
+        scan_logger.addHandler(handler)
+
+    if log_data:
+        handler = logging.StreamHandler()
+        handler.setFormatter(jsonlogger.JsonFormatter())
+        handler.setLevel(logging.INFO)
+        data_logger.addHandler(handler)
 
     ctx.ensure_object(dict)
 

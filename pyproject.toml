@@ -24,7 +24,6 @@ repository="https://github.com/tokern/piicatcher/"
 [tool.poetry.dependencies]
 python = "^3.8"
 pypi-publisher = "*"
-commonregex = "*"
 spacy = "*"
 tableprint = "*"
 pymysql = "*"
@@ -40,8 +39,9 @@ botocore = "*"
 click = "*"
 click-config-file = "*"
 snowflake-connector-python = "*"
-types-PyMySQL = "^1.0.2"
-types-python-dateutil = "^0.1.6"
+python-json-logger = "^2.0.2"
+commonregex = "^1.5.3"
+
 [tool.poetry.dev-dependencies]
 black = "==19.10b0"
 flake8 = "*"
@@ -56,7 +56,12 @@ pytest-pylint = "*"
 twine = "*"
 pytest-mock = "*"
 pipenv-setup = "*"
+types-PyMySQL = "^1.0.2"
+types-python-dateutil = "^0.1.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+piicatcher = "piicatcher.command_line:cli"
