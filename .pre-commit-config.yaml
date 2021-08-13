@@ -5,21 +5,21 @@ repos:
         name: isort
         stages: [commit]
         language: system
-        entry: pipenv run isort
+        entry: poetry run isort
         types: [python]
 
       - id: black
         name: black
         stages: [commit]
         language: system
-        entry: pipenv run black
+        entry: poetry run black
         types: [python]
 
       - id: flake8
         name: flake8
         stages: [commit]
         language: system
-        entry: pipenv run flake8
+        entry: poetry run flake8
         types: [python]
         exclude: setup.py
 
@@ -27,6 +27,6 @@ repos:
         name: mypy
         stages: [commit]
         language: system
-        entry: pipenv run mypy
+        entry: poetry run mypy
         types: [python]
         pass_filenames: false

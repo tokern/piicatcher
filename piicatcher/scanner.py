@@ -95,5 +95,4 @@ class ColumnNameScanner(Scanner):
             if self.regex[pii_type].match(text) is not None:
                 types.add(pii_type)
 
-        logging.debug("PiiTypes are %s", ",".join(str(x) for x in list(types)))
         return list(types)
