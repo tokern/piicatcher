@@ -1,5 +1,5 @@
 from argparse import Namespace
-from typing import Any, Dict, List, TextIO, Tuple
+from typing import Any, Dict, Tuple
 
 from piicatcher.explorer.aws import AthenaExplorer
 from piicatcher.explorer.databases import (
@@ -9,29 +9,7 @@ from piicatcher.explorer.databases import (
     RedshiftExplorer,
 )
 from piicatcher.explorer.explorer import Explorer
-from piicatcher.explorer.files import IO, Tokenizer
 from piicatcher.explorer.sqlite import SqliteExplorer
-from piicatcher.scanner import NERScanner, RegexScanner
-
-
-def scan_file_object(fd: TextIO) -> List[Any]:
-    """
-
-    Args:
-        fd (file descriptor): A file descriptor open in text mode.
-
-    Returns: A list of PIITypes enum of all the PII types found in the file.
-
-    """
-    scanner = IO("api file object", fd)
-    context = {
-        "tokenizer": Tokenizer(),
-        "regex": RegexScanner(),
-        "ner": NERScanner(),
-    }
-
-    scanner.scan(context)
-    return scanner.get_pii_types()
 
 
 def _scan_db(scanner: Explorer, scan_type: str) -> Dict[Any, Any]:

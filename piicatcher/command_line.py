@@ -7,7 +7,6 @@ from pythonjsonlogger import jsonlogger
 from piicatcher import __version__
 from piicatcher.explorer.aws import cli as aws_cli
 from piicatcher.explorer.databases import cli as db_cli
-from piicatcher.explorer.files import cli as files_cli
 from piicatcher.explorer.metadata import data_logger, scan_logger
 from piicatcher.explorer.snowflake import cli as snowflake_cli
 from piicatcher.explorer.sqlite import cli as sqlite_cli
@@ -87,7 +86,6 @@ def cli(
 
 
 cli.add_command(aws_cli)
-cli.add_command(files_cli)
 cli.add_command(sqlite_cli)
 cli.add_command(db_cli)
 cli.add_command(snowflake_cli)
