@@ -7,6 +7,7 @@ from unittest import TestCase, mock
 import psycopg2
 import pymysql
 import pytest
+from dbcat.catalog.models import PiiTypes
 
 from piicatcher import scan_database
 from piicatcher.explorer.databases import (
@@ -18,7 +19,6 @@ from piicatcher.explorer.databases import (
 )
 from piicatcher.explorer.metadata import Column, Schema, Table
 from piicatcher.explorer.sqlite import SqliteExplorer
-from piicatcher.piitypes import PiiTypes
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -65,7 +65,7 @@ def mysql_conn():
 
 def pg_conn():
     return (
-        "postgres",
+        "postgresql",
         psycopg2.connect(
             host="127.0.0.1", user="piiuser", password="p11secret", database="piidb"
         ),
@@ -240,6 +240,7 @@ class MySQLExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
                 user="piiuser",
                 password="p11secret",
                 database="piidb",
+                connection_type="mysql",
                 include_schema=(),
                 exclude_schema=(),
                 include_table=(),
@@ -301,6 +302,7 @@ class MySQLDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
                 user="piiuser",
                 password="p11secret",
                 database="piidb",
+                connection_type="mysql",
                 include_schema=(),
                 exclude_schema=(),
                 include_table=(),
@@ -358,6 +360,7 @@ class PostgresDataTypeTest(CommonDataTypeTestCases.CommonDataTypeTests):
                 user="piiuser",
                 password="p11secret",
                 database="piidb",
+                connection_type="postgresql",
                 include_schema=(),
                 exclude_schema=(),
                 include_table=(),
@@ -423,6 +426,7 @@ class PostgresExplorerTest(CommonExplorerTestCases.CommonExplorerTests):
                 user="piiuser",
                 password="p11secret",
                 database="piidb",
+                connection_type="postgresql",
                 include_schema=(),
                 exclude_schema=(),
                 include_table=(),
@@ -544,7 +548,7 @@ class TestDispatcher(TestCase):
                             host="connection",
                             port=None,
                             list_all=None,
-                            connection_type="postgres",
+                            connection_type="postgresql",
                             database="public",
                             scan_type=None,
                             catalog={"format": "ascii_table"},

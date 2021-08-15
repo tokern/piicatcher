@@ -45,6 +45,7 @@ from piicatcher.explorer.sqlite import cli as sqlite_cli
     "--catalog-user", help="Username to connect database.  Use if catalog is a db"
 )
 @click.option("--catalog-password", help="Password of the user. Use if catalog is a db")
+@click.option("--catalog-database", help="Database name of the catalog")
 # pylint: disable=too-many-arguments
 def cli(
     ctx,
@@ -57,6 +58,7 @@ def cli(
     catalog_port,
     catalog_user,
     catalog_password,
+    catalog_database,
 ):
     logging.basicConfig(level=getattr(logging, log_level.upper()))
     logging.debug("Catalog - host: %s, port: %s, ", catalog_host, catalog_port)
@@ -80,6 +82,7 @@ def cli(
         "port": catalog_port,
         "user": catalog_user,
         "password": catalog_password,
+        "database": catalog_database,
         "format": catalog_format,
         "file": catalog_file,
     }

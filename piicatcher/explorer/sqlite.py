@@ -1,6 +1,7 @@
 import logging
 import sqlite3
 from argparse import Namespace
+from typing import Dict
 
 import click
 
@@ -87,6 +88,14 @@ class SqliteExplorer(Explorer):
     def __init__(self, ns):
         super(SqliteExplorer, self).__init__(ns)
         self.path = ns.path
+
+    @property
+    def type(self) -> str:
+        return "sqlite"
+
+    @property
+    def connection_parameters(self) -> Dict[str, str]:
+        return dict(path=self.path)
 
     @classmethod
     def factory(cls, ns):

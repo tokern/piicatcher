@@ -1,5 +1,6 @@
 import logging
 from argparse import Namespace
+from typing import Dict
 
 import click
 import snowflake.connector
@@ -127,6 +128,14 @@ class SnowflakeExplorer(Explorer):
         self.okta_account_name = ns.okta_account_name
         self.oauth_token = ns.oauth_token
         self.oauth_host = ns.oauth_host
+
+    @property
+    def type(self) -> str:
+        return "snowflake"
+
+    @property
+    def connection_parameters(self) -> Dict[str, str]:
+        return self._get_connection_args()
 
     @classmethod
     def factory(cls, ns):

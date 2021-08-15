@@ -2,7 +2,7 @@ import json
 import sys
 
 from piicatcher.catalog import Store
-from piicatcher.piitypes import PiiTypeEncoder
+from piicatcher.explorer.metadata import PiiTypeEncoder
 
 
 class FileStore(Store):

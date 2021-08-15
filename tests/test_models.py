@@ -1,235 +1,146 @@
-import logging
 from argparse import Namespace
 
+import psycopg2
 import pymysql
 import pytest
+import yaml
+from dbcat.catalog.models import PiiTypes
 
-from piicatcher.catalog.db import DbStore, model_db_close
-from piicatcher.explorer.explorer import Explorer
-from piicatcher.explorer.metadata import Column
-from piicatcher.explorer.metadata import Database as mdDatabase
-from piicatcher.explorer.metadata import Schema, Table
-from piicatcher.piitypes import PiiTypes
+from piicatcher.explorer.databases import RelDbExplorer
 
-logging.basicConfig(level=logging.DEBUG)
+pii_data_script = """
+create table no_pii(a text, b text);
+insert into no_pii values ('abc', 'def');
+insert into no_pii values ('xsfr', 'asawe');
+
+create table partial_pii(a text, b text);
+insert into partial_pii values ('917-908-2234', 'plkj');
+insert into partial_pii values ('215-099-2234', 'sfrf');
+
+create table full_pii(name text, location text);
+insert into full_pii values ('Jonathan Smith', 'Virginia');
+insert into full_pii values ('Chase Ryan', 'Chennai');
+
+"""
 
 
-catalog = {
-    "host": "127.0.0.1",
-    "port": 3306,
-    "user": "catalog_user",
-    "password": "catal0g_passw0rd",
-    "format": "db",
-}
+pii_data_load = [
+    "create table no_pii(a text, b text)",
+    "insert into no_pii values ('abc', 'def')",
+    "insert into no_pii values ('xsfr', 'asawe')",
+    "create table partial_pii(a text, b text)",
+    "insert into partial_pii values ('917-908-2234', 'plkj')",
+    "insert into partial_pii values ('215-099-2234', 'sfrf')",
+    "create table full_pii(name text, location text)",
+    "insert into full_pii values ('Jonathan Smith', 'Virginia')",
+    "insert into full_pii values ('Chase Ryan', 'Chennai')",
+]
+
+pii_data_drop = ["DROP TABLE full_pii", "DROP TABLE partial_pii", "DROP TABLE no_pii"]
+
+
+def mysql_conn():
+    return (
+        pymysql.connect(
+            host="127.0.0.1", user="piiuser", password="p11secret", database="piidb",
+        ),
+        "piidb",
+    )
+
+
+def pg_conn():
+    return (
+        psycopg2.connect(
+            host="127.0.0.1", user="piiuser", password="p11secret", database="piidb"
+        ),
+        "public",
+    )
 
 
 @pytest.fixture(scope="module")
-def setup_catalog():
-    with pymysql.connect(
-        host=catalog["host"],
-        port=catalog["port"],
-        user="root",
-        password="r00tPa33w0rd",
+def load_all_data():
+    params = [mysql_conn(), pg_conn()]
+    for p in params:
+        db_conn, expected_schema = p
+        with db_conn.cursor() as cursor:
+            for statement in pii_data_load:
+                cursor.execute(statement)
+            cursor.execute("commit")
+    yield params
+    for p in params:
+        db_conn, expected_schema = p
+        with db_conn.cursor() as cursor:
+            for statement in pii_data_drop:
+                cursor.execute(statement)
+            cursor.execute("commit")
+
+    for p in params:
+        db_conn, expected_schema = p
+        db_conn.close()
+
+
+@pytest.fixture(scope="module")
+def setup_explorer(open_catalog_connection, load_all_data):
+    catalog_obj, conf = open_catalog_connection
+    config_yaml = yaml.safe_load(conf)
+    config_yaml["catalog"]["format"] = "db"
+
+    namespace = Namespace(
+        catalog=config_yaml["catalog"],
+        catalog_conf=conf,
+        host="127.0.0.1",
+        user="piiuser",
+        password="p11secret",
         database="piidb",
-    ).cursor() as c:
-        c.execute(
-            "CREATE USER IF NOT EXISTS catalog_user IDENTIFIED BY 'catal0g_passw0rd'"
-        )
-        c.execute("CREATE DATABASE IF NOT EXISTS tokern")
-        c.execute("GRANT ALL ON tokern.* TO 'catalog_user'@'%'")
-
-
-class MockExplorer(Explorer):
-    @classmethod
-    def parser(cls, sub_parsers):
-        pass
-
-    def _open_connection(self):
-        pass
-
-    def _get_catalog_query(self):
-        pass
-
-    @staticmethod
-    def get_no_pii_table():
-        no_pii_table = Table("test_store", "no_pii")
-        no_pii_a = Column("a")
-        no_pii_b = Column("b")
-
-        no_pii_table.add_child(no_pii_a)
-        no_pii_table.add_child(no_pii_b)
-
-        return no_pii_table
-
-    @staticmethod
-    def get_partial_pii_table():
-        partial_pii_table = Table("test_store", "partial_pii")
-        partial_pii_a = Column("a")
-        partial_pii_a.add_pii_type(PiiTypes.PHONE)
-        partial_pii_b = Column("b")
-
-        partial_pii_table.add_child(partial_pii_a)
-        partial_pii_table.add_child(partial_pii_b)
-
-        return partial_pii_table
-
-    @staticmethod
-    def get_full_pii_table():
-        full_pii_table = Table("test_store", "full_pii")
-        full_pii_a = Column("a")
-        full_pii_a.add_pii_type(PiiTypes.PHONE)
-        full_pii_b = Column("b")
-        full_pii_b.add_pii_type(PiiTypes.ADDRESS)
-        full_pii_b.add_pii_type(PiiTypes.LOCATION)
-
-        full_pii_table.add_child(full_pii_a)
-        full_pii_table.add_child(full_pii_b)
-
-        return full_pii_table
-
-    def _load_catalog(self):
-        schema = Schema(
-            "test_store", include=self._include_table, exclude=self._exclude_table
-        )
-        schema.add_child(MockExplorer.get_no_pii_table())
-        schema.add_child(MockExplorer.get_partial_pii_table())
-        schema.add_child(MockExplorer.get_full_pii_table())
-
-        self._database = mdDatabase(
-            "database", include=self._include_schema, exclude=self._exclude_schema
-        )
-        self._database.add_child(schema)
-
-
-@pytest.fixture(scope="module")
-def setup_explorer(request, setup_catalog):
-    ns = Namespace(
-        catalog=catalog,
+        connection_type="postgresql",
+        scan_type=None,
         include_schema=(),
         exclude_schema=(),
         include_table=(),
         exclude_table=(),
     )
-    explorer = MockExplorer(ns)
-    MockExplorer.output(ns, explorer)
 
-    def finalizer():
-        model_db_close()
-
-    request.addfinalizer(finalizer)
+    RelDbExplorer.dispatch(namespace)
+    yield catalog_obj
 
 
-def get_connection():
-    return pymysql.connect(
-        host=catalog["host"],
-        port=catalog["port"],
-        user=catalog["user"],
-        password=catalog["password"],
-        database="tokern",
+@pytest.fixture
+def managed_session(setup_explorer):
+    catalog_obj = setup_explorer
+    with catalog_obj.managed_session:
+        yield catalog_obj
+
+
+def test_get_source(managed_session):
+    catalog_obj = managed_session
+    source = catalog_obj.get_source("database")
+    assert source.fqdn == "database"
+
+
+def test_get_schema(managed_session):
+    catalog_obj = managed_session
+    schema = catalog_obj.get_schema("database", "public")
+    assert schema.fqdn == ("database", "public")
+
+
+def test_get_tables(managed_session):
+    catalog_obj = managed_session
+    tables = catalog_obj.search_tables(
+        source_like="database", schema_like="public", table_like="%"
     )
 
-
-def test_schema(setup_explorer):
-    with get_connection().cursor() as c:
-        c.execute("select name from dbschemas")
-        assert [("test_store",)] == list(c.fetchall())
-
-
-def test_tables(setup_explorer):
-    with get_connection().cursor() as c:
-        c.execute("select name from dbtables order by id")
-        assert [("no_pii",), ("partial_pii",), ("full_pii",)] == list(c.fetchall())
+    assert len(tables) == 3
+    assert tables[0].fqdn == ("database", "public", "full_pii")
+    assert tables[1].fqdn == ("database", "public", "no_pii")
+    assert tables[2].fqdn == ("database", "public", "partial_pii")
 
 
-def test_columns(setup_explorer):
-    with get_connection().cursor() as c:
-        c.execute("select name, pii_type from dbcolumns order by id")
-        assert [
-            ("a", "[]"),
-            ("b", "[]"),
-            ("a", '[{"__enum__": "PiiTypes.PHONE"}]'),
-            ("b", "[]"),
-            ("a", '[{"__enum__": "PiiTypes.PHONE"}]'),
-            (
-                "b",
-                '[{"__enum__": "PiiTypes.ADDRESS"}, {"__enum__": "PiiTypes.LOCATION"}]',
-            ),
-        ] == list(c.fetchall())
-
-
-def test_setup_database(setup_explorer):
-    DbStore.setup_database(catalog=catalog)
-    with get_connection().cursor() as c:
-        c.execute("select name from dbtables order by id")
-        assert [("no_pii",), ("partial_pii",), ("full_pii",)] == list(c.fetchall())
-
-
-def test_out_of_band_update(setup_explorer):
-    connection = get_connection()
-    with connection.cursor() as c:
-        c.execute("select id from dbtables where name = 'partial_pii'")
-        table_id = c.fetchone()[0]
-        c.execute(
-            """
-            update dbcolumns set pii_type='[{{"__enum__": "PiiTypes.CREDIT_CARD"}}]'
-            where table_id = {0} and name = 'b'
-            """.format(
-                table_id
-            )
-        )
-
-    connection.commit()
-
-    with connection.cursor() as c:
-        c.execute(
-            "select name, pii_type from dbcolumns where table_id = {0} order by id".format(
-                table_id
-            )
-        )
-        assert [
-            ("a", '[{"__enum__": "PiiTypes.PHONE"}]'),
-            ("b", '[{"__enum__": "PiiTypes.CREDIT_CARD"}]'),
-        ] == list(c.fetchall())
-
-
-class UpdateColumnExplorer(MockExplorer):
-    @staticmethod
-    def get_partial_pii_table():
-        partial_pii_table = Table("test_store", "partial_pii")
-        partial_pii_a = Column("a")
-        partial_pii_a.add_pii_type(PiiTypes.PHONE)
-        partial_pii_b = Column("b")
-        partial_pii_b.add_pii_type(PiiTypes.ADDRESS)
-
-        partial_pii_table.add_child(partial_pii_a)
-        partial_pii_table.add_child(partial_pii_b)
-
-        return partial_pii_table
-
-
-def test_update(setup_explorer):
-    ns = Namespace(
-        catalog=catalog,
-        include_schema=(),
-        exclude_schema=(),
-        include_table=(),
-        exclude_table=(),
+def test_column(managed_session):
+    catalog_obj = managed_session
+    column = catalog_obj.get_column(
+        source_name="database",
+        schema_name="public",
+        table_name="full_pii",
+        column_name="name",
     )
-    explorer = UpdateColumnExplorer(ns)
-    UpdateColumnExplorer.output(ns, explorer)
-
-    connection = get_connection()
-    with connection.cursor() as c:
-        c.execute("select id from dbtables where name = 'partial_pii'")
-        table_id = c.fetchone()[0]
-
-    with connection.cursor() as c:
-        c.execute(
-            "select name, pii_type from dbcolumns where table_id = {0} order by id".format(
-                table_id
-            )
-        )
-        assert [
-            ("a", '[{"__enum__": "PiiTypes.PHONE"}]'),
-            ("b", '[{"__enum__": "PiiTypes.CREDIT_CARD"}]'),
-        ] == list(c.fetchall())
+    assert column.pii_type == PiiTypes.PERSON

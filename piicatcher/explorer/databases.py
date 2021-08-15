@@ -1,6 +1,7 @@
 import logging
 from abc import abstractmethod
 from argparse import Namespace
+from typing import Dict
 
 import click
 import cx_Oracle
@@ -59,7 +60,7 @@ tables matching -T are excluded from what is otherwise a normal dump.
 @click.option(
     "--connection-type",
     default="mysql",
-    type=click.Choice(["mysql", "postgres", "redshift", "oracle"]),
+    type=click.Choice(["mysql", "postgresql", "redshift", "oracle"]),
     help="Type of database",
 )
 @click.option(
@@ -124,6 +125,25 @@ class RelDbExplorer(Explorer):
             if "port" in vars(ns) and ns.port is not None
             else self.default_port
         )
+        self._conn_database = (
+            ns.database if "database" in vars(ns) and ns.database is not None else None
+        )
+        self.connection_type = ns.connection_type
+
+    @property
+    def type(self) -> str:
+        return self.connection_type
+
+    @property
+    def connection_parameters(self) -> Dict[str, str]:
+        print(self._conn_database)
+        return dict(
+            username=self.user,
+            password=self.password,
+            uri=self.host,
+            port=str(self.port),
+            database=self._conn_database,
+        )
 
     @property
     @abstractmethod
@@ -136,7 +156,7 @@ class RelDbExplorer(Explorer):
         explorer = None
         if ns.connection_type == "mysql":
             explorer = MySQLExplorer(ns)
-        elif ns.connection_type == "postgres":
+        elif ns.connection_type == "postgresql":
             explorer = PostgreSQLExplorer(ns)
         elif ns.connection_type == "redshift":
             explorer = RedshiftExplorer(ns)
@@ -165,9 +185,6 @@ class MySQLExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(MySQLExplorer, self).__init__(ns)
-        self._mysql_database = (
-            ns.database if "database" in vars(ns) and ns.database is not None else None
-        )
 
     @property
     def default_port(self):
@@ -179,7 +196,7 @@ class MySQLExplorer(RelDbExplorer):
             port=self.port,
             user=self.user,
             password=self.password,
-            database=self._mysql_database,
+            database=self._conn_database,
         )
 
     def _get_catalog_query(self):
@@ -212,9 +229,6 @@ class PostgreSQLExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(PostgreSQLExplorer, self).__init__(ns)
-        self._pg_database = (
-            ns.database if "database" in vars(ns) and ns.database is not None else None
-        )
 
     @property
     def default_database(self):
@@ -230,7 +244,7 @@ class PostgreSQLExplorer(RelDbExplorer):
             port=self.port,
             user=self.user,
             password=self.password,
-            database=self._pg_database,
+            database=self._conn_database,
         )
 
     def _get_catalog_query(self):
@@ -280,7 +294,6 @@ class OracleExplorer(RelDbExplorer):
 
     def __init__(self, ns):
         super(OracleExplorer, self).__init__(ns)
-        self._oracle_database = ns.database
 
     @property
     def default_port(self):
@@ -290,11 +303,11 @@ class OracleExplorer(RelDbExplorer):
         return cx_Oracle.connect(
             self.user,
             self.password,
-            "%s:%d/%s" % (self.host, self.port, self._oracle_database),
+            "%s:%d/%s" % (self.host, self.port, self._conn_database),
         )
 
     def _get_catalog_query(self):
-        return self._catalog_query.format(db=self._oracle_database)
+        return self._catalog_query.format(db=self._conn_database)
 
     @classmethod
     def _get_select_query(cls, schema_name, table_name, column_list):
