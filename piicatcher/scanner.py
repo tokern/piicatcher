@@ -5,11 +5,9 @@ from abc import ABC, abstractmethod
 
 import spacy
 from commonregex import CommonRegex
+from dbcat.catalog.models import PiiTypes
 
-from piicatcher.piitypes import PiiTypes
 
-
-# pylint: disable=too-few-public-methods
 class Scanner(ABC):
     """Scanner abstract class that defines required methods"""
 

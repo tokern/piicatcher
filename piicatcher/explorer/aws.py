@@ -1,5 +1,6 @@
 import logging
 from argparse import Namespace
+from typing import Dict
 
 import click
 import pyathena
@@ -90,6 +91,19 @@ class AthenaExplorer(Explorer):
     def __init__(self, ns):
         super(AthenaExplorer, self).__init__(ns)
         self.config = ns
+
+    @property
+    def type(self) -> str:
+        return "athena"
+
+    @property
+    def connection_parameters(self) -> Dict[str, str]:
+        return dict(
+            aws_access_key_id=self.config.access_key,
+            aws_secret_access_key=self.config.secret_key,
+            s3_staging_dir=self.config.staging_dir,
+            region_name=self.config.region,
+        )
 
     @classmethod
     def factory(cls, ns):

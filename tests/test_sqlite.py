@@ -6,10 +6,10 @@ from shutil import rmtree
 from unittest import TestCase, mock
 
 import pytest
+from dbcat.catalog.models import PiiTypes
 
 from piicatcher import scan_database
 from piicatcher.explorer.sqlite import SqliteExplorer
-from piicatcher.piitypes import PiiTypes
 from tests.test_databases import (
     CommonDataTypeTestCases,
     CommonExplorerTestCases,

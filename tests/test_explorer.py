@@ -1,13 +1,27 @@
 import json
 from argparse import Namespace
+from typing import Dict
 from unittest import TestCase
 
+from dbcat.catalog.models import PiiTypes
+
 from piicatcher.explorer.explorer import Explorer
-from piicatcher.explorer.metadata import Column, Database, Schema, Table
-from piicatcher.piitypes import PiiTypeEncoder, PiiTypes
+from piicatcher.explorer.metadata import Column, Database, PiiTypeEncoder, Schema, Table
 
 
 class MockExplorer(Explorer):
+    @property
+    def type(self) -> str:
+        pass
+
+    @property
+    def connection_parameters(self) -> Dict[str, str]:
+        pass
+
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        pass
+
     def _open_connection(self):
         pass
 

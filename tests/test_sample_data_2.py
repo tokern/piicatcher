@@ -55,6 +55,7 @@ def pg_explorer():
             user="piiuser",
             password="p11secret",
             database="piidb",
+            connection_type="postgresql",
             include_schema=(),
             exclude_schema=(),
             include_table=(),

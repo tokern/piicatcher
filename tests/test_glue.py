@@ -4,7 +4,7 @@ import unittest
 from dateutil.tz import tzlocal
 
 from piicatcher.catalog.glue import GlueStore
-from tests.test_models import MockExplorer
+from tests.test_dbmetadata import MockExplorer
 
 
 class PiiTable(unittest.TestCase):

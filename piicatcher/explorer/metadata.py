@@ -1,6 +1,9 @@
+import json
 import logging
 import re
 from abc import ABC
+
+from dbcat.catalog.models import PiiTypes
 
 from piicatcher.log_mixin import LogMixin
 from piicatcher.scanner import ColumnNameScanner, NERScanner, RegexScanner
@@ -14,6 +17,15 @@ scan_logger = logging.getLogger("piicatcher.scan")
 scan_logger.propagate = False
 scan_logger.setLevel(logging.INFO)
 scan_logger.addHandler(logging.NullHandler())
+
+
+# Ref: https://stackoverflow.com/questions/24481852/serialising-an-enum-member-to-json
+class PiiTypeEncoder(json.JSONEncoder):
+    # pylint: disable=method-hidden
+    def default(self, obj):
+        if type(obj) == PiiTypes:
+            return {"__enum__": str(obj)}
+        return json.JSONEncoder.default(self, obj)
 
 
 class NamedObject(ABC, LogMixin):

@@ -2,7 +2,7 @@ import json
 from argparse import Namespace
 
 from piicatcher.catalog.file import FileStore
-from tests.test_models import MockExplorer
+from tests.test_dbmetadata import MockExplorer
 
 
 def test_file(tmp_path):

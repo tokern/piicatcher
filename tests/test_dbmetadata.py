@@ -1,10 +1,88 @@
 from argparse import Namespace
+from typing import Dict
 from unittest import TestCase
 
-from piicatcher.explorer.metadata import Column, Schema, Table
-from piicatcher.piitypes import PiiTypes
+from dbcat.catalog.models import PiiTypes
+
+from piicatcher.explorer.explorer import Explorer
+from piicatcher.explorer.metadata import Column
+from piicatcher.explorer.metadata import Database as mdDatabase
+from piicatcher.explorer.metadata import Schema, Table
 from piicatcher.scanner import NERScanner, RegexScanner
-from tests.test_models import MockExplorer
+
+
+class MockExplorer(Explorer):
+    @property
+    def type(self) -> str:
+        pass
+
+    @property
+    def connection_parameters(self) -> Dict[str, str]:
+        pass
+
+    @classmethod
+    def _get_sample_query(cls, schema_name, table_name, column_list):
+        pass
+
+    @classmethod
+    def parser(cls, sub_parsers):
+        pass
+
+    def _open_connection(self):
+        pass
+
+    def _get_catalog_query(self):
+        pass
+
+    @staticmethod
+    def get_no_pii_table():
+        no_pii_table = Table("test_store", "no_pii")
+        no_pii_a = Column("a")
+        no_pii_b = Column("b")
+
+        no_pii_table.add_child(no_pii_a)
+        no_pii_table.add_child(no_pii_b)
+
+        return no_pii_table
+
+    @staticmethod
+    def get_partial_pii_table():
+        partial_pii_table = Table("test_store", "partial_pii")
+        partial_pii_a = Column("a")
+        partial_pii_a.add_pii_type(PiiTypes.PHONE)
+        partial_pii_b = Column("b")
+
+        partial_pii_table.add_child(partial_pii_a)
+        partial_pii_table.add_child(partial_pii_b)
+
+        return partial_pii_table
+
+    @staticmethod
+    def get_full_pii_table():
+        full_pii_table = Table("test_store", "full_pii")
+        full_pii_a = Column("a")
+        full_pii_a.add_pii_type(PiiTypes.PHONE)
+        full_pii_b = Column("b")
+        full_pii_b.add_pii_type(PiiTypes.ADDRESS)
+        full_pii_b.add_pii_type(PiiTypes.LOCATION)
+
+        full_pii_table.add_child(full_pii_a)
+        full_pii_table.add_child(full_pii_b)
+
+        return full_pii_table
+
+    def _load_catalog(self):
+        schema = Schema(
+            "test_store", include=self._include_table, exclude=self._exclude_table
+        )
+        schema.add_child(MockExplorer.get_no_pii_table())
+        schema.add_child(MockExplorer.get_partial_pii_table())
+        schema.add_child(MockExplorer.get_full_pii_table())
+
+        self._database = mdDatabase(
+            "database", include=self._include_schema, exclude=self._exclude_schema
+        )
+        self._database.add_child(schema)
 
 
 class DbMetadataTests(TestCase):

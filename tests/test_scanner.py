@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from piicatcher.piitypes import PiiTypes
+from dbcat.catalog.models import PiiTypes
+
 from piicatcher.scanner import ColumnNameScanner, NERScanner, RegexScanner
 
 

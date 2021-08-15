@@ -35,7 +35,7 @@ def scan_database(
     """
     Args:
         connection (connection): Connection object to a database
-        connection_type (str): Database type. Can be one of sqlite, snowflake, athena, redshift, postgres, mysql or oracle
+        connection_type (str): Database type. Can be one of sqlite, snowflake, athena, redshift, postgresql, mysql or oracle
         scan_type (str): Choose deep(scan data) or shallow(scan column names only)
         include_schema (List[str]): Scan only schemas matching any pattern; When this option is not specified, all
                                     non-system schemas in the target database will be scanned. Also, the pattern is
@@ -107,7 +107,7 @@ def scan_database(
     #        scanner = SnowflakeExplorer(args)
     elif (
         connection_type == "mysql"
-        or connection_type == "postgres"
+        or connection_type == "postgresql"
         or connection_type == "redshift"
         or connection_type == "oracle"
     ):
@@ -128,7 +128,7 @@ def scan_database(
         )
         if ns.connection_type == "mysql":
             scanner = MySQLExplorer(ns)
-        elif ns.connection_type == "postgres":
+        elif ns.connection_type == "postgresql":
             scanner = PostgreSQLExplorer(ns)
         elif ns.connection_type == "redshift":
             scanner = RedshiftExplorer(ns)

@@ -1,6 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from typing import Dict
 
 import tableprint
 
@@ -17,6 +18,7 @@ class Explorer(ABC):
         self._connection = None
         self._cache_ts = None
         self.catalog = ns.catalog
+        self.catalog_conf = ns.catalog_conf if "catalog_conf" in vars(ns) else None
         self._include_schema = ns.include_schema
         self._exclude_schema = ns.exclude_schema
         self._include_table = ns.include_table
@@ -51,16 +53,29 @@ class Explorer(ABC):
     def database(self):
         return self._database
 
+    @property
+    @abstractmethod
+    def type(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def connection_parameters(self) -> Dict[str, str]:
+        pass
+
     @classmethod
     def dispatch(cls, ns):
         logging.debug("Dispatch of %s" % cls.__name__)
         explorer = cls.factory(ns)
-        if ns.scan_type is None or ns.scan_type == "deep":
-            explorer.scan()
-        else:
-            explorer.shallow_scan()
+        try:
+            if ns.scan_type is None or ns.scan_type == "deep":
+                explorer.scan()
+            else:
+                explorer.shallow_scan()
 
-        cls.output(ns, explorer)
+            cls.output(ns, explorer)
+        finally:
+            explorer.close_connection()
 
     @classmethod
     def output(cls, ns, explorer):
