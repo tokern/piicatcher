@@ -5,7 +5,7 @@
 [![image](https://img.shields.io/pypi/pyversions/piicatcher.svg)](https://pypi.org/project/piicatcher/)
 [![image](https://img.shields.io/docker/v/tokern/piicatcher)](https://hub.docker.com/r/tokern/piicatcher)
 
-# PII Catcher for Files and Databases
+# PII Catcher for Databases and Data Warehouses
 
 ## Overview
 
@@ -60,18 +60,12 @@ To install use pip:
 
 ### API
 
-    from piicatcher import scan_file_object, scan_database
+    from piicatcher import scan_database
 
     pii_types = scan_file_object(...)
     catalog = scan_database(...)
     
 ## Supported Technologies
-
-PIICatcher supports the following filesystems:
-* POSIX
-* AWS S3 (for files that are part of tables in AWS Glue and AWS Athena)
-* Google Cloud Storage _(Coming Soon)_
-* ADLS _(Coming Soon)_
 
 PIICatcher supports the following databases:
 1. **Sqlite3** v3.24.0 or greater
