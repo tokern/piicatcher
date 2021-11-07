@@ -1,64 +1,55 @@
 import logging
+from pathlib import Path
+from typing import Optional
 
-import click
-import click_config_file
+import typer
 from pythonjsonlogger import jsonlogger
 
 from piicatcher import __version__
-from piicatcher.explorer.aws import cli as aws_cli
-from piicatcher.explorer.databases import cli as db_cli
-from piicatcher.explorer.metadata import data_logger, scan_logger
-from piicatcher.explorer.snowflake import cli as snowflake_cli
-from piicatcher.explorer.sqlite import cli as sqlite_cli
+from piicatcher.app_state import app_state
+from piicatcher.cli import app as scan_app
+from piicatcher.output import OutputFormat
+from piicatcher.scanner import data_logger, scan_logger
+
+app = typer.Typer()
 
 
-@click.group()
-@click.pass_context
-@click.version_option(__version__)
-@click_config_file.configuration_option()
-@click.option("-l", "--log-level", help="Logging Level", default="WARNING")
-@click.option(
-    "--catalog-format",
-    type=click.Choice(["ascii_table", "json", "db", "glue"]),
-    default="ascii_table",
-    help="Choose catalog format type",
-)
-@click.option(
-    "--log-data", default=False, is_flag=True, help="Log data that was scanned"
-)
-@click.option(
-    "--log-scan",
-    default=False,
-    is_flag=True,
-    help="Log scan events with column names and PII types",
-)
-@click.option(
-    "--catalog-file",
-    default=None,
-    type=click.File("w"),
-    help="File path of the catalog if format is json. If not specified, "
-    "then report is printed to sys.stdout",
-)
-@click.option("--catalog-host", help="Hostname of the database. Use if catalog is a db")
-@click.option("--catalog-port", help="Port of database. Use if catalog is a db")
-@click.option(
-    "--catalog-user", help="Username to connect database.  Use if catalog is a db"
-)
-@click.option("--catalog-password", help="Password of the user. Use if catalog is a db")
-@click.option("--catalog-database", help="Database name of the catalog")
+def version_callback(value: bool):
+    if value:
+        print("{}".format(__version__))
+        typer.Exit()
+
+
 # pylint: disable=too-many-arguments
+@app.callback()
 def cli(
-    ctx,
-    log_level,
-    log_data,
-    log_scan,
-    catalog_format,
-    catalog_file,
-    catalog_host,
-    catalog_port,
-    catalog_user,
-    catalog_password,
-    catalog_database,
+    log_level: str = typer.Option("WARNING", help="Logging Level"),
+    log_data: bool = typer.Option(False, help="Choose output format type"),
+    log_scan: bool = typer.Option(False, help="Log data that was scanned"),
+    output_format: OutputFormat = typer.Option(
+        OutputFormat.tabular, case_sensitive=False
+    ),
+    catalog_path: Path = typer.Option(
+        None, help="Path to store catalog state. Use if NOT using a database"
+    ),
+    catalog_host: str = typer.Option(
+        None, help="hostname of Postgres database. Use if catalog is a database."
+    ),
+    catalog_port: int = typer.Option(
+        None, help="port of Postgres database. Use if catalog is a database."
+    ),
+    catalog_user: str = typer.Option(
+        None, help="user of Postgres database. Use if catalog is a database."
+    ),
+    catalog_password: str = typer.Option(
+        None, help="password of Postgres database. Use if catalog is a database."
+    ),
+    catalog_database: str = typer.Option(
+        None, help="database of Postgres database. Use if catalog is a database."
+    ),
+    version: Optional[bool] = typer.Option(
+        None, "--version", callback=version_callback
+    ),
 ):
     logging.basicConfig(level=getattr(logging, log_level.upper()))
     logging.debug("Catalog - host: %s, port: %s, ", catalog_host, catalog_port)
@@ -75,20 +66,24 @@ def cli(
         handler.setLevel(logging.INFO)
         data_logger.addHandler(handler)
 
-    ctx.ensure_object(dict)
+    if catalog_path is None:
+        app_dir = typer.get_app_dir("piicatcher")
+        app_dir_path = Path(app_dir)
+        app_dir_path.mkdir(parents=True, exist_ok=True)
+        catalog_path = Path(app_dir) / "catalog.db"
 
-    ctx.obj["catalog"] = {
-        "host": catalog_host,
-        "port": catalog_port,
-        "user": catalog_user,
-        "password": catalog_password,
-        "database": catalog_database,
-        "format": catalog_format,
-        "file": catalog_file,
+    app_state["catalog_connection"] = {
+        "catalog_path": str(catalog_path),
+        "catalog_user": catalog_user,
+        "catalog_password": catalog_password,
+        "catalog_host": catalog_host,
+        "catalog_port": catalog_port,
+        "catalog_database": catalog_database,
     }
+    app_state["output_format"] = output_format
 
 
-cli.add_command(aws_cli)
-cli.add_command(sqlite_cli)
-cli.add_command(db_cli)
-cli.add_command(snowflake_cli)
+app.add_typer(scan_app, name="scan")
+# cli.add_command(aws_cli)
+# cli.add_command(db_cli)
+# cli.add_command(snowflake_cli)
