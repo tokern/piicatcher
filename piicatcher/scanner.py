@@ -2,10 +2,25 @@
 import logging
 import re
 from abc import ABC, abstractmethod
+from typing import Generator, Tuple
 
 import spacy
 from commonregex import CommonRegex
-from dbcat.catalog.models import PiiTypes
+from dbcat import Catalog
+from dbcat.catalog.models import CatColumn, CatSchema, CatTable, PiiTypes
+
+LOGGER = logging.getLogger(__name__)
+
+
+data_logger = logging.getLogger("piicatcher.data")
+data_logger.propagate = False
+data_logger.setLevel(logging.INFO)
+data_logger.addHandler(logging.NullHandler())
+
+scan_logger = logging.getLogger("piicatcher.scan")
+scan_logger.propagate = False
+scan_logger.setLevel(logging.INFO)
+scan_logger.addHandler(logging.NullHandler())
 
 
 class Scanner(ABC):
@@ -79,7 +94,7 @@ class ColumnNameScanner(Scanner):
         PiiTypes.GENDER: re.compile("^.*(gender).*$", re.IGNORECASE),
         PiiTypes.NATIONALITY: re.compile("^.*(nationality).*$", re.IGNORECASE),
         PiiTypes.ADDRESS: re.compile(
-            "^.*(address|city|state|county|country|" "zipcode|postal|zone|borough).*$",
+            "^.*(address|city|state|county|country|zipcode|postal|zone|borough).*$",
             re.IGNORECASE,
         ),
         PiiTypes.USER_NAME: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
@@ -94,3 +109,43 @@ class ColumnNameScanner(Scanner):
                 types.add(pii_type)
 
         return list(types)
+
+
+def shallow_scan(
+    catalog: Catalog,
+    generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],
+):
+    scanner = ColumnNameScanner()
+
+    for schema, table, column in generator:
+        types = scanner.scan(column.name)
+        if len(types) > 0:
+            catalog.set_column_pii_type(column=column, pii_type=types.pop())
+
+
+def deep_scan(
+    catalog: Catalog,
+    generator: Generator[Tuple[CatSchema, CatTable, CatColumn, str], None, None],
+):
+    scanners = [RegexScanner(), NERScanner()]
+
+    for schema, table, column, val in generator:
+        LOGGER.debug("Scanning column name {}, val: {}".format(column.fqdn, val))
+        if val is not None:
+            pii_types = set()
+            for scanner in scanners:
+                for pii in scanner.scan(val):
+                    pii_types.add(pii)
+
+            if len(pii_types) > 0:
+                top = pii_types.pop()
+                catalog.set_column_pii_type(column=column, pii_type=top)
+                LOGGER.debug("{} has {}".format(column.fqdn, top))
+
+                scan_logger.info(
+                    "deep_scan", extra={"column": column.fqdn, "pii_types": top}
+                )
+                data_logger.info(
+                    "deep_scan",
+                    extra={"column": column.fqdn, "data": val, "pii_types": top,},
+                )

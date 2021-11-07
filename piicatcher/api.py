@@ -1,141 +1,325 @@
-from argparse import Namespace
-from typing import Any, Dict, Tuple
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from piicatcher.explorer.aws import AthenaExplorer
-from piicatcher.explorer.databases import (
-    MySQLExplorer,
-    OracleExplorer,
-    PostgreSQLExplorer,
-    RedshiftExplorer,
-)
-from piicatcher.explorer.explorer import Explorer
-from piicatcher.explorer.sqlite import SqliteExplorer
+from dbcat import Catalog, DbScanner, PGCatalog, SqliteCatalog, init_db
+from dbcat.catalog import CatSource
+from sqlalchemy.orm.exc import NoResultFound
+
+from piicatcher.generators import column_generator, data_generator
+from piicatcher.scanner import deep_scan, shallow_scan
 
 
-def _scan_db(scanner: Explorer, scan_type: str) -> Dict[Any, Any]:
-    if scan_type == "deep":
-        scanner.scan()
-    elif scan_type == "shallow":
-        scanner.shallow_scan()
+def get_catalog(
+    catalog_path: str = None,
+    catalog_host: str = None,
+    catalog_port: int = None,
+    catalog_user: str = None,
+    catalog_password: str = None,
+    catalog_database: str = None,
+) -> Catalog:
+    if (
+        catalog_host is not None
+        and catalog_port is not None
+        and catalog_user is not None
+        and catalog_password is not None
+        and catalog_database is not None
+    ):
+        catalog = PGCatalog(
+            host=catalog_host,
+            port=str(catalog_port),
+            user=catalog_user,
+            password=catalog_password,
+            database=catalog_database,
+        )
+    elif catalog_path is not None:
+        catalog = SqliteCatalog(path=str(catalog_path))
     else:
-        raise AttributeError("Unknown scan type: {}".format(scan_type))
+        raise AttributeError(
+            "None of Path or Postgres connection parameters are provided"
+        )
 
-    return scanner.get_dict()
+    init_db(catalog)
+    return catalog
+
+
+class ScanTypeEnum(str, Enum):
+    shallow = "shallow"
+    deep = "deep"
 
 
 def scan_database(
-    connection: Any,
-    connection_type: str,
-    scan_type: str = "shallow",
-    include_schema: Tuple = (),
-    exclude_schema: Tuple = (),
-    include_table: Tuple = (),
-    exclude_table: Tuple = (),
-) -> Dict[Any, Any]:
-    """
-    Args:
-        connection (connection): Connection object to a database
-        connection_type (str): Database type. Can be one of sqlite, snowflake, athena, redshift, postgresql, mysql or oracle
-        scan_type (str): Choose deep(scan data) or shallow(scan column names only)
-        include_schema (List[str]): Scan only schemas matching any pattern; When this option is not specified, all
-                                    non-system schemas in the target database will be scanned. Also, the pattern is
-                                    interpreted as a regular expression, so multiple schemas can also be selected
-                                    by writing wildcard characters in the pattern.
-        exclude_schema (List[str]): List of patterns. Do not scan any schemas matching any pattern. The pattern is
-                                    interpreted according to the same rules as include_schema. When both include_schema
-                                    and exclude_schema are given, the behavior is to dump just the schemas that
-                                    match at least one include_schema pattern but no exclude_schema patterns. If only
-                                    exclude_schema is specified, then matching schemas matching are excluded.
-        include_table (List[str]):  List of patterns to match table. Similar in behaviour to include_schema.
-        exclude_table (List[str]):  List of patterns to exclude matching table. Similar in behaviour to exclude_schema
+    catalog: Catalog,
+    source: CatSource,
+    scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+):
+    with catalog.managed_session:
+        scanner = DbScanner(catalog=catalog, source=source)
+        scanner.scan()
 
-    Returns:
-        dict: A dictionary of schemata, tables and columns
+        if scan_type == ScanTypeEnum.shallow:
+            shallow_scan(
+                catalog=catalog,
+                generator=column_generator(
+                    catalog=catalog,
+                    source=source,
+                    exclude_schema_regex_str=exclude_schema_regex,
+                    include_schema_regex_str=include_schema_regex,
+                    exclude_table_regex_str=exclude_table_regex,
+                    include_table_regex_str=include_table_regex,
+                ),
+            )
+        else:
+            deep_scan(
+                catalog=catalog,
+                generator=data_generator(
+                    catalog=catalog,
+                    source=source,
+                    exclude_schema_regex_str=exclude_schema_regex,
+                    include_schema_regex_str=include_schema_regex,
+                    exclude_table_regex_str=exclude_table_regex,
+                    include_table_regex_str=include_table_regex,
+                ),
+            )
 
-    """
 
-    scanner: Explorer
-    if connection_type == "sqlite":
-        args = Namespace(
-            path=None,
+def scan_sqlite(
+    catalog_params: Dict[str, Any],
+    name: str,
+    path: Path,
+    scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+):
+    catalog = get_catalog(**catalog_params)
+
+    with catalog.managed_session:
+        try:
+            source = catalog.get_source(name)
+        except NoResultFound:
+            source = catalog.add_source(
+                name=path.name, uri=str(path), source_type="sqlite"
+            )
+
+        scan_database(
+            catalog=catalog,
+            source=source,
             scan_type=scan_type,
-            list_all=None,
-            catalog=None,
-            include_schema=include_schema,
-            exclude_schema=exclude_schema,
-            include_table=include_table,
-            exclude_table=exclude_table,
+            include_schema_regex=include_schema_regex,
+            exclude_schema_regex=exclude_schema_regex,
+            include_table_regex=include_table_regex,
+            exclude_table_regex=exclude_table_regex,
         )
 
-        scanner = SqliteExplorer(args)
-    elif connection_type == "athena":
-        args = Namespace(
-            access_key=None,
-            secret_key=None,
-            staging_dir=None,
-            region=None,
+
+def scan_postgresql(
+    catalog_params: Dict[str, Any],
+    name: str,
+    username: str,
+    password: str,
+    database: str,
+    uri: str,
+    port: Optional[int] = None,
+    scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+):
+    catalog = get_catalog(**catalog_params)
+
+    with catalog.managed_session:
+        try:
+            source = catalog.get_source(name)
+        except NoResultFound:
+            source = catalog.add_source(
+                name=name,
+                username=username,
+                password=password,
+                database=database,
+                uri=uri,
+                port=port,
+                source_type="postgresql",
+            )
+
+        scan_database(
+            catalog=catalog,
+            source=source,
             scan_type=scan_type,
-            list_all=None,
-            include_schema=include_schema,
-            exclude_schema=exclude_schema,
-            include_table=include_table,
-            exclude_table=exclude_table,
-            catalog=None,
+            include_schema_regex=include_schema_regex,
+            exclude_schema_regex=exclude_schema_regex,
+            include_table_regex=include_table_regex,
+            exclude_table_regex=exclude_table_regex,
         )
 
-        scanner = AthenaExplorer(args)
-    #    elif connection_type == "snowflake":
-    #        args = Namespace(
-    #            account=None,
-    #            warehouse=None,
-    #            database=None,
-    #            user=None,
-    #            password=None,
-    #            authenticator=None,
-    #            okta_account_name=None,
-    #            oauth_token=None,
-    #            oauth_host=None,
-    #            scan_type=scan_type,
-    #            list_all=None,
-    #            catalog=None,
-    #            include_schema=include_schema,
-    #            exclude_schema=exclude_schema,
-    #            include_table=include_table,
-    #            exclude_table=exclude_table,
-    #        )
 
-    #        scanner = SnowflakeExplorer(args)
-    elif (
-        connection_type == "mysql"
-        or connection_type == "postgresql"
-        or connection_type == "redshift"
-        or connection_type == "oracle"
-    ):
-        ns = Namespace(
-            host=None,
-            port=None,
-            user=None,
-            password=None,
-            database=None,
-            connection_type=connection_type,
+def scan_mysql(
+    catalog_params: Dict[str, Any],
+    name: str,
+    username: str,
+    password: str,
+    database: str,
+    uri: str,
+    port: Optional[int] = None,
+    scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+) -> int:
+    catalog = get_catalog(**catalog_params)
+
+    with catalog.managed_session:
+        try:
+            source = catalog.get_source(name)
+        except NoResultFound:
+            source = catalog.add_source(
+                name=name,
+                username=username,
+                password=password,
+                database=database,
+                uri=uri,
+                port=port,
+                source_type="mysql",
+            )
+
+        scan_database(
+            catalog=catalog,
+            source=source,
             scan_type=scan_type,
-            list_all=None,
-            catalog=None,
-            include_schema=include_schema,
-            exclude_schema=exclude_schema,
-            include_table=include_table,
-            exclude_table=exclude_table,
+            include_schema_regex=include_schema_regex,
+            exclude_schema_regex=exclude_schema_regex,
+            include_table_regex=include_table_regex,
+            exclude_table_regex=exclude_table_regex,
         )
-        if ns.connection_type == "mysql":
-            scanner = MySQLExplorer(ns)
-        elif ns.connection_type == "postgresql":
-            scanner = PostgreSQLExplorer(ns)
-        elif ns.connection_type == "redshift":
-            scanner = RedshiftExplorer(ns)
-        elif ns.connection_type == "oracle":
-            scanner = OracleExplorer(ns)
-    else:
-        raise AttributeError("Unknown connection type: {}".format(connection_type))
 
-    scanner.connection = connection
-    return _scan_db(scanner, scan_type)
+        return source.id
+
+
+def scan_redshift(
+    catalog_params: Dict[str, Any],
+    name: str,
+    username: str,
+    password: str,
+    database: str,
+    uri: str,
+    port: Optional[int] = None,
+    scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+):
+    catalog = get_catalog(**catalog_params)
+
+    with catalog.managed_session:
+        try:
+            source = catalog.get_source(name)
+        except NoResultFound:
+            source = catalog.add_source(
+                name=name,
+                username=username,
+                password=password,
+                database=database,
+                uri=uri,
+                port=port,
+                source_type="redshift",
+            )
+
+        scan_database(
+            catalog=catalog,
+            source=source,
+            scan_type=scan_type,
+            include_schema_regex=include_schema_regex,
+            exclude_schema_regex=exclude_schema_regex,
+            include_table_regex=include_table_regex,
+            exclude_table_regex=exclude_table_regex,
+        )
+
+
+def scan_snowflake(
+    catalog_params: Dict[str, Any],
+    name: str,
+    account: str,
+    username: str,
+    password: str,
+    database: str,
+    warehouse: str,
+    role: str,
+    scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+):
+    catalog = get_catalog(**catalog_params)
+
+    with catalog.managed_session:
+        try:
+            source = catalog.get_source(name)
+        except NoResultFound:
+            source = catalog.add_source(
+                name=name,
+                username=username,
+                password=password,
+                database=database,
+                account=account,
+                warehouse=warehouse,
+                role=role,
+                source_type="snowflake",
+            )
+
+        scan_database(
+            catalog=catalog,
+            source=source,
+            scan_type=scan_type,
+            include_schema_regex=include_schema_regex,
+            exclude_schema_regex=exclude_schema_regex,
+            include_table_regex=include_table_regex,
+            exclude_table_regex=exclude_table_regex,
+        )
+
+
+def scan_athena(
+    catalog_params: Dict[str, Any],
+    name: str,
+    aws_access_key_id: str,
+    aws_secret_access_key: str,
+    region_name: str,
+    s3_staging_dir: str,
+    scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+):
+    catalog = get_catalog(**catalog_params)
+
+    with catalog.managed_session:
+        try:
+            source = catalog.get_source(name)
+        except NoResultFound:
+            source = catalog.add_source(
+                name=name,
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
+                region_name=region_name,
+                s3_staging_dir=s3_staging_dir,
+                source_type="athena",
+            )
+
+        scan_database(
+            catalog=catalog,
+            source=source,
+            scan_type=scan_type,
+            include_schema_regex=include_schema_regex,
+            exclude_schema_regex=exclude_schema_regex,
+            include_table_regex=include_table_regex,
+            exclude_table_regex=exclude_table_regex,
+        )

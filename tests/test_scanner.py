@@ -2,7 +2,14 @@ from unittest import TestCase
 
 from dbcat.catalog.models import PiiTypes
 
-from piicatcher.scanner import ColumnNameScanner, NERScanner, RegexScanner
+from piicatcher.generators import column_generator, data_generator
+from piicatcher.scanner import (
+    ColumnNameScanner,
+    NERScanner,
+    RegexScanner,
+    deep_scan,
+    shallow_scan,
+)
 
 
 class RegexTestCase(TestCase):
@@ -68,10 +75,6 @@ class NERTests(TestCase):
         types = self.parser.scan("Roger is in the office")
         self.assertTrue(PiiTypes.PERSON in types)
 
-    def test_location(self):
-        types = self.parser.scan("Jonathan is in Bangalore")
-        self.assertTrue(PiiTypes.LOCATION in types)
-
     def test_date(self):
         types = self.parser.scan("Jan 1 2016 is a new year")
         self.assertTrue(PiiTypes.BIRTH_DATE in types)
@@ -124,3 +127,47 @@ class ColumnNameScannerTests(TestCase):
 
     def test_ssn(self):
         self.assertTrue(PiiTypes.SSN in self.parser.scan("ssn"))
+
+
+def test_shallow_scan(load_data):
+    catalog, source_id = load_data
+    with catalog.managed_session:
+        source = catalog.get_source_by_id(source_id)
+        shallow_scan(
+            catalog=catalog, generator=column_generator(catalog=catalog, source=source)
+        )
+
+        schemata = catalog.search_schema(source_like=source.name, schema_like="%")
+        state = catalog.get_column(
+            source_name=source.name,
+            schema_name=schemata[0].name,
+            table_name="full_pii",
+            column_name="state",
+        )
+        assert state.pii_type == PiiTypes.ADDRESS
+
+        name = catalog.get_column(
+            source_name=source.name,
+            schema_name=schemata[0].name,
+            table_name="full_pii",
+            column_name="name",
+        )
+        assert name.pii_type == PiiTypes.PERSON
+
+
+def test_deep_scan(load_data):
+    catalog, source_id = load_data
+    with catalog.managed_session:
+        source = catalog.get_source_by_id(source_id)
+        deep_scan(
+            catalog=catalog, generator=data_generator(catalog=catalog, source=source)
+        )
+
+        schemata = catalog.search_schema(source_like=source.name, schema_like="%")
+        state = catalog.get_column(
+            source_name=source.name,
+            schema_name=schemata[0].name,
+            table_name="partial_pii",
+            column_name="a",
+        )
+        assert state.pii_type == PiiTypes.PHONE
