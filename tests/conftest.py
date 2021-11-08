@@ -7,7 +7,7 @@ from typing import Any, Generator, Tuple
 
 import pytest
 import yaml
-from dbcat import catalog_connection, init_db, pull
+from dbcat import catalog_connection_yaml, init_db, pull
 from dbcat.catalog.catalog import Catalog, PGCatalog
 from pytest_cases import fixture, parametrize_with_cases
 from sqlalchemy import create_engine
@@ -84,7 +84,7 @@ def case_setup_pg(setup_pg_catalog):
 @fixture(scope="module")
 @parametrize_with_cases("catalog_conf", cases=".", scope="module")
 def open_catalog_connection(catalog_conf) -> Generator[Catalog, None, None]:
-    with closing(catalog_connection(catalog_conf)) as conn:
+    with closing(catalog_connection_yaml(catalog_conf)) as conn:
         init_db(conn)
         yield conn
 
@@ -177,14 +177,16 @@ def create_source_engine(
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         name = source.name
-        engine = create_engine(source.conn_string)
+        conn_string = source.conn_string
         source_type = source.source_type
 
+    engine = create_engine(conn_string)
     yield catalog, source_id, engine, name, source_type
+    engine.dispose()
 
 
 @pytest.fixture(scope="module")
-def load_data(create_source_engine) -> Generator[Tuple[Catalog, int], None, None]:
+def load_data(create_source_engine) -> Generator[Tuple[Catalog, int, str], None, None]:
     catalog, source_id, engine, name, source_type = create_source_engine
     with engine.begin() as conn:
         for statement in pii_data_load:
@@ -192,8 +194,7 @@ def load_data(create_source_engine) -> Generator[Tuple[Catalog, int], None, None
         if source_type != "sqlite":
             conn.execute("commit")
 
-    pull(catalog, name)
-    yield catalog, source_id
+    yield catalog, source_id, name
 
     with engine.begin() as conn:
         for statement in pii_data_drop:
@@ -202,10 +203,17 @@ def load_data(create_source_engine) -> Generator[Tuple[Catalog, int], None, None
             conn.execute("commit")
 
 
+@pytest.fixture(scope="module")
+def load_data_and_pull(load_data) -> Generator[Tuple[Catalog, int], None, None]:
+    catalog, source_id, name = load_data
+    pull(catalog, name)
+    yield catalog, source_id
+
+
 @fixture(scope="module")
 def load_sample_data(
     create_source_engine,
-) -> Generator[Tuple[Catalog, int], None, None]:
+) -> Generator[Tuple[Catalog, int, str], None, None]:
     catalog, source_id, engine, name, source_type = create_source_engine
     with engine.begin() as conn:
         create_table = """
@@ -240,10 +248,18 @@ def load_sample_data(
         if source_type != "sqlite":
             conn.execute("commit")
 
-        pull(catalog, name)
-        yield catalog, source_id
+    yield catalog, source_id, name
 
     with engine.begin() as conn:
         conn.execute("DROP TABLE sample")
         if source_type != "sqlite":
             conn.execute("commit")
+
+
+@fixture(scope="module")
+def load_sample_data_and_pull(
+    load_sample_data,
+) -> Generator[Tuple[Catalog, int], None, None]:
+    catalog, source_id, name = load_sample_data
+    pull(catalog, name)
+    yield catalog, source_id

@@ -19,9 +19,9 @@ from piicatcher.generators import (
 
 @pytest.fixture(scope="module")
 def sqlalchemy_engine(
-    load_data,
+    load_data_and_pull,
 ) -> Generator[Tuple[Catalog, CatSource, Any], None, None]:
-    catalog, source_id = load_data
+    catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         engine = create_engine(source.conn_string)
@@ -30,8 +30,8 @@ def sqlalchemy_engine(
 
 
 @pytest.fixture(scope="module")
-def load_source(load_data) -> Generator[Tuple[Catalog, CatSource], None, None]:
-    catalog, source_id = load_data
+def load_source(load_data_and_pull) -> Generator[Tuple[Catalog, CatSource], None, None]:
+    catalog, source_id = load_data_and_pull
 
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
