@@ -129,8 +129,8 @@ class ColumnNameScannerTests(TestCase):
         self.assertTrue(PiiTypes.SSN in self.parser.scan("ssn"))
 
 
-def test_shallow_scan(load_data):
-    catalog, source_id = load_data
+def test_shallow_scan(load_data_and_pull):
+    catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         shallow_scan(
@@ -155,8 +155,8 @@ def test_shallow_scan(load_data):
         assert name.pii_type == PiiTypes.PERSON
 
 
-def test_deep_scan(load_data):
-    catalog, source_id = load_data
+def test_deep_scan(load_data_and_pull):
+    catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         deep_scan(

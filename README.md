@@ -21,7 +21,7 @@ PIICatcher is available as a docker image or command-line application.
 
 ### Docker
 
-    docker run tokern/piicatcher:latest db -c '/db/sqlqb'
+    docker run tokern/piicatcher:latest scan sqlite --path '/db/sqlqb'
 
     ╭─────────────┬─────────────┬─────────────┬─────────────╮
     │   schema    │    table    │   column    │   has_pii   │
@@ -45,7 +45,7 @@ To install use pip:
     python -m spacy download en_core_web_sm
     
     # run piicatcher on a sqlite db and print report to console
-    piicatcher db -c '/db/sqlqb'
+    piicatcher scan sqlite --path '/db/sqlqb'
     ╭─────────────┬─────────────┬─────────────┬─────────────╮
     │   schema    │    table    │   column    │   has_pii   │
     ├─────────────┼─────────────┼─────────────┼─────────────┤
@@ -59,20 +59,37 @@ To install use pip:
 
 
 ### API
+    from piicatcher.api import scan_postgresql
 
-    from piicatcher import scan_database
-    catalog = scan_database(...)
-    
-## Supported Technologies
+    # PIICatcher uses a catalog to store its state. 
+    # The easiest option is to use a sqlite memory database.
+    # For production usage check, https://tokern.io/docs/data-catalog
+    catalog_params={'catalog_path': ':memory:'}
+    output = scan_postrgresql(catalog_params=catalog_params, name="pg_db", uri="127.0.0.1", 
+                              username="piiuser", password="p11secret", database="piidb", 
+                              include_table_regex=["sample"])
+    print(output)
+
+    # Example Output
+    [['public', 'sample', 'gender', 'PiiTypes.GENDER'], 
+     ['public', 'sample', 'maiden_name', 'PiiTypes.PERSON'], 
+     ['public', 'sample', 'lname', 'PiiTypes.PERSON'], 
+     ['public', 'sample', 'fname', 'PiiTypes.PERSON'], 
+     ['public', 'sample', 'address', 'PiiTypes.ADDRESS'], 
+     ['public', 'sample', 'city', 'PiiTypes.ADDRESS'], 
+     ['public', 'sample', 'state', 'PiiTypes.ADDRESS'], 
+     ['public', 'sample', 'email', 'PiiTypes.EMAIL']]
+
+
+## Supported Databases
 
 PIICatcher supports the following databases:
 1. **Sqlite3** v3.24.0 or greater
 2. **MySQL** 5.6 or greater
 3. **PostgreSQL** 9.4 or greater
 4. **AWS Redshift**
-5. **Oracle**
-6. **AWS Glue/AWS Athena**
-7. **Snowflake**
+5. **AWS Athena**
+6. **Snowflake**
 
 ## Documentation
 

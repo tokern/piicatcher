@@ -1,20 +1,12 @@
+import datetime
 import json
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from dbcat import Catalog
 from dbcat.catalog import CatSchema, CatSource, CatTable
 from dbcat.catalog.models import PiiTypes
-from tabulate import tabulate
 
-from piicatcher.api import get_catalog
-from piicatcher.app_state import app_state
 from piicatcher.generators import column_generator
-
-
-class OutputFormat(str, Enum):
-    tabular = "tabular"
-    json = "json"
 
 
 # Ref: https://stackoverflow.com/questions/24481852/serialising-an-enum-member-to-json
@@ -26,23 +18,16 @@ class PiiTypeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def output(catalog_params: Dict[str, Any], source_name: str, list_all: bool) -> str:
-    catalog = get_catalog(**catalog_params)
-
-    with catalog.managed_session:
-        source = catalog.get_source(source_name)
-
-        if app_state["output_format"] == OutputFormat.tabular:
-            table = output_tabular(catalog=catalog, source=source, list_all=list_all)
-            return tabulate(
-                tabular_data=table, headers=("schema", "table", "column", "PII Type")
-            )
-        else:
-            d = output_dict(catalog=catalog, source=source, list_all=list_all)
-            return json.dumps(d, sort_keys=True, indent=2, cls=PiiTypeEncoder)
-
-
-def output_dict(catalog: Catalog, source: CatSource, list_all: bool) -> Dict[Any, Any]:
+def output_dict(
+    catalog: Catalog,
+    source: CatSource,
+    list_all: bool = False,
+    last_run: datetime.datetime = None,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+) -> Dict[Any, Any]:
     current_schema: Optional[CatSchema] = None
     current_table: Optional[CatTable] = None
 
@@ -50,7 +35,15 @@ def output_dict(catalog: Catalog, source: CatSource, list_all: bool) -> Dict[Any
     schema_dict = {"name": "", "tables": []}
 
     table_dict = {"name": "", "columns": []}
-    for schema, table, column in column_generator(catalog=catalog, source=source):
+    for schema, table, column in column_generator(
+        catalog=catalog,
+        source=source,
+        last_run=last_run,
+        exclude_schema_regex_str=exclude_schema_regex,
+        include_schema_regex_str=include_schema_regex,
+        exclude_table_regex_str=exclude_table_regex,
+        include_table_regex_str=include_table_regex,
+    ):
         if current_schema is None or schema != current_schema:
             if current_schema is not None:
                 if len(table_dict["columns"]) > 0 or list_all:
@@ -81,13 +74,30 @@ def output_dict(catalog: Catalog, source: CatSource, list_all: bool) -> Dict[Any
     if len(schema_dict["tables"]) > 0 or list_all:
         source_dict["schemata"].append(schema_dict)
 
-    return source_dict
+    return source_dict if len(source_dict["schemata"]) > 0 or list_all else {}
 
 
-def output_tabular(catalog: Catalog, source: CatSource, list_all: bool) -> List[Any]:
+def output_tabular(
+    catalog: Catalog,
+    source: CatSource,
+    list_all: bool = False,
+    last_run: datetime.datetime = None,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+) -> List[Any]:
     tabular = []
 
-    for schema, table, column in column_generator(catalog=catalog, source=source):
+    for schema, table, column in column_generator(
+        catalog=catalog,
+        source=source,
+        last_run=last_run,
+        exclude_schema_regex_str=exclude_schema_regex,
+        include_schema_regex_str=include_schema_regex,
+        exclude_table_regex_str=exclude_table_regex,
+        include_table_regex_str=include_table_regex,
+    ):
         if list_all or column.pii_type is not None:
             tabular.append([schema.name, table.name, column.name, str(column.pii_type)])
 

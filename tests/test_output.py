@@ -242,8 +242,8 @@ sqlite_output_all = {
 }
 
 
-def test_output_dict_all(load_data):
-    catalog, source_id = load_data
+def test_output_dict_all(load_data_and_pull):
+    catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         scan_database(catalog=catalog, source=source)
@@ -376,8 +376,8 @@ sqlite_output_only = {
 }
 
 
-def test_output_dict(load_data):
-    catalog, source_id = load_data
+def test_output_dict(load_data_and_pull):
+    catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         scan_database(
@@ -412,8 +412,8 @@ sqlite_output_tabular = [
 ]
 
 
-def test_output_tabular(load_data):
-    catalog, source_id = load_data
+def test_output_tabular(load_data_and_pull):
+    catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         scan_database(
@@ -463,8 +463,8 @@ sqlite_output_tabular_all = [
 ]
 
 
-def test_output_tabular_all(load_data):
-    catalog, source_id = load_data
+def test_output_tabular_all(load_data_and_pull):
+    catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         scan_database(catalog=catalog, source=source)

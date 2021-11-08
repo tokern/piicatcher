@@ -1,3 +1,4 @@
+import datetime
 import logging
 import re
 from collections import namedtuple
@@ -43,6 +44,7 @@ def _filter_objects(
 def column_generator(
     catalog: Catalog,
     source: CatSource,
+    last_run: Optional[datetime.datetime] = None,
     include_schema_regex_str: List[str] = None,
     exclude_schema_regex_str: List[str] = None,
     include_table_regex_str: List[str] = None,
@@ -75,7 +77,9 @@ def column_generator(
         for table_object in table_objects:
             table = catalog.get_table_by_id(table_object.id)
 
-            for column in catalog.get_columns_for_table(table=table):
+            for column in catalog.get_columns_for_table(
+                table=table, newer_than=last_run
+            ):
                 yield schema, table, column
 
 
@@ -153,6 +157,7 @@ def _filter_text_columns(column_list: List[CatColumn]) -> List[CatColumn]:
 def data_generator(
     catalog: Catalog,
     source: CatSource,
+    last_run: Optional[datetime.datetime] = None,
     include_schema_regex_str: List[str] = None,
     exclude_schema_regex_str: List[str] = None,
     include_table_regex_str: List[str] = None,
@@ -184,9 +189,12 @@ def data_generator(
 
         for table_object in table_objects:
             table = catalog.get_table_by_id(table_object.id)
-            columns = _filter_text_columns(catalog.get_columns_for_table(table=table))
-            for row in _row_generator(
-                column_list=columns, schema=schema, table=table, source=source
-            ):
-                for col, val in zip(columns, row):
-                    yield schema, table, col, val
+            columns = _filter_text_columns(
+                catalog.get_columns_for_table(table=table, newer_than=last_run)
+            )
+            if len(columns) > 0:
+                for row in _row_generator(
+                    column_list=columns, schema=schema, table=table, source=source
+                ):
+                    for col, val in zip(columns, row):
+                        yield schema, table, col, val

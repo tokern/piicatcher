@@ -1,9 +1,12 @@
+import json
 from pathlib import Path
 from typing import List, Optional
 
 import typer
+from tabulate import tabulate
 
 from piicatcher.api import (
+    OutputFormat,
     ScanTypeEnum,
     scan_athena,
     scan_mysql,
@@ -13,7 +16,7 @@ from piicatcher.api import (
     scan_sqlite,
 )
 from piicatcher.app_state import app_state
-from piicatcher.output import output
+from piicatcher.output import PiiTypeEncoder
 
 app = typer.Typer()
 
@@ -21,42 +24,48 @@ app = typer.Typer()
 schema_help_text = """
 Scan only schemas matching schema; When this option is not specified, all
 non-system schemas in the target database will be dumped. Multiple schemas can
-be selected by writing multiple -n switches. Also, the schema parameter is
+be selected by writing multiple --include switches. Also, the schema parameter is
 interpreted as a regular expression, so multiple schemas can also be selected
 by writing wildcard characters in the pattern. When using wildcards, be careful
 to quote the pattern if needed to prevent the shell from expanding the wildcards;
 """
 exclude_schema_help_text = """
 Do not scan any schemas matching the schema pattern. The pattern is interpreted
-according to the same rules as for -n. -N can be given more than once to exclude
+according to the same rules as for --include. --exclude can be given more than once to exclude
  schemas matching any of several patterns.
 
-When both -n and -N are given, the behavior is to dump just the schemas that
-match at least one -n switch but no -N switches. If -N appears without -n, then
-schemas matching -N are excluded from what is otherwise a normal dump.")
+When both --include and ---exclude are given, the behavior is to dump just the schemas that
+match at least one --include switch but no --exclude switches.
+If --exclude appears without --include, then schemas matching --exclude are excluded from what
+is otherwise a normal scan.")
 """
 table_help_text = """
-Dump only tables matching table. Multiple tables can be selected by writing
-multiple -t switches. Also, the table parameter is interpreted as a regular
+Scan only tables matching table. Multiple tables can be selected by writing
+multiple switches. Also, the table parameter is interpreted as a regular
 expression, so multiple tables can also be selected by writing wildcard
 characters in the pattern. When using wildcards, be careful to quote the pattern
  if needed to prevent the shell from expanding the wildcards.
-
-The -n and -N switches have no effect when -t is used, because tables selected
-by -t will be dumped regardless of those switches.
 """
 exclude_table_help_text = """
-Do not dump any tables matching the table pattern. The pattern is interpreted
-according to the same rules as for -t. -T can be given more than once to
+Do not scan any tables matching the table pattern. The pattern is interpreted
+according to the same rules as for --include. --exclude can be given more than once to
 exclude tables matching any of several patterns.
 
-When both -t and -T are given, the behavior is to dump just the tables that
-match at least one -t switch but no -T switches. If -T appears without -t, then
-tables matching -T are excluded from what is otherwise a normal dump.
+When both switches are given, the behavior is to dump just the tables that
+match at least one --include switch but no --exclude switches. If --exclude appears without
+--include, then tables matching --exclude are excluded from what is otherwise a normal scan.
 """
 
 
-# pylint: disable=too-many-arguments
+def str_output(op, output_format: OutputFormat):
+    if output_format == OutputFormat.tabular:
+        return tabulate(
+            tabular_data=op, headers=("schema", "table", "column", "PII Type")
+        )
+    else:
+        return json.dumps(op, sort_keys=True, indent=2, cls=PiiTypeEncoder)
+
+
 @app.command()
 def sqlite(
     name: str = typer.Option(..., help="A memorable name for the database"),
@@ -64,6 +73,9 @@ def sqlite(
     scan_type: ScanTypeEnum = typer.Option(
         ScanTypeEnum.shallow,
         help="Choose deep(scan data) or shallow(scan column names only)",
+    ),
+    incremental: bool = typer.Option(
+        True, help="Scan columns updated or created since last run",
     ),
     list_all: bool = typer.Option(
         False,
@@ -78,24 +90,21 @@ def sqlite(
         None, help=exclude_table_help_text
     ),
 ):
-    scan_sqlite(
+    op = scan_sqlite(
         catalog_params=app_state["catalog_connection"],
         name=name,
         path=path,
         scan_type=scan_type,
+        incremental=incremental,
+        output_format=app_state["output_format"],
+        list_all=list_all,
         include_schema_regex=include_schema,
         exclude_schema_regex=exclude_schema,
         include_table_regex=include_table,
         exclude_table_regex=exclude_table,
     )
 
-    typer.echo(
-        message=output(
-            catalog_params=app_state["catalog_connection"],
-            source_name=name,
-            list_all=list_all,
-        )
-    )
+    typer.echo(message=str_output(op, app_state["output_format"]))
 
 
 @app.command()
@@ -110,6 +119,9 @@ def postgresql(
         ScanTypeEnum.shallow,
         help="Choose deep(scan data) or shallow(scan column names only)",
     ),
+    incremental: bool = typer.Option(
+        True, help="Scan columns updated or created since last run",
+    ),
     list_all: bool = typer.Option(
         False,
         help="List all columns. By default only columns with PII information is listed",
@@ -123,7 +135,7 @@ def postgresql(
         None, help=exclude_table_help_text
     ),
 ):
-    scan_postgresql(
+    op = scan_postgresql(
         catalog_params=app_state["catalog_connection"],
         name=name,
         username=username,
@@ -132,19 +144,16 @@ def postgresql(
         uri=uri,
         port=port,
         scan_type=scan_type,
+        incremental=incremental,
+        output_format=app_state["output_format"],
+        list_all=list_all,
         include_schema_regex=include_schema,
         exclude_schema_regex=exclude_schema,
         include_table_regex=include_table,
         exclude_table_regex=exclude_table,
     )
 
-    typer.echo(
-        message=output(
-            catalog_params=app_state["catalog_connection"],
-            source_name=name,
-            list_all=list_all,
-        )
-    )
+    typer.echo(message=str_output(op, app_state["output_format"]))
 
 
 @app.command()
@@ -159,6 +168,9 @@ def mysql(
         ScanTypeEnum.shallow,
         help="Choose deep(scan data) or shallow(scan column names only)",
     ),
+    incremental: bool = typer.Option(
+        True, help="Scan columns updated or created since last run",
+    ),
     list_all: bool = typer.Option(
         False,
         help="List all columns. By default only columns with PII information is listed",
@@ -172,7 +184,7 @@ def mysql(
         None, help=exclude_table_help_text
     ),
 ):
-    scan_mysql(
+    op = scan_mysql(
         catalog_params=app_state["catalog_connection"],
         name=name,
         username=username,
@@ -181,19 +193,16 @@ def mysql(
         uri=uri,
         port=port,
         scan_type=scan_type,
+        incremental=incremental,
+        output_format=app_state["output_format"],
+        list_all=list_all,
         include_schema_regex=include_schema,
         exclude_schema_regex=exclude_schema,
         include_table_regex=include_table,
         exclude_table_regex=exclude_table,
     )
 
-    typer.echo(
-        message=output(
-            catalog_params=app_state["catalog_connection"],
-            source_name=name,
-            list_all=list_all,
-        )
-    )
+    typer.echo(message=str_output(op, app_state["output_format"]))
 
 
 @app.command()
@@ -208,6 +217,9 @@ def redshift(
         ScanTypeEnum.shallow,
         help="Choose deep(scan data) or shallow(scan column names only)",
     ),
+    incremental: bool = typer.Option(
+        True, help="Scan columns updated or created since last run",
+    ),
     list_all: bool = typer.Option(
         False,
         help="List all columns. By default only columns with PII information is listed",
@@ -221,7 +233,7 @@ def redshift(
         None, help=exclude_table_help_text
     ),
 ):
-    scan_redshift(
+    op = scan_redshift(
         catalog_params=app_state["catalog_connection"],
         name=name,
         username=username,
@@ -230,19 +242,16 @@ def redshift(
         uri=uri,
         port=port,
         scan_type=scan_type,
+        incremental=incremental,
+        output_format=app_state["output_format"],
+        list_all=list_all,
         include_schema_regex=include_schema,
         exclude_schema_regex=exclude_schema,
         include_table_regex=include_table,
         exclude_table_regex=exclude_table,
     )
 
-    typer.echo(
-        message=output(
-            catalog_params=app_state["catalog_connection"],
-            source_name=name,
-            list_all=list_all,
-        )
-    )
+    typer.echo(message=str_output(op, app_state["output_format"]))
 
 
 @app.command()
@@ -258,6 +267,9 @@ def snowflake(
         ScanTypeEnum.shallow,
         help="Choose deep(scan data) or shallow(scan column names only)",
     ),
+    incremental: bool = typer.Option(
+        True, help="Scan columns updated or created since last run",
+    ),
     list_all: bool = typer.Option(
         False,
         help="List all columns. By default only columns with PII information is listed",
@@ -271,7 +283,7 @@ def snowflake(
         None, help=exclude_table_help_text
     ),
 ):
-    scan_snowflake(
+    op = scan_snowflake(
         catalog_params=app_state["catalog_connection"],
         name=name,
         username=username,
@@ -281,19 +293,16 @@ def snowflake(
         warehouse=warehouse,
         role=role,
         scan_type=scan_type,
+        incremental=incremental,
+        output_format=app_state["output_format"],
+        list_all=list_all,
         include_schema_regex=include_schema,
         exclude_schema_regex=exclude_schema,
         include_table_regex=include_table,
         exclude_table_regex=exclude_table,
     )
 
-    typer.echo(
-        message=output(
-            catalog_params=app_state["catalog_connection"],
-            source_name=name,
-            list_all=list_all,
-        )
-    )
+    typer.echo(message=str_output(op, app_state["output_format"]))
 
 
 @app.command()
@@ -307,6 +316,9 @@ def athena(
         ScanTypeEnum.shallow,
         help="Choose deep(scan data) or shallow(scan column names only)",
     ),
+    incremental: bool = typer.Option(
+        True, help="Scan columns updated or created since last run",
+    ),
     list_all: bool = typer.Option(
         False,
         help="List all columns. By default only columns with PII information is listed",
@@ -320,7 +332,7 @@ def athena(
         None, help=exclude_table_help_text
     ),
 ):
-    scan_athena(
+    op = scan_athena(
         catalog_params=app_state["catalog_connection"],
         name=name,
         aws_access_key_id=aws_access_key_id,
@@ -328,16 +340,13 @@ def athena(
         region_name=region_name,
         s3_staging_dir=s3_staging_dir,
         scan_type=scan_type,
+        incremental=incremental,
+        output_format=app_state["output_format"],
+        list_all=list_all,
         include_schema_regex=include_schema,
         exclude_schema_regex=exclude_schema,
         include_table_regex=include_table,
         exclude_table_regex=exclude_table,
     )
 
-    typer.echo(
-        message=output(
-            catalog_params=app_state["catalog_connection"],
-            source_name=name,
-            list_all=list_all,
-        )
-    )
+    typer.echo(message=str_output(op, app_state["output_format"]))

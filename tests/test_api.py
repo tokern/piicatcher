@@ -17,8 +17,8 @@ from piicatcher.api import (
 )
 
 
-def test_scan_database_shallow(load_sample_data):
-    catalog, source_id = load_sample_data
+def test_scan_database_shallow(load_sample_data_and_pull):
+    catalog, source_id = load_sample_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         scan_database(catalog=catalog, source=source, include_table_regex=["sample"])
@@ -43,10 +43,15 @@ def test_scan_database_shallow(load_sample_data):
             )
             assert column.pii_type == pii_type
 
+        latest_task = catalog.get_latest_task("piicatcher.{}".format(source.name))
+        assert latest_task.status == 0
+        assert latest_task.created_at is not None
+        assert latest_task.updated_at is not None
+
 
 @pytest.mark.skip
-def test_scan_database_deep(load_sample_data):
-    catalog, source_id = load_sample_data
+def test_scan_database_deep(load_sample_data_and_pull):
+    catalog, source_id = load_sample_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         scan_database(
