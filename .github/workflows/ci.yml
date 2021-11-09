@@ -1,0 +1,37 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: piicatcher
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install Python Poetry
+      uses: abatilo/actions-poetry@v2.1.0
+      with:
+        poetry-version: 1.1.2
+    - name: View poetry version
+      run: poetry --version
+    - name: Install dependencies
+      run: |
+        python -m poetry install
+    - name: Lint
+      run: |
+        python -m poetry run isort --check --diff .
+        python -m poetry run black --check .
+        python -m poetry run flake8 piicatcher tests
+        python -m poetry run mypy
+    - name: Test with pytest
+      run: |
+        python -m poetry run python -m spacy download en_core_web_sm
+        python -m poetry run pytest --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
