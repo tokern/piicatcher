@@ -1,13 +1,13 @@
 import csv
 import logging
-import os
 from contextlib import closing
+from pathlib import Path
 from shutil import rmtree
 from typing import Any, Generator, Tuple
 
 import pytest
 import yaml
-from dbcat import catalog_connection_yaml, init_db, pull
+from dbcat.api import catalog_connection_yaml, init_db, scan_sources
 from dbcat.catalog.catalog import Catalog, PGCatalog
 from pytest_cases import fixture, parametrize_with_cases
 from sqlalchemy import create_engine
@@ -29,13 +29,16 @@ catalog:
 
 
 @fixture(scope="module")
-def temp_sqlite_path(tmpdir_factory):
-    temp_dir = tmpdir_factory.mktemp("sqlite_test")
-    sqlite_path = temp_dir.join("sqldb")
+def app_dir_path(tmp_path_factory) -> Generator[Path, None, None]:
+    app_dir = tmp_path_factory.mktemp("piicatcher_app_dir")
+    yield app_dir
+
+
+@fixture(scope="module")
+def temp_sqlite_path(app_dir_path) -> Generator[Path, None, None]:
+    sqlite_path = app_dir_path / "sqldb"
 
     yield sqlite_path
-
-    os.remove(sqlite_path)
 
 
 def case_setup_sqlite(temp_sqlite_path):
@@ -206,7 +209,7 @@ def load_data(create_source_engine) -> Generator[Tuple[Catalog, int, str], None,
 @pytest.fixture(scope="module")
 def load_data_and_pull(load_data) -> Generator[Tuple[Catalog, int], None, None]:
     catalog, source_id, name = load_data
-    pull(catalog, name)
+    scan_sources(catalog, [name])
     yield catalog, source_id
 
 
@@ -261,5 +264,5 @@ def load_sample_data_and_pull(
     load_sample_data,
 ) -> Generator[Tuple[Catalog, int], None, None]:
     catalog, source_id, name = load_sample_data
-    pull(catalog, name)
+    scan_sources(catalog, [name])
     yield catalog, source_id

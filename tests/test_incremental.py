@@ -3,7 +3,8 @@ import time
 from typing import Generator, Tuple
 
 import pytest
-from dbcat import Catalog, pull
+from dbcat.api import scan_sources
+from dbcat.catalog import Catalog
 from dbcat.catalog.models import PiiTypes
 from pytest_cases import fixture
 
@@ -17,13 +18,13 @@ def setup_incremental(
     load_sample_data, load_data
 ) -> Generator[Tuple[Catalog, int], None, None]:
     catalog, source_id, name = load_sample_data
-    pull(catalog, name, include_table_regex_str=["sample"])
+    scan_sources(catalog, [name], include_table_regex=["sample"])
     time.sleep(1)
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         scan_database(catalog=catalog, source=source, include_table_regex=["sample"])
         time.sleep(1)
-        pull(catalog, name)
+        scan_sources(catalog, [name])
         time.sleep(1)
         scan_database(catalog=catalog, source=source, include_table_regex=["partial.*"])
         yield catalog, source_id
@@ -186,48 +187,56 @@ sqlite_all = {
                         {
                             "data_type": "VARCHAR(255)",
                             "name": "address",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "VARCHAR(255)",
                             "name": "city",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 6,
                         },
                         {
                             "data_type": "VARCHAR(255)",
                             "name": "email",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.EMAIL,
                             "sort_order": 7,
                         },
                         {
                             "data_type": "VARCHAR(255)",
                             "name": "fname",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 8,
                         },
                         {
                             "data_type": "VARCHAR(255)",
                             "name": "gender",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.GENDER,
                             "sort_order": 9,
                         },
                         {
                             "data_type": "VARCHAR(255)",
                             "name": "lname",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 11,
                         },
                         {
                             "data_type": "VARCHAR(255)",
                             "name": "maiden_name",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 12,
                         },
                         {
                             "data_type": "VARCHAR(255)",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 14,
                         },
@@ -239,6 +248,7 @@ sqlite_all = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }
@@ -262,48 +272,56 @@ pg_all = {
                         {
                             "data_type": "varchar",
                             "name": "gender",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.GENDER,
                             "sort_order": 1,
                         },
                         {
                             "data_type": "varchar",
                             "name": "maiden_name",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 3,
                         },
                         {
                             "data_type": "varchar",
                             "name": "lname",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 4,
                         },
                         {
                             "data_type": "varchar",
                             "name": "fname",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 5,
                         },
                         {
                             "data_type": "varchar",
                             "name": "address",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 6,
                         },
                         {
                             "data_type": "varchar",
                             "name": "city",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 7,
                         },
                         {
                             "data_type": "varchar",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 8,
                         },
                         {
                             "data_type": "varchar",
                             "name": "email",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.EMAIL,
                             "sort_order": 11,
                         },
@@ -315,6 +333,7 @@ pg_all = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }
@@ -338,48 +357,56 @@ mysql_all = {
                         {
                             "data_type": "varchar",
                             "name": "email",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.EMAIL,
                             "sort_order": 3,
                         },
                         {
                             "data_type": "varchar",
                             "name": "gender",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.GENDER,
                             "sort_order": 8,
                         },
                         {
                             "data_type": "varchar",
                             "name": "maiden_name",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 10,
                         },
                         {
                             "data_type": "varchar",
                             "name": "lname",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 11,
                         },
                         {
                             "data_type": "varchar",
                             "name": "fname",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 12,
                         },
                         {
                             "data_type": "varchar",
                             "name": "address",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 13,
                         },
                         {
                             "data_type": "varchar",
                             "name": "city",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 14,
                         },
                         {
                             "data_type": "varchar",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 15,
                         },
@@ -391,6 +418,7 @@ mysql_all = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }
@@ -414,6 +442,7 @@ sqlite_one = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }
@@ -437,6 +466,7 @@ pg_one = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }
@@ -459,6 +489,7 @@ mysql_one = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }

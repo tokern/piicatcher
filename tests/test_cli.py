@@ -1,6 +1,6 @@
 from unittest.mock import ANY
 
-from dbcat import Catalog
+from dbcat.catalog import Catalog
 from pytest_cases import parametrize_with_cases
 from typer.testing import CliRunner
 

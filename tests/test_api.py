@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from dbcat import Catalog
+from dbcat.catalog import Catalog
 from dbcat.catalog.models import PiiTypes
 
 import piicatcher
@@ -73,12 +73,12 @@ def test_scan_database_deep(load_sample_data_and_pull):
             assert column.pii_type == pii_type
 
 
-def test_scan_sqlite(mocker, temp_sqlite_path):
+def test_scan_sqlite(mocker, temp_sqlite_path, app_dir_path):
     mocker.patch("piicatcher.api.scan_database")
     mocker.patch.object(Catalog, "add_source")
 
     scan_sqlite(
-        catalog_params={"catalog_path": str(temp_sqlite_path)},
+        catalog_params={"path": str(temp_sqlite_path), "app_dir": app_dir_path},
         name="test_scan_sqlite",
         path=Path("/tmp/sqldb"),
         scan_type=ScanTypeEnum.deep,
@@ -87,12 +87,12 @@ def test_scan_sqlite(mocker, temp_sqlite_path):
     Catalog.add_source.assert_called_once()
 
 
-def test_scan_pg(mocker, temp_sqlite_path):
+def test_scan_pg(mocker, temp_sqlite_path, app_dir_path):
     mocker.patch("piicatcher.api.scan_database")
     mocker.patch.object(Catalog, "add_source")
 
     scan_postgresql(
-        catalog_params={"catalog_path": str(temp_sqlite_path)},
+        catalog_params={"path": str(temp_sqlite_path), "app_dir": app_dir_path},
         name="test_scan_pg",
         uri="127.0.0.1",
         username="u",
@@ -103,12 +103,12 @@ def test_scan_pg(mocker, temp_sqlite_path):
     Catalog.add_source.assert_called_once()
 
 
-def test_scan_mysql(mocker, temp_sqlite_path):
+def test_scan_mysql(mocker, temp_sqlite_path, app_dir_path):
     mocker.patch("piicatcher.api.scan_database")
     mocker.patch.object(Catalog, "add_source")
 
     scan_mysql(
-        catalog_params={"catalog_path": str(temp_sqlite_path)},
+        catalog_params={"path": str(temp_sqlite_path), "app_dir": app_dir_path},
         name="test_scan_mysql",
         uri="127.0.0.1",
         username="u",
@@ -119,12 +119,12 @@ def test_scan_mysql(mocker, temp_sqlite_path):
     Catalog.add_source.assert_called_once()
 
 
-def test_scan_redshift(mocker, temp_sqlite_path):
+def test_scan_redshift(mocker, temp_sqlite_path, app_dir_path):
     mocker.patch("piicatcher.api.scan_database")
     mocker.patch.object(Catalog, "add_source")
 
     scan_redshift(
-        catalog_params={"catalog_path": str(temp_sqlite_path)},
+        catalog_params={"path": str(temp_sqlite_path), "app_dir": app_dir_path},
         name="test_scan_redshift",
         uri="127.0.0.1",
         username="u",
@@ -135,12 +135,12 @@ def test_scan_redshift(mocker, temp_sqlite_path):
     Catalog.add_source.assert_called_once()
 
 
-def test_scan_snowflake(mocker, temp_sqlite_path):
+def test_scan_snowflake(mocker, temp_sqlite_path, app_dir_path):
     mocker.patch("piicatcher.api.scan_database")
     mocker.patch.object(Catalog, "add_source")
 
     scan_snowflake(
-        catalog_params={"catalog_path": str(temp_sqlite_path)},
+        catalog_params={"path": str(temp_sqlite_path), "app_dir": app_dir_path},
         name="test_scan_redshift",
         account="127.0.0.1",
         username="u",
@@ -153,12 +153,12 @@ def test_scan_snowflake(mocker, temp_sqlite_path):
     Catalog.add_source.assert_called_once()
 
 
-def test_scan_athena(mocker, temp_sqlite_path):
+def test_scan_athena(mocker, temp_sqlite_path, app_dir_path):
     mocker.patch("piicatcher.api.scan_database")
     mocker.patch.object(Catalog, "add_source")
 
     scan_athena(
-        catalog_params={"catalog_path": temp_sqlite_path},
+        catalog_params={"path": temp_sqlite_path, "app_dir": app_dir_path},
         name="test_scan_athena",
         aws_access_key_id="a",
         aws_secret_access_key="s",

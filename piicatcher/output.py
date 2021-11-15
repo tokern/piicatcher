@@ -2,8 +2,7 @@ import datetime
 import json
 from typing import Any, Dict, List, Optional
 
-from dbcat import Catalog
-from dbcat.catalog import CatSchema, CatSource, CatTable
+from dbcat.catalog import Catalog, CatSchema, CatSource, CatTable
 from dbcat.catalog.models import PiiTypes
 
 from piicatcher.generators import column_generator
@@ -67,6 +66,7 @@ def output_dict(
                     "data_type": column.data_type,
                     "sort_order": column.sort_order,
                     "pii_type": column.pii_type,
+                    "pii_plugin": column.pii_plugin,
                 }
             )
     if len(table_dict["columns"]) > 0 or list_all:
@@ -99,6 +99,14 @@ def output_tabular(
         include_table_regex_str=include_table_regex,
     ):
         if list_all or column.pii_type is not None:
-            tabular.append([schema.name, table.name, column.name, str(column.pii_type)])
+            tabular.append(
+                [
+                    schema.name,
+                    table.name,
+                    column.name,
+                    str(column.pii_type),
+                    column.pii_plugin,
+                ]
+            )
 
     return tabular

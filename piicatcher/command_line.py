@@ -66,19 +66,18 @@ def cli(
         handler.setLevel(logging.INFO)
         data_logger.addHandler(handler)
 
-    if catalog_path is None:
-        app_dir = typer.get_app_dir("piicatcher")
-        app_dir_path = Path(app_dir)
-        app_dir_path.mkdir(parents=True, exist_ok=True)
-        catalog_path = Path(app_dir) / "catalog.db"
+    app_dir = typer.get_app_dir("tokern")
+    app_dir_path = Path(app_dir)
+    app_dir_path.mkdir(parents=True, exist_ok=True)
 
     app_state["catalog_connection"] = {
-        "catalog_path": str(catalog_path),
-        "catalog_user": catalog_user,
-        "catalog_password": catalog_password,
-        "catalog_host": catalog_host,
-        "catalog_port": catalog_port,
-        "catalog_database": catalog_database,
+        "path": str(catalog_path),
+        "user": catalog_user,
+        "password": catalog_password,
+        "host": catalog_host,
+        "port": catalog_port,
+        "database": catalog_database,
+        "app_dir": app_dir,
     }
     app_state["output_format"] = output_format
 

@@ -1,14 +1,11 @@
 from typing import Any, Generator, Tuple
 
 import pytest
-from dbcat import Catalog
-from dbcat.catalog import CatSource
+from dbcat.catalog import Catalog, CatSource
 from sqlalchemy import create_engine
 
 from piicatcher.dbinfo import get_dbinfo
 from piicatcher.generators import (
-    CatalogObject,
-    _filter_objects,
     _get_query,
     _get_table_count,
     _row_generator,
@@ -36,161 +33,6 @@ def load_source(load_data_and_pull) -> Generator[Tuple[Catalog, CatSource], None
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         yield catalog, source
-
-
-def test_simple_schema_include(load_source):
-    catalog, source = load_source
-    schema_objects = [
-        CatalogObject(s.name, s.id)
-        for s in catalog.search_schema(source_like=source.name, schema_like="%")
-    ]
-
-    filtered = _filter_objects(
-        include_regex_str=[schema_objects[0].name],
-        exclude_regex_str=None,
-        objects=schema_objects,
-    )
-    assert len(filtered) == 1
-
-
-def test_simple_schema_exclude(load_source):
-    catalog, source = load_source
-    schema_objects = [
-        CatalogObject(s.name, s.id)
-        for s in catalog.search_schema(source_like=source.name, schema_like="%")
-    ]
-
-    filtered = _filter_objects(
-        exclude_regex_str=[schema_objects[0].name],
-        include_regex_str=None,
-        objects=schema_objects,
-    )
-    assert len(filtered) == 0
-
-
-def test_simple_schema_include_exclude(load_source):
-    catalog, source = load_source
-    schema_objects = [
-        CatalogObject(s.name, s.id)
-        for s in catalog.search_schema(source_like=source.name, schema_like="%")
-    ]
-
-    filtered = _filter_objects(
-        include_regex_str=[schema_objects[0].name],
-        exclude_regex_str=[schema_objects[0].name],
-        objects=schema_objects,
-    )
-    assert len(filtered) == 0
-
-
-def test_regex_schema_include(load_source):
-    catalog, source = load_source
-    schema_objects = [
-        CatalogObject(s.name, s.id)
-        for s in catalog.search_schema(source_like=source.name, schema_like="%")
-    ]
-
-    filtered = _filter_objects(
-        include_regex_str=[".*"], exclude_regex_str=None, objects=schema_objects
-    )
-    assert len(filtered) == 1
-
-
-def test_regex_schema_exclude(load_source):
-    catalog, source = load_source
-    schema_objects = [
-        CatalogObject(s.name, s.id)
-        for s in catalog.search_schema(source_like=source.name, schema_like="%")
-    ]
-
-    filtered = _filter_objects(
-        exclude_regex_str=[".*"], include_regex_str=None, objects=schema_objects
-    )
-    assert len(filtered) == 0
-
-
-def test_regex_failed_schema_include(load_source):
-    catalog, source = load_source
-    schema_objects = [
-        CatalogObject(s.name, s.id)
-        for s in catalog.search_schema(source_like=source.name, schema_like="%")
-    ]
-
-    filtered = _filter_objects(
-        include_regex_str=["fail.*"], exclude_regex_str=None, objects=schema_objects
-    )
-    assert len(filtered) == 0
-
-
-def test_regex_failed_schema_exclude(load_source):
-    catalog, source = load_source
-    schema_objects = [
-        CatalogObject(s.name, s.id)
-        for s in catalog.search_schema(source_like=source.name, schema_like="%")
-    ]
-
-    filtered = _filter_objects(
-        exclude_regex_str=["fail.*"], include_regex_str=None, objects=schema_objects
-    )
-    assert len(filtered) == 1
-
-
-def test_regex_success_table_include(load_source):
-    catalog, source = load_source
-    table_objects = [
-        CatalogObject(t.name, t.id)
-        for t in catalog.search_tables(
-            source_like=source.name, schema_like="%", table_like="%"
-        )
-    ]
-
-    filtered = _filter_objects(
-        include_regex_str=["full.*", "partial.*"],
-        exclude_regex_str=None,
-        objects=table_objects,
-    )
-    assert len(filtered) == 3
-    assert sorted([c.name for c in filtered]) == [
-        "full_pii",
-        "partial_data_type",
-        "partial_pii",
-    ]
-
-
-def test_regex_success_table_exclude(load_source):
-    catalog, source = load_source
-    table_objects = [
-        CatalogObject(t.name, t.id)
-        for t in catalog.search_tables(
-            source_like=source.name, schema_like="%", table_like="%"
-        )
-    ]
-
-    filtered = _filter_objects(
-        exclude_regex_str=["full.*", "partial.*"],
-        include_regex_str=None,
-        objects=table_objects,
-    )
-    assert len(filtered) == 1
-    assert [c.name for c in filtered] == ["no_pii"]
-
-
-def test_regex_success_table_include_exclude(load_source):
-    catalog, source = load_source
-    table_objects = [
-        CatalogObject(t.name, t.id)
-        for t in catalog.search_tables(
-            source_like=source.name, schema_like="%", table_like="%"
-        )
-    ]
-
-    filtered = _filter_objects(
-        include_regex_str=["full.*", "partial.*"],
-        exclude_regex_str=["full.*"],
-        objects=table_objects,
-    )
-    assert len(filtered) == 2
-    assert sorted([c.name for c in filtered]) == ["partial_data_type", "partial_pii"]
 
 
 def test_column_generator(load_source):

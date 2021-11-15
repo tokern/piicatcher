@@ -60,7 +60,8 @@ match at least one --include switch but no --exclude switches. If --exclude appe
 def str_output(op, output_format: OutputFormat):
     if output_format == OutputFormat.tabular:
         return tabulate(
-            tabular_data=op, headers=("schema", "table", "column", "PII Type")
+            tabular_data=op,
+            headers=("schema", "table", "column", "PII Type", "Scanner"),
         )
     else:
         return json.dumps(op, sort_keys=True, indent=2, cls=PiiTypeEncoder)
