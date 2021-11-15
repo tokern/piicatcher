@@ -4,9 +4,9 @@ import re
 from collections import namedtuple
 from typing import Generator, List, Optional, Tuple, Type
 
-from dbcat import Catalog
-from dbcat.catalog import CatColumn, CatSchema, CatSource, CatTable
-from sqlalchemy import create_engine
+from dbcat.catalog import Catalog, CatColumn, CatSchema, CatSource, CatTable
+from dbcat.generators import table_generator
+from sqlalchemy import create_engine, exc
 
 from piicatcher.dbinfo import DbInfo, get_dbinfo
 
@@ -16,29 +16,6 @@ SMALL_TABLE_MAX = 100
 
 
 CatalogObject = namedtuple("CatalogObject", ["name", "id"])
-
-
-def _filter_objects(
-    include_regex_str: Optional[List[str]],
-    exclude_regex_str: Optional[List[str]],
-    objects: List[CatalogObject],
-) -> List[CatalogObject]:
-    if include_regex_str is not None and len(include_regex_str) > 0:
-        include_regex = [re.compile(exp, re.IGNORECASE) for exp in include_regex_str]
-        matched_set = set()
-        for regex in include_regex:
-            matched_set |= set(
-                list(filter(lambda m: regex.search(m.name) is not None, objects,))
-            )
-
-        objects = list(matched_set)
-
-    if exclude_regex_str is not None and len(exclude_regex_str) > 0:
-        exclude_regex = [re.compile(exp, re.IGNORECASE) for exp in exclude_regex_str]
-        for regex in exclude_regex:
-            objects = list(filter(lambda m: regex.search(m.name) is None, objects))
-
-    return objects
 
 
 def column_generator(
@@ -51,36 +28,17 @@ def column_generator(
     exclude_table_regex_str: List[str] = None,
 ) -> Generator[Tuple[CatSchema, CatTable, CatColumn], None, None]:
 
-    schemata = _filter_objects(
-        include_schema_regex_str,
-        exclude_schema_regex_str,
-        [
-            CatalogObject(s.name, s.id)
-            for s in catalog.search_schema(source_like=source.name, schema_like="%")
-        ],
-    )
+    for schema, table in table_generator(
+        catalog=catalog,
+        source=source,
+        include_schema_regex_str=include_schema_regex_str,
+        exclude_schema_regex_str=exclude_schema_regex_str,
+        include_table_regex_str=include_table_regex_str,
+        exclude_table_regex_str=exclude_table_regex_str,
+    ):
 
-    for schema_object in schemata:
-        schema = catalog.get_schema_by_id(schema_object.id)
-
-        table_objects = _filter_objects(
-            include_table_regex_str,
-            exclude_table_regex_str,
-            [
-                CatalogObject(t.name, t.id)
-                for t in catalog.search_tables(
-                    source_like=source.name, schema_like=schema.name, table_like="%"
-                )
-            ],
-        )
-
-        for table_object in table_objects:
-            table = catalog.get_table_by_id(table_object.id)
-
-            for column in catalog.get_columns_for_table(
-                table=table, newer_than=last_run
-            ):
-                yield schema, table, column
+        for column in catalog.get_columns_for_table(table=table, newer_than=last_run):
+            yield schema, table, column
 
 
 def _get_table_count(
@@ -164,31 +122,16 @@ def data_generator(
     exclude_table_regex_str: List[str] = None,
 ) -> Generator[Tuple[CatSchema, CatTable, CatColumn, str], None, None]:
 
-    schemata = _filter_objects(
-        include_schema_regex_str,
-        exclude_schema_regex_str,
-        [
-            CatalogObject(s.name, s.id)
-            for s in catalog.search_schema(source_like=source.name, schema_like="%")
-        ],
-    )
+    for schema, table in table_generator(
+        catalog=catalog,
+        source=source,
+        include_schema_regex_str=include_schema_regex_str,
+        exclude_schema_regex_str=exclude_schema_regex_str,
+        include_table_regex_str=include_table_regex_str,
+        exclude_table_regex_str=exclude_table_regex_str,
+    ):
 
-    for schema_object in schemata:
-        schema = catalog.get_schema_by_id(schema_object.id)
-
-        table_objects = _filter_objects(
-            include_table_regex_str,
-            exclude_table_regex_str,
-            [
-                CatalogObject(t.name, t.id)
-                for t in catalog.search_tables(
-                    source_like=source.name, schema_like=schema.name, table_like="%"
-                )
-            ],
-        )
-
-        for table_object in table_objects:
-            table = catalog.get_table_by_id(table_object.id)
+        try:
             columns = _filter_text_columns(
                 catalog.get_columns_for_table(table=table, newer_than=last_run)
             )
@@ -198,3 +141,7 @@ def data_generator(
                 ):
                     for col, val in zip(columns, row):
                         yield schema, table, col, val
+        except exc.SQLAlchemyError as e:
+            LOGGER.warning(
+                f"Exception when getting data for {schema.name}.{table.name}. Code: {e.code}"
+            )

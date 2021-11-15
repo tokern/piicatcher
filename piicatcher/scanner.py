@@ -6,7 +6,7 @@ from typing import Generator, Tuple
 
 import spacy
 from commonregex import CommonRegex
-from dbcat import Catalog
+from dbcat.catalog import Catalog
 from dbcat.catalog.models import CatColumn, CatSchema, CatTable, PiiTypes
 
 LOGGER = logging.getLogger(__name__)
@@ -30,9 +30,16 @@ class Scanner(ABC):
     def scan(self, text):
         """Scan the text and return an array of PiiTypes that are found"""
 
+    @abstractmethod
+    def name(self) -> str:
+        """Return name of the scanner"""
+
 
 class RegexScanner(Scanner):
     """A scanner that uses common regular expressions to find PII"""
+
+    def name(self) -> str:
+        return "Regex Scanner on data"
 
     def scan(self, text):
         """Scan the text and return an array of PiiTypes that are found"""
@@ -53,6 +60,9 @@ class RegexScanner(Scanner):
 
 class NERScanner(Scanner):
     """A scanner that uses Spacy NER for entity recognition"""
+
+    def name(self) -> str:
+        return "NLP Scanner on data"
 
     def __init__(self):
         self.nlp = spacy.load("en_core_web_sm")
@@ -78,6 +88,9 @@ class NERScanner(Scanner):
 
 
 class ColumnNameScanner(Scanner):
+    def name(self) -> str:
+        return "Regular Expression Scanner on column name"
+
     regex = {
         PiiTypes.PERSON: re.compile(
             "^.*(firstname|fname|lastname|lname|"
@@ -120,7 +133,9 @@ def shallow_scan(
     for schema, table, column in generator:
         types = scanner.scan(column.name)
         if len(types) > 0:
-            catalog.set_column_pii_type(column=column, pii_type=types.pop())
+            catalog.set_column_pii_type(
+                column=column, pii_type=types.pop(), pii_plugin=scanner.name()
+            )
 
 
 def deep_scan(
@@ -137,15 +152,17 @@ def deep_scan(
                 for pii in scanner.scan(val):
                     pii_types.add(pii)
 
-            if len(pii_types) > 0:
-                top = pii_types.pop()
-                catalog.set_column_pii_type(column=column, pii_type=top)
-                LOGGER.debug("{} has {}".format(column.fqdn, top))
+                if len(pii_types) > 0:
+                    top = pii_types.pop()
+                    catalog.set_column_pii_type(
+                        column=column, pii_type=top, pii_plugin=scanner.name()
+                    )
+                    LOGGER.debug("{} has {}".format(column.fqdn, top))
 
-                scan_logger.info(
-                    "deep_scan", extra={"column": column.fqdn, "pii_types": top}
-                )
-                data_logger.info(
-                    "deep_scan",
-                    extra={"column": column.fqdn, "data": val, "pii_types": top,},
-                )
+                    scan_logger.info(
+                        "deep_scan", extra={"column": column.fqdn, "pii_types": top}
+                    )
+                    data_logger.info(
+                        "deep_scan",
+                        extra={"column": column.fqdn, "data": val, "pii_types": top},
+                    )

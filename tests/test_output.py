@@ -14,12 +14,14 @@ mysql_output_all = {
                         {
                             "data_type": "text",
                             "name": "name",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 1,
                         },
@@ -31,12 +33,14 @@ mysql_output_all = {
                         {
                             "data_type": "text",
                             "name": "a",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "b",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 1,
                         },
@@ -48,12 +52,14 @@ mysql_output_all = {
                         {
                             "data_type": "int",
                             "name": "id",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         },
@@ -65,12 +71,14 @@ mysql_output_all = {
                         {
                             "data_type": "text",
                             "name": "a",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "b",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 1,
                         },
@@ -94,12 +102,14 @@ pg_output_all = {
                         {
                             "data_type": "text",
                             "name": "name",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 1,
                         },
@@ -111,12 +121,14 @@ pg_output_all = {
                         {
                             "data_type": "text",
                             "name": "a",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "b",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 1,
                         },
@@ -128,12 +140,14 @@ pg_output_all = {
                         {
                             "data_type": "int4",
                             "name": "id",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         },
@@ -145,12 +159,14 @@ pg_output_all = {
                         {
                             "data_type": "text",
                             "name": "a",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "b",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 1,
                         },
@@ -174,11 +190,13 @@ sqlite_output_all = {
                             "data_type": "text",
                             "name": "name",
                             "pii_type": PiiTypes.PERSON,
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 1,
                         },
@@ -190,12 +208,14 @@ sqlite_output_all = {
                         {
                             "data_type": "text",
                             "name": "a",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "b",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 1,
                         },
@@ -207,12 +227,14 @@ sqlite_output_all = {
                         {
                             "data_type": "int",
                             "name": "id",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         },
@@ -224,12 +246,14 @@ sqlite_output_all = {
                         {
                             "data_type": "text",
                             "name": "a",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "b",
+                            "pii_plugin": None,
                             "pii_type": None,
                             "sort_order": 1,
                         },
@@ -268,12 +292,14 @@ mysql_output_only = {
                         {
                             "data_type": "text",
                             "name": "name",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 1,
                         },
@@ -285,6 +311,7 @@ mysql_output_only = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }
@@ -307,12 +334,14 @@ pg_output_only = {
                         {
                             "data_type": "text",
                             "name": "name",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 1,
                         },
@@ -324,6 +353,7 @@ pg_output_only = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }
@@ -347,12 +377,14 @@ sqlite_output_only = {
                         {
                             "data_type": "text",
                             "name": "name",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.PERSON,
                             "sort_order": 0,
                         },
                         {
                             "data_type": "text",
                             "name": "state",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.ADDRESS,
                             "sort_order": 1,
                         },
@@ -364,6 +396,7 @@ sqlite_output_only = {
                         {
                             "data_type": "text",
                             "name": "ssn",
+                            "pii_plugin": "Regular Expression Scanner on column name",
                             "pii_type": PiiTypes.SSN,
                             "sort_order": 1,
                         }
@@ -394,21 +427,75 @@ def test_output_dict(load_data_and_pull):
 
 
 mysql_output_tabular = [
-    ["piidb", "full_pii", "name", "PiiTypes.PERSON"],
-    ["piidb", "full_pii", "state", "PiiTypes.ADDRESS"],
-    ["piidb", "partial_data_type", "ssn", "PiiTypes.SSN"],
+    [
+        "piidb",
+        "full_pii",
+        "name",
+        "PiiTypes.PERSON",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "piidb",
+        "full_pii",
+        "state",
+        "PiiTypes.ADDRESS",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "piidb",
+        "partial_data_type",
+        "ssn",
+        "PiiTypes.SSN",
+        "Regular Expression Scanner on column name",
+    ],
 ]
 
 pg_output_tabular = [
-    ["public", "full_pii", "name", "PiiTypes.PERSON"],
-    ["public", "full_pii", "state", "PiiTypes.ADDRESS"],
-    ["public", "partial_data_type", "ssn", "PiiTypes.SSN"],
+    [
+        "public",
+        "full_pii",
+        "name",
+        "PiiTypes.PERSON",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "public",
+        "full_pii",
+        "state",
+        "PiiTypes.ADDRESS",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "public",
+        "partial_data_type",
+        "ssn",
+        "PiiTypes.SSN",
+        "Regular Expression Scanner on column name",
+    ],
 ]
 
 sqlite_output_tabular = [
-    ["", "full_pii", "name", "PiiTypes.PERSON"],
-    ["", "full_pii", "state", "PiiTypes.ADDRESS"],
-    ["", "partial_data_type", "ssn", "PiiTypes.SSN"],
+    [
+        "",
+        "full_pii",
+        "name",
+        "PiiTypes.PERSON",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "",
+        "full_pii",
+        "state",
+        "PiiTypes.ADDRESS",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "",
+        "partial_data_type",
+        "ssn",
+        "PiiTypes.SSN",
+        "Regular Expression Scanner on column name",
+    ],
 ]
 
 
@@ -430,36 +517,90 @@ def test_output_tabular(load_data_and_pull):
 
 
 mysql_output_tabular_all = [
-    ["piidb", "full_pii", "name", "PiiTypes.PERSON"],
-    ["piidb", "full_pii", "state", "PiiTypes.ADDRESS"],
-    ["piidb", "no_pii", "a", "None"],
-    ["piidb", "no_pii", "b", "None"],
-    ["piidb", "partial_data_type", "id", "None"],
-    ["piidb", "partial_data_type", "ssn", "PiiTypes.SSN"],
-    ["piidb", "partial_pii", "a", "None"],
-    ["piidb", "partial_pii", "b", "None"],
+    [
+        "piidb",
+        "full_pii",
+        "name",
+        "PiiTypes.PERSON",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "piidb",
+        "full_pii",
+        "state",
+        "PiiTypes.ADDRESS",
+        "Regular Expression Scanner on column name",
+    ],
+    ["piidb", "no_pii", "a", "None", None],
+    ["piidb", "no_pii", "b", "None", None],
+    ["piidb", "partial_data_type", "id", "None", None],
+    [
+        "piidb",
+        "partial_data_type",
+        "ssn",
+        "PiiTypes.SSN",
+        "Regular Expression Scanner on column name",
+    ],
+    ["piidb", "partial_pii", "a", "None", None],
+    ["piidb", "partial_pii", "b", "None", None],
 ]
 
 pg_output_tabular_all = [
-    ["public", "full_pii", "name", "PiiTypes.PERSON"],
-    ["public", "full_pii", "state", "PiiTypes.ADDRESS"],
-    ["public", "no_pii", "a", "None"],
-    ["public", "no_pii", "b", "None"],
-    ["public", "partial_data_type", "id", "None"],
-    ["public", "partial_data_type", "ssn", "PiiTypes.SSN"],
-    ["public", "partial_pii", "a", "None"],
-    ["public", "partial_pii", "b", "None"],
+    [
+        "public",
+        "full_pii",
+        "name",
+        "PiiTypes.PERSON",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "public",
+        "full_pii",
+        "state",
+        "PiiTypes.ADDRESS",
+        "Regular Expression Scanner on column name",
+    ],
+    ["public", "no_pii", "a", "None", None],
+    ["public", "no_pii", "b", "None", None],
+    ["public", "partial_data_type", "id", "None", None],
+    [
+        "public",
+        "partial_data_type",
+        "ssn",
+        "PiiTypes.SSN",
+        "Regular Expression Scanner on column name",
+    ],
+    ["public", "partial_pii", "a", "None", None],
+    ["public", "partial_pii", "b", "None", None],
 ]
 
 sqlite_output_tabular_all = [
-    ["", "full_pii", "name", "PiiTypes.PERSON"],
-    ["", "full_pii", "state", "PiiTypes.ADDRESS"],
-    ["", "no_pii", "a", "None"],
-    ["", "no_pii", "b", "None"],
-    ["", "partial_data_type", "id", "None"],
-    ["", "partial_data_type", "ssn", "PiiTypes.SSN"],
-    ["", "partial_pii", "a", "None"],
-    ["", "partial_pii", "b", "None"],
+    [
+        "",
+        "full_pii",
+        "name",
+        "PiiTypes.PERSON",
+        "Regular Expression Scanner on column name",
+    ],
+    [
+        "",
+        "full_pii",
+        "state",
+        "PiiTypes.ADDRESS",
+        "Regular Expression Scanner on column name",
+    ],
+    ["", "no_pii", "a", "None", None],
+    ["", "no_pii", "b", "None", None],
+    ["", "partial_data_type", "id", "None", None],
+    [
+        "",
+        "partial_data_type",
+        "ssn",
+        "PiiTypes.SSN",
+        "Regular Expression Scanner on column name",
+    ],
+    ["", "partial_pii", "a", "None", None],
+    ["", "partial_pii", "b", "None", None],
 ]
 
 

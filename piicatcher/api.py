@@ -1,10 +1,12 @@
 import datetime
+from contextlib import closing
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from dbcat import Catalog, DbScanner, catalog_connection, init_db
-from dbcat.catalog import CatSource
+from dbcat.api import init_db, open_catalog
+from dbcat.catalog import Catalog, CatSource
+from dbcat.catalog.db import DbScanner
 from sqlalchemy.orm.exc import NoResultFound
 
 from piicatcher.generators import column_generator, data_generator
@@ -132,29 +134,31 @@ def scan_sqlite(
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = catalog_connection(**catalog_params)
-    init_db(catalog)
+    catalog = open_catalog(**catalog_params)
 
-    with catalog.managed_session:
-        try:
-            source = catalog.get_source(name)
-        except NoResultFound:
-            source = catalog.add_source(
-                name=path.name, uri=str(path), source_type="sqlite"
+    with closing(catalog) as catalog:
+        init_db(catalog)
+
+        with catalog.managed_session:
+            try:
+                source = catalog.get_source(name)
+            except NoResultFound:
+                source = catalog.add_source(
+                    name=path.name, uri=str(path), source_type="sqlite"
+                )
+
+            return scan_database(
+                catalog=catalog,
+                source=source,
+                scan_type=scan_type,
+                incremental=incremental,
+                output_format=output_format,
+                list_all=list_all,
+                include_schema_regex=include_schema_regex,
+                exclude_schema_regex=exclude_schema_regex,
+                include_table_regex=include_table_regex,
+                exclude_table_regex=exclude_table_regex,
             )
-
-        return scan_database(
-            catalog=catalog,
-            source=source,
-            scan_type=scan_type,
-            incremental=incremental,
-            output_format=output_format,
-            list_all=list_all,
-            include_schema_regex=include_schema_regex,
-            exclude_schema_regex=exclude_schema_regex,
-            include_table_regex=include_table_regex,
-            exclude_table_regex=exclude_table_regex,
-        )
 
 
 def scan_postgresql(
@@ -174,35 +178,37 @@ def scan_postgresql(
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = catalog_connection(**catalog_params)
-    init_db(catalog)
+    catalog = open_catalog(**catalog_params)
 
-    with catalog.managed_session:
-        try:
-            source = catalog.get_source(name)
-        except NoResultFound:
-            source = catalog.add_source(
-                name=name,
-                username=username,
-                password=password,
-                database=database,
-                uri=uri,
-                port=port,
-                source_type="postgresql",
+    with closing(catalog) as catalog:
+        init_db(catalog)
+
+        with catalog.managed_session:
+            try:
+                source = catalog.get_source(name)
+            except NoResultFound:
+                source = catalog.add_source(
+                    name=name,
+                    username=username,
+                    password=password,
+                    database=database,
+                    uri=uri,
+                    port=port,
+                    source_type="postgresql",
+                )
+
+            return scan_database(
+                catalog=catalog,
+                source=source,
+                scan_type=scan_type,
+                incremental=incremental,
+                output_format=output_format,
+                list_all=list_all,
+                include_schema_regex=include_schema_regex,
+                exclude_schema_regex=exclude_schema_regex,
+                include_table_regex=include_table_regex,
+                exclude_table_regex=exclude_table_regex,
             )
-
-        return scan_database(
-            catalog=catalog,
-            source=source,
-            scan_type=scan_type,
-            incremental=incremental,
-            output_format=output_format,
-            list_all=list_all,
-            include_schema_regex=include_schema_regex,
-            exclude_schema_regex=exclude_schema_regex,
-            include_table_regex=include_table_regex,
-            exclude_table_regex=exclude_table_regex,
-        )
 
 
 def scan_mysql(
@@ -222,35 +228,37 @@ def scan_mysql(
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = catalog_connection(**catalog_params)
-    init_db(catalog)
+    catalog = open_catalog(**catalog_params)
 
-    with catalog.managed_session:
-        try:
-            source = catalog.get_source(name)
-        except NoResultFound:
-            source = catalog.add_source(
-                name=name,
-                username=username,
-                password=password,
-                database=database,
-                uri=uri,
-                port=port,
-                source_type="mysql",
+    with closing(catalog) as catalog:
+        init_db(catalog)
+
+        with catalog.managed_session:
+            try:
+                source = catalog.get_source(name)
+            except NoResultFound:
+                source = catalog.add_source(
+                    name=name,
+                    username=username,
+                    password=password,
+                    database=database,
+                    uri=uri,
+                    port=port,
+                    source_type="mysql",
+                )
+
+            return scan_database(
+                catalog=catalog,
+                source=source,
+                scan_type=scan_type,
+                incremental=incremental,
+                output_format=output_format,
+                list_all=list_all,
+                include_schema_regex=include_schema_regex,
+                exclude_schema_regex=exclude_schema_regex,
+                include_table_regex=include_table_regex,
+                exclude_table_regex=exclude_table_regex,
             )
-
-        return scan_database(
-            catalog=catalog,
-            source=source,
-            scan_type=scan_type,
-            incremental=incremental,
-            output_format=output_format,
-            list_all=list_all,
-            include_schema_regex=include_schema_regex,
-            exclude_schema_regex=exclude_schema_regex,
-            include_table_regex=include_table_regex,
-            exclude_table_regex=exclude_table_regex,
-        )
 
 
 def scan_redshift(
@@ -270,35 +278,37 @@ def scan_redshift(
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = catalog_connection(**catalog_params)
-    init_db(catalog)
+    catalog = open_catalog(**catalog_params)
 
-    with catalog.managed_session:
-        try:
-            source = catalog.get_source(name)
-        except NoResultFound:
-            source = catalog.add_source(
-                name=name,
-                username=username,
-                password=password,
-                database=database,
-                uri=uri,
-                port=port,
-                source_type="redshift",
+    with closing(catalog) as catalog:
+        init_db(catalog)
+
+        with catalog.managed_session:
+            try:
+                source = catalog.get_source(name)
+            except NoResultFound:
+                source = catalog.add_source(
+                    name=name,
+                    username=username,
+                    password=password,
+                    database=database,
+                    uri=uri,
+                    port=port,
+                    source_type="redshift",
+                )
+
+            return scan_database(
+                catalog=catalog,
+                source=source,
+                scan_type=scan_type,
+                incremental=incremental,
+                output_format=output_format,
+                list_all=list_all,
+                include_schema_regex=include_schema_regex,
+                exclude_schema_regex=exclude_schema_regex,
+                include_table_regex=include_table_regex,
+                exclude_table_regex=exclude_table_regex,
             )
-
-        return scan_database(
-            catalog=catalog,
-            source=source,
-            scan_type=scan_type,
-            incremental=incremental,
-            output_format=output_format,
-            list_all=list_all,
-            include_schema_regex=include_schema_regex,
-            exclude_schema_regex=exclude_schema_regex,
-            include_table_regex=include_table_regex,
-            exclude_table_regex=exclude_table_regex,
-        )
 
 
 def scan_snowflake(
@@ -319,36 +329,38 @@ def scan_snowflake(
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = catalog_connection(**catalog_params)
-    init_db(catalog)
+    catalog = open_catalog(**catalog_params)
 
-    with catalog.managed_session:
-        try:
-            source = catalog.get_source(name)
-        except NoResultFound:
-            source = catalog.add_source(
-                name=name,
-                username=username,
-                password=password,
-                database=database,
-                account=account,
-                warehouse=warehouse,
-                role=role,
-                source_type="snowflake",
+    with closing(catalog) as catalog:
+        init_db(catalog)
+
+        with catalog.managed_session:
+            try:
+                source = catalog.get_source(name)
+            except NoResultFound:
+                source = catalog.add_source(
+                    name=name,
+                    username=username,
+                    password=password,
+                    database=database,
+                    account=account,
+                    warehouse=warehouse,
+                    role=role,
+                    source_type="snowflake",
+                )
+
+            return scan_database(
+                catalog=catalog,
+                source=source,
+                scan_type=scan_type,
+                incremental=incremental,
+                output_format=output_format,
+                list_all=list_all,
+                include_schema_regex=include_schema_regex,
+                exclude_schema_regex=exclude_schema_regex,
+                include_table_regex=include_table_regex,
+                exclude_table_regex=exclude_table_regex,
             )
-
-        return scan_database(
-            catalog=catalog,
-            source=source,
-            scan_type=scan_type,
-            incremental=incremental,
-            output_format=output_format,
-            list_all=list_all,
-            include_schema_regex=include_schema_regex,
-            exclude_schema_regex=exclude_schema_regex,
-            include_table_regex=include_table_regex,
-            exclude_table_regex=exclude_table_regex,
-        )
 
 
 def scan_athena(
@@ -367,31 +379,33 @@ def scan_athena(
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = catalog_connection(**catalog_params)
-    init_db(catalog)
+    catalog = open_catalog(**catalog_params)
 
-    with catalog.managed_session:
-        try:
-            source = catalog.get_source(name)
-        except NoResultFound:
-            source = catalog.add_source(
-                name=name,
-                aws_access_key_id=aws_access_key_id,
-                aws_secret_access_key=aws_secret_access_key,
-                region_name=region_name,
-                s3_staging_dir=s3_staging_dir,
-                source_type="athena",
+    with closing(catalog) as catalog:
+        init_db(catalog)
+
+        with catalog.managed_session:
+            try:
+                source = catalog.get_source(name)
+            except NoResultFound:
+                source = catalog.add_source(
+                    name=name,
+                    aws_access_key_id=aws_access_key_id,
+                    aws_secret_access_key=aws_secret_access_key,
+                    region_name=region_name,
+                    s3_staging_dir=s3_staging_dir,
+                    source_type="athena",
+                )
+
+            return scan_database(
+                catalog=catalog,
+                source=source,
+                scan_type=scan_type,
+                incremental=incremental,
+                output_format=output_format,
+                list_all=list_all,
+                include_schema_regex=include_schema_regex,
+                exclude_schema_regex=exclude_schema_regex,
+                include_table_regex=include_table_regex,
+                exclude_table_regex=exclude_table_regex,
             )
-
-        return scan_database(
-            catalog=catalog,
-            source=source,
-            scan_type=scan_type,
-            incremental=incremental,
-            output_format=output_format,
-            list_all=list_all,
-            include_schema_regex=include_schema_regex,
-            exclude_schema_regex=exclude_schema_regex,
-            include_table_regex=include_table_regex,
-            exclude_table_regex=exclude_table_regex,
-        )
