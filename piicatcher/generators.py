@@ -1,7 +1,6 @@
 import datetime
 import logging
 import re
-from collections import namedtuple
 from typing import Generator, List, Optional, Tuple, Type
 
 from dbcat.catalog import Catalog, CatColumn, CatSchema, CatSource, CatTable
@@ -15,7 +14,10 @@ LOGGER = logging.getLogger(__name__)
 SMALL_TABLE_MAX = 100
 
 
-CatalogObject = namedtuple("CatalogObject", ["name", "id"])
+class NoMatchesError(Exception):
+    """Raise Exception if schema/table/column generators do not find any matches"""
+
+    message = "No columns were scanned. Ensure include/exclude patterns are correct OR no new columns have been added"
 
 
 def column_generator(
@@ -28,17 +30,23 @@ def column_generator(
     exclude_table_regex_str: List[str] = None,
 ) -> Generator[Tuple[CatSchema, CatTable, CatColumn], None, None]:
 
-    for schema, table in table_generator(
-        catalog=catalog,
-        source=source,
-        include_schema_regex_str=include_schema_regex_str,
-        exclude_schema_regex_str=exclude_schema_regex_str,
-        include_table_regex_str=include_table_regex_str,
-        exclude_table_regex_str=exclude_table_regex_str,
-    ):
+    try:
+        for schema, table in table_generator(
+            catalog=catalog,
+            source=source,
+            include_schema_regex_str=include_schema_regex_str,
+            exclude_schema_regex_str=exclude_schema_regex_str,
+            include_table_regex_str=include_table_regex_str,
+            exclude_table_regex_str=exclude_table_regex_str,
+        ):
 
-        for column in catalog.get_columns_for_table(table=table, newer_than=last_run):
-            yield schema, table, column
+            for column in catalog.get_columns_for_table(
+                table=table, newer_than=last_run
+            ):
+                LOGGER.debug(f"Scanning {schema.name}.{table.name}.{column.name}")
+                yield schema, table, column
+    except StopIteration:
+        raise NoMatchesError
 
 
 def _get_table_count(
@@ -109,6 +117,7 @@ def _filter_text_columns(column_list: List[CatColumn]) -> List[CatColumn]:
             list(filter(lambda m: regex.search(m.data_type) is not None, column_list,))
         )
 
+    LOGGER.debug(f"{len(matched_set)} text columns found")
     return list(matched_set)
 
 
@@ -141,6 +150,8 @@ def data_generator(
                 ):
                     for col, val in zip(columns, row):
                         yield schema, table, col, val
+        except StopIteration:
+            raise NoMatchesError
         except exc.SQLAlchemyError as e:
             LOGGER.warning(
                 f"Exception when getting data for {schema.name}.{table.name}. Code: {e.code}"

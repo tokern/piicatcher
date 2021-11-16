@@ -95,6 +95,10 @@ jobs:
         environment:
           PYVERSION: "3.8.3"
     steps:
+      - run:
+          name: poetry update
+          command: poetry self update
+
       - checkout
       - python/install-packages:
           pkg-manager: poetry

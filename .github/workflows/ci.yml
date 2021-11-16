@@ -4,13 +4,39 @@
 name: piicatcher
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: piiuser
+          POSTGRES_PASSWORD: p11secret
+          POSTGRES_DB: piidb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - 3306
+        env:
+          MYSQL_USER: piiuser
+          MYSQL_PASSWORD: p11secret
+          MYSQL_DATABASE: piidb
+          MYSQL_ROOT_PASSWORD: r00tpassw0rd
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
