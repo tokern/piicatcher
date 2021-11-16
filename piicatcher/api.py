@@ -1,4 +1,5 @@
 import datetime
+import logging
 from contextlib import closing
 from enum import Enum
 from pathlib import Path
@@ -9,9 +10,11 @@ from dbcat.catalog import Catalog, CatSource
 from dbcat.catalog.db import DbScanner
 from sqlalchemy.orm.exc import NoResultFound
 
-from piicatcher.generators import column_generator, data_generator
+from piicatcher.generators import NoMatchesError, column_generator, data_generator
 from piicatcher.output import output_dict, output_tabular
 from piicatcher.scanner import deep_scan, shallow_scan
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ScanTypeEnum(str, Enum):
@@ -72,7 +75,10 @@ def scan_database(
                 include_table_regex_str=include_table_regex,
                 exclude_table_regex_str=exclude_table_regex,
             )
-            scanner.scan()
+            try:
+                scanner.scan()
+            except StopIteration:
+                raise NoMatchesError
 
             if scan_type == ScanTypeEnum.shallow:
                 shallow_scan(
@@ -236,6 +242,7 @@ def scan_mysql(
         with catalog.managed_session:
             try:
                 source = catalog.get_source(name)
+                LOGGER.debug(f"{name} source found")
             except NoResultFound:
                 source = catalog.add_source(
                     name=name,
@@ -246,6 +253,7 @@ def scan_mysql(
                     port=port,
                     source_type="mysql",
                 )
+                LOGGER.debug(f"{name} source added")
 
             return scan_database(
                 catalog=catalog,

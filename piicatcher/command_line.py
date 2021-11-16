@@ -1,4 +1,5 @@
 import logging
+import logging.config
 from pathlib import Path
 from typing import Optional
 
@@ -12,6 +13,48 @@ from piicatcher.cli import app as scan_app
 from piicatcher.scanner import data_logger, scan_logger
 
 app = typer.Typer()
+
+LOGGER = logging.getLogger(__name__)
+
+
+class TyperLoggerHandler(logging.Handler):
+    def emit(self, record: logging.LogRecord) -> None:
+        fg = None
+        bg = None
+        if record.levelno == logging.DEBUG:
+            fg = typer.colors.YELLOW
+        elif record.levelno == logging.INFO:
+            fg = typer.colors.BRIGHT_BLUE
+        elif record.levelno == logging.WARNING:
+            fg = typer.colors.BRIGHT_MAGENTA
+        elif record.levelno == logging.CRITICAL:
+            fg = typer.colors.BRIGHT_RED
+        elif record.levelno == logging.ERROR:
+            fg = typer.colors.BRIGHT_WHITE
+            bg = typer.colors.RED
+        typer.secho(self.format(record), bg=bg, fg=fg)
+
+
+def log_config(log_level: str):
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "simple": {
+                "format": "{asctime}:{levelname}:{name} {message}",
+                "style": "{",
+            },
+        },
+        "handlers": {
+            "console": {"class": "logging.StreamHandler", "formatter": "simple",},
+            "typer": {
+                "class": "piicatcher.command_line.TyperLoggerHandler",
+                "formatter": "simple",
+            },
+        },
+        "root": {"handlers": ["typer"], "level": log_level},
+        "piicatcher.api": {"handlers": ["typer"], "level": log_level},
+    }
 
 
 def version_callback(value: bool):
@@ -51,20 +94,21 @@ def cli(
         None, "--version", callback=version_callback
     ),
 ):
-    logging.basicConfig(level=getattr(logging, log_level.upper()))
-    logging.debug("Catalog - host: %s, port: %s, ", catalog_host, catalog_port)
+    logging.config.dictConfig(log_config(log_level=log_level.upper()))
 
     if log_scan:
         handler = logging.StreamHandler()
         handler.setFormatter(jsonlogger.JsonFormatter())
         handler.setLevel(logging.INFO)
         scan_logger.addHandler(handler)
+        LOGGER.debug("SCAN LOG setup")
 
     if log_data:
         handler = logging.StreamHandler()
         handler.setFormatter(jsonlogger.JsonFormatter())
         handler.setLevel(logging.INFO)
         data_logger.addHandler(handler)
+        LOGGER.debug("DATA LOG setup")
 
     app_dir = typer.get_app_dir("tokern")
     app_dir_path = Path(app_dir)

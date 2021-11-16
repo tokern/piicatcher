@@ -16,6 +16,7 @@ from piicatcher.api import (
     scan_sqlite,
 )
 from piicatcher.app_state import app_state
+from piicatcher.generators import NoMatchesError
 from piicatcher.output import PiiTypeEncoder
 
 app = typer.Typer()
@@ -91,21 +92,25 @@ def sqlite(
         None, help=exclude_table_help_text
     ),
 ):
-    op = scan_sqlite(
-        catalog_params=app_state["catalog_connection"],
-        name=name,
-        path=path,
-        scan_type=scan_type,
-        incremental=incremental,
-        output_format=app_state["output_format"],
-        list_all=list_all,
-        include_schema_regex=include_schema,
-        exclude_schema_regex=exclude_schema,
-        include_table_regex=include_table,
-        exclude_table_regex=exclude_table,
-    )
+    try:
+        op = scan_sqlite(
+            catalog_params=app_state["catalog_connection"],
+            name=name,
+            path=path,
+            scan_type=scan_type,
+            incremental=incremental,
+            output_format=app_state["output_format"],
+            list_all=list_all,
+            include_schema_regex=include_schema,
+            exclude_schema_regex=exclude_schema,
+            include_table_regex=include_table,
+            exclude_table_regex=exclude_table,
+        )
 
-    typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, app_state["output_format"]))
+    except NoMatchesError:
+        typer.echo(message=NoMatchesError.message)
+        typer.Exit(1)
 
 
 @app.command()
@@ -136,25 +141,29 @@ def postgresql(
         None, help=exclude_table_help_text
     ),
 ):
-    op = scan_postgresql(
-        catalog_params=app_state["catalog_connection"],
-        name=name,
-        username=username,
-        password=password,
-        database=database,
-        uri=uri,
-        port=port,
-        scan_type=scan_type,
-        incremental=incremental,
-        output_format=app_state["output_format"],
-        list_all=list_all,
-        include_schema_regex=include_schema,
-        exclude_schema_regex=exclude_schema,
-        include_table_regex=include_table,
-        exclude_table_regex=exclude_table,
-    )
+    try:
+        op = scan_postgresql(
+            catalog_params=app_state["catalog_connection"],
+            name=name,
+            username=username,
+            password=password,
+            database=database,
+            uri=uri,
+            port=port,
+            scan_type=scan_type,
+            incremental=incremental,
+            output_format=app_state["output_format"],
+            list_all=list_all,
+            include_schema_regex=include_schema,
+            exclude_schema_regex=exclude_schema,
+            include_table_regex=include_table,
+            exclude_table_regex=exclude_table,
+        )
 
-    typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, app_state["output_format"]))
+    except NoMatchesError:
+        typer.echo(message=NoMatchesError.message)
+        typer.Exit(1)
 
 
 @app.command()
@@ -185,25 +194,29 @@ def mysql(
         None, help=exclude_table_help_text
     ),
 ):
-    op = scan_mysql(
-        catalog_params=app_state["catalog_connection"],
-        name=name,
-        username=username,
-        password=password,
-        database=database,
-        uri=uri,
-        port=port,
-        scan_type=scan_type,
-        incremental=incremental,
-        output_format=app_state["output_format"],
-        list_all=list_all,
-        include_schema_regex=include_schema,
-        exclude_schema_regex=exclude_schema,
-        include_table_regex=include_table,
-        exclude_table_regex=exclude_table,
-    )
+    try:
+        op = scan_mysql(
+            catalog_params=app_state["catalog_connection"],
+            name=name,
+            username=username,
+            password=password,
+            database=database,
+            uri=uri,
+            port=port,
+            scan_type=scan_type,
+            incremental=incremental,
+            output_format=app_state["output_format"],
+            list_all=list_all,
+            include_schema_regex=include_schema,
+            exclude_schema_regex=exclude_schema,
+            include_table_regex=include_table,
+            exclude_table_regex=exclude_table,
+        )
 
-    typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, app_state["output_format"]))
+    except NoMatchesError:
+        typer.echo(message=NoMatchesError.message)
+        typer.Exit(1)
 
 
 @app.command()
@@ -234,25 +247,29 @@ def redshift(
         None, help=exclude_table_help_text
     ),
 ):
-    op = scan_redshift(
-        catalog_params=app_state["catalog_connection"],
-        name=name,
-        username=username,
-        password=password,
-        database=database,
-        uri=uri,
-        port=port,
-        scan_type=scan_type,
-        incremental=incremental,
-        output_format=app_state["output_format"],
-        list_all=list_all,
-        include_schema_regex=include_schema,
-        exclude_schema_regex=exclude_schema,
-        include_table_regex=include_table,
-        exclude_table_regex=exclude_table,
-    )
+    try:
+        op = scan_redshift(
+            catalog_params=app_state["catalog_connection"],
+            name=name,
+            username=username,
+            password=password,
+            database=database,
+            uri=uri,
+            port=port,
+            scan_type=scan_type,
+            incremental=incremental,
+            output_format=app_state["output_format"],
+            list_all=list_all,
+            include_schema_regex=include_schema,
+            exclude_schema_regex=exclude_schema,
+            include_table_regex=include_table,
+            exclude_table_regex=exclude_table,
+        )
 
-    typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, app_state["output_format"]))
+    except NoMatchesError:
+        typer.echo(message=NoMatchesError.message)
+        typer.Exit(1)
 
 
 @app.command()
@@ -284,26 +301,30 @@ def snowflake(
         None, help=exclude_table_help_text
     ),
 ):
-    op = scan_snowflake(
-        catalog_params=app_state["catalog_connection"],
-        name=name,
-        username=username,
-        password=password,
-        database=database,
-        account=account,
-        warehouse=warehouse,
-        role=role,
-        scan_type=scan_type,
-        incremental=incremental,
-        output_format=app_state["output_format"],
-        list_all=list_all,
-        include_schema_regex=include_schema,
-        exclude_schema_regex=exclude_schema,
-        include_table_regex=include_table,
-        exclude_table_regex=exclude_table,
-    )
+    try:
+        op = scan_snowflake(
+            catalog_params=app_state["catalog_connection"],
+            name=name,
+            username=username,
+            password=password,
+            database=database,
+            account=account,
+            warehouse=warehouse,
+            role=role,
+            scan_type=scan_type,
+            incremental=incremental,
+            output_format=app_state["output_format"],
+            list_all=list_all,
+            include_schema_regex=include_schema,
+            exclude_schema_regex=exclude_schema,
+            include_table_regex=include_table,
+            exclude_table_regex=exclude_table,
+        )
 
-    typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, app_state["output_format"]))
+    except NoMatchesError:
+        typer.echo(message=NoMatchesError.message)
+        typer.Exit(1)
 
 
 @app.command()
@@ -333,21 +354,25 @@ def athena(
         None, help=exclude_table_help_text
     ),
 ):
-    op = scan_athena(
-        catalog_params=app_state["catalog_connection"],
-        name=name,
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key,
-        region_name=region_name,
-        s3_staging_dir=s3_staging_dir,
-        scan_type=scan_type,
-        incremental=incremental,
-        output_format=app_state["output_format"],
-        list_all=list_all,
-        include_schema_regex=include_schema,
-        exclude_schema_regex=exclude_schema,
-        include_table_regex=include_table,
-        exclude_table_regex=exclude_table,
-    )
+    try:
+        op = scan_athena(
+            catalog_params=app_state["catalog_connection"],
+            name=name,
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            region_name=region_name,
+            s3_staging_dir=s3_staging_dir,
+            scan_type=scan_type,
+            incremental=incremental,
+            output_format=app_state["output_format"],
+            list_all=list_all,
+            include_schema_regex=include_schema,
+            exclude_schema_regex=exclude_schema,
+            include_table_regex=include_table,
+            exclude_table_regex=exclude_table,
+        )
 
-    typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, app_state["output_format"]))
+    except NoMatchesError:
+        typer.echo(message=NoMatchesError.message)
+        typer.Exit(1)
