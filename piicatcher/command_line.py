@@ -46,14 +46,18 @@ def log_config(log_level: str):
             },
         },
         "handlers": {
-            "console": {"class": "logging.StreamHandler", "formatter": "simple",},
+            "console": {"class": "logging.StreamHandler", "formatter": "simple"},
             "typer": {
-                "class": "piicatcher.command_line.TyperLoggerHandler",
+                "class": "dbcat.__main__.TyperLoggerHandler",
                 "formatter": "simple",
             },
         },
         "root": {"handlers": ["typer"], "level": log_level},
-        "piicatcher.api": {"handlers": ["typer"], "level": log_level},
+        "dbcat": {"handlers": ["typer"], "level": log_level},
+        "piicatcher": {"handlers": ["typer"], "level": log_level},
+        "sqlachemy": {"handlers": ["typer"], "level": "DEBUG"},
+        "alembic": {"handlers": ["typer"], "level": "DEBUG"},
+        "databuilder": {"handlers": ["typer"], "level": "INFO"},
     }
 
 
@@ -115,13 +119,13 @@ def cli(
     app_dir_path.mkdir(parents=True, exist_ok=True)
 
     app_state["catalog_connection"] = {
-        "path": str(catalog_path),
+        "path": catalog_path,
         "user": catalog_user,
         "password": catalog_password,
         "host": catalog_host,
         "port": catalog_port,
         "database": catalog_database,
-        "app_dir": app_dir,
+        "app_dir": app_dir_path,
     }
     app_state["output_format"] = output_format
 

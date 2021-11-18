@@ -69,11 +69,10 @@ class NERScanner(Scanner):
 
     def scan(self, text):
         """Scan the text and return an array of PiiTypes that are found"""
-        logging.debug("Processing '%s'", text)
         doc = self.nlp(text)
         types = set()
         for ent in doc.ents:
-            logging.debug("Found %s", ent.label_)
+            LOGGER.debug("Found %s", ent.label_)
             if ent.label_ == "PERSON":
                 types.add(PiiTypes.PERSON)
 
@@ -83,7 +82,7 @@ class NERScanner(Scanner):
             if ent.label_ == "DATE":
                 types.add(PiiTypes.BIRTH_DATE)
 
-        logging.debug("PiiTypes are %s", ",".join(str(x) for x in list(types)))
+        LOGGER.debug("PiiTypes are %s", ",".join(str(x) for x in list(types)))
         return list(types)
 
 
@@ -130,12 +129,19 @@ def shallow_scan(
 ):
     scanner = ColumnNameScanner()
 
+    counter = 0
+    set_number = 0
     for schema, table, column in generator:
+        counter += 1
+        LOGGER.debug("Scanning column name %s", column.fqdn)
         types = scanner.scan(column.name)
         if len(types) > 0:
+            set_number += 1
             catalog.set_column_pii_type(
                 column=column, pii_type=types.pop(), pii_plugin=scanner.name()
             )
+
+    LOGGER.info("Columns Scanned: %d, Columns Labeled: %d", counter, set_number)
 
 
 def deep_scan(
@@ -144,25 +150,33 @@ def deep_scan(
 ):
     scanners = [RegexScanner(), NERScanner()]
 
+    counter = 0
+    set_number = 0
+
     for schema, table, column, val in generator:
-        LOGGER.debug("Scanning column name {}, val: {}".format(column.fqdn, val))
+        counter += 1
+        LOGGER.debug("Scanning column name %s", column.fqdn)
         if val is not None:
             pii_types = set()
             for scanner in scanners:
                 for pii in scanner.scan(val):
                     pii_types.add(pii)
 
-                if len(pii_types) > 0:
-                    top = pii_types.pop()
-                    catalog.set_column_pii_type(
-                        column=column, pii_type=top, pii_plugin=scanner.name()
-                    )
-                    LOGGER.debug("{} has {}".format(column.fqdn, top))
+            if len(pii_types) > 0:
+                set_number += 1
 
-                    scan_logger.info(
-                        "deep_scan", extra={"column": column.fqdn, "pii_types": top}
-                    )
-                    data_logger.info(
-                        "deep_scan",
-                        extra={"column": column.fqdn, "data": val, "pii_types": top},
-                    )
+                top = pii_types.pop()
+                catalog.set_column_pii_type(
+                    column=column, pii_type=top, pii_plugin=scanner.name()
+                )
+                LOGGER.debug("{} has {}".format(column.fqdn, top))
+
+                scan_logger.info(
+                    "deep_scan", extra={"column": column.fqdn, "pii_types": top}
+                )
+                data_logger.info(
+                    "deep_scan",
+                    extra={"column": column.fqdn, "data": val, "pii_types": top},
+                )
+
+    LOGGER.info("Columns Scanned: %d, Columns Labeled: %d", counter, set_number)
