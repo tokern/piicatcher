@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "piicatcher"
-version = "0.17.0"
+version = "0.17.1"
 description = "Find PII data in databases"
 authors = ["Tokern <info@tokern.io>"]
 license = "Apache 2.0"
@@ -22,7 +22,7 @@ repository="https://github.com/tokern/piicatcher/"
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.6,<4"
 spacy = "*"
 pyyaml = "*"
 click = "*"
@@ -50,7 +50,6 @@ codecov = "*"
 pytest-pylint = "*"
 twine = "*"
 pytest-mock = "*"
-pipenv-setup = "*"
 types-PyMySQL = "^1.0.2"
 types-python-dateutil = "^0.1.6"
 types-PyYAML = "^5.4.6"
