@@ -65,6 +65,7 @@ def scan_database(
         if incremental:
             last_task = catalog.get_latest_task("piicatcher.{}".format(source.name))
             last_run = last_task.updated_at if last_task is not None else None
+            LOGGER.debug("Last Run at {}", last_run)
 
         try:
             scanner = DbScanner(

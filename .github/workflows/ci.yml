@@ -11,12 +11,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8']
+    name: Python ${{ matrix.python-version }}
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
       postgres:
         # Docker Hub image
         image: postgres
+        ports:
+          - 5432:5432
         # Provide the password for postgres
         env:
           POSTGRES_USER: piiuser
@@ -30,7 +36,7 @@ jobs:
       mariadb:
         image: mariadb:latest
         ports:
-          - 3306
+          - 3306:3306
         env:
           MYSQL_USER: piiuser
           MYSQL_PASSWORD: p11secret
@@ -41,7 +47,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
     - name: Install Python Poetry
       uses: abatilo/actions-poetry@v2.1.0
       with:
@@ -51,13 +57,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m poetry install
-    - name: Lint
-      run: |
-        python -m poetry run isort --check --diff .
-        python -m poetry run black --check .
-        python -m poetry run flake8 piicatcher tests
-        python -m poetry run mypy
     - name: Test with pytest
       run: |
         python -m poetry run python -m spacy download en_core_web_sm
-        python -m poetry run pytest --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
+        python -m poetry run pytest --pg-host localhost --mysql-host localhost --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/

@@ -6,9 +6,8 @@ from shutil import rmtree
 from typing import Any, Generator, Tuple
 
 import pytest
-import yaml
 from dbcat.api import catalog_connection_yaml, init_db, scan_sources
-from dbcat.catalog.catalog import Catalog, PGCatalog
+from dbcat.catalog.catalog import Catalog
 from pytest_cases import fixture, parametrize_with_cases
 from sqlalchemy import create_engine
 
@@ -16,7 +15,7 @@ postgres_conf = """
 catalog:
   user: piiuser
   password: p11secret
-  host: 127.0.0.1
+  host: {host}
   port: 5432
   database: piidb
 """
@@ -26,6 +25,18 @@ sqlite_catalog_conf = """
 catalog:
   path: {path}
 """
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--pg-host", action="store", default="127.0.0.1", help="specify IP of pg host"
+    )
+    parser.addoption(
+        "--mysql-host",
+        action="store",
+        default="127.0.0.1",
+        help="specify IP of mysql host",
+    )
 
 
 @fixture(scope="module")
@@ -49,16 +60,16 @@ pg_catalog_conf = """
 catalog:
   user: catalog_user
   password: catal0g_passw0rd
-  host: 127.0.0.1
+  host: {host}
   port: 5432
   database: tokern
 """
 
 
 @fixture(scope="module")
-def setup_pg_catalog():
-    config = yaml.safe_load(postgres_conf)
-    with closing(PGCatalog(**config["catalog"])) as root_connection:
+def setup_pg_catalog(request):
+    conf = postgres_conf.format(host=request.config.getoption("--pg-host"))
+    with closing(catalog_connection_yaml(conf)) as root_connection:
         with root_connection.engine.connect() as conn:
             conn.execute("CREATE USER catalog_user PASSWORD 'catal0g_passw0rd'")
             conn.execution_options(isolation_level="AUTOCOMMIT").execute(
@@ -68,7 +79,7 @@ def setup_pg_catalog():
                 "GRANT ALL PRIVILEGES ON DATABASE tokern TO catalog_user"
             )
 
-        yield
+        yield pg_catalog_conf.format(host=request.config.getoption("--pg-host"))
 
         with root_connection.engine.connect() as conn:
             conn.execution_options(isolation_level="AUTOCOMMIT").execute(
@@ -81,7 +92,7 @@ def setup_pg_catalog():
 
 
 def case_setup_pg(setup_pg_catalog):
-    return pg_catalog_conf
+    return setup_pg_catalog
 
 
 @fixture(scope="module")
@@ -115,13 +126,14 @@ pii_data_drop = [
 ]
 
 
-def source_mysql(open_catalog_connection) -> Tuple[Catalog, int]:
+def source_mysql(open_catalog_connection, request) -> Tuple[Catalog, int]:
     catalog = open_catalog_connection
+    host = request.config.getoption("--mysql-host")
     with catalog.managed_session:
         source = catalog.add_source(
             name="mysql_src",
             source_type="mysql",
-            uri="127.0.0.1",
+            uri=host,
             username="piiuser",
             password="p11secret",
             database="piidb",
@@ -131,13 +143,14 @@ def source_mysql(open_catalog_connection) -> Tuple[Catalog, int]:
     return catalog, source_id
 
 
-def source_pg(open_catalog_connection) -> Tuple[Catalog, int]:
+def source_pg(open_catalog_connection, request) -> Tuple[Catalog, int]:
     catalog = open_catalog_connection
+    host = request.config.getoption("--pg-host")
     with catalog.managed_session:
         source = catalog.add_source(
             name="pg_src",
             source_type="postgresql",
-            uri="127.0.0.1",
+            uri=host,
             username="piiuser",
             password="p11secret",
             database="piidb",

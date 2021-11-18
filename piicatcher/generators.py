@@ -4,7 +4,7 @@ import re
 from typing import Generator, List, Optional, Tuple, Type
 
 from dbcat.catalog import Catalog, CatColumn, CatSchema, CatSource, CatTable
-from dbcat.generators import table_generator
+from dbcat.generators import NoMatchesError, table_generator
 from sqlalchemy import create_engine, exc
 
 from piicatcher.dbinfo import DbInfo, get_dbinfo
@@ -12,12 +12,6 @@ from piicatcher.dbinfo import DbInfo, get_dbinfo
 LOGGER = logging.getLogger(__name__)
 
 SMALL_TABLE_MAX = 100
-
-
-class NoMatchesError(Exception):
-    """Raise Exception if schema/table/column generators do not find any matches"""
-
-    message = "No columns were scanned. Ensure include/exclude patterns are correct OR no new columns have been added"
 
 
 def column_generator(
