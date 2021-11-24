@@ -590,7 +590,7 @@ python-versions = ">=3.6, <3.7"
 
 [[package]]
 name = "dbcat"
-version = "0.10.3"
+version = "0.10.4"
 description = "Tokern Data Catalog"
 category = "main"
 optional = false
@@ -3259,8 +3259,8 @@ dataclasses = [
     {file = "dataclasses-0.8.tar.gz", hash = "sha256:8479067f342acf957dc82ec415d355ab5edb7e7646b90dc6e2fd1d96ad084c97"},
 ]
 dbcat = [
-    {file = "dbcat-0.10.3-py3-none-any.whl", hash = "sha256:a10199eaf8a66bfaca1b04984356a3d089c4e9c2b4d5444ce0754cff8fa94b6b"},
-    {file = "dbcat-0.10.3.tar.gz", hash = "sha256:c4c05d7f92dcf81a536797b8182e4204a97a451f6f21def0674126f74a3c3551"},
+    {file = "dbcat-0.10.4-py3-none-any.whl", hash = "sha256:ab739c076c88b09034b6e38e3ba5b51269d6354ee5c05944d5e4fb52683463ee"},
+    {file = "dbcat-0.10.4.tar.gz", hash = "sha256:8cd16375133c1fb415a2ee7bcfc99085271c5869dd0d8be5b80bbe7697d354e7"},
 ]
 decopatch = [
     {file = "decopatch-1.4.8-py2.py3-none-any.whl", hash = "sha256:29a74d5d753423b188d5b537532da4f4b88e33ddccb95a8a20a5eff5b13265d4"},
