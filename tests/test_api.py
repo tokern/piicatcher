@@ -167,3 +167,17 @@ def test_scan_athena(mocker, temp_sqlite_path, app_dir_path):
     )
     piicatcher.api.scan_database.assert_called_once()
     Catalog.add_source.assert_called_once()
+
+
+def test_scan_athena_iam(mocker, temp_sqlite_path, app_dir_path):
+    mocker.patch("piicatcher.api.scan_database")
+    mocker.patch.object(Catalog, "add_source")
+
+    scan_athena(
+        catalog_params={"path": temp_sqlite_path, "app_dir": app_dir_path},
+        name="test_scan_athena",
+        region_name="r",
+        s3_staging_dir="s3",
+    )
+    piicatcher.api.scan_database.assert_called_once()
+    Catalog.add_source.assert_called_once()

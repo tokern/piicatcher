@@ -375,10 +375,10 @@ def scan_snowflake(
 def scan_athena(
     catalog_params: Dict[str, Any],
     name: str,
-    aws_access_key_id: str,
-    aws_secret_access_key: str,
     region_name: str,
     s3_staging_dir: str,
+    aws_access_key_id: Optional[str] = None,
+    aws_secret_access_key: Optional[str] = None,
     scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
     incremental: bool = True,
     output_format: OutputFormat = OutputFormat.tabular,

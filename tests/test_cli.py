@@ -102,6 +102,19 @@ def case_athena_cli():
     ]
 
 
+def case_athena_cli_iam():
+    return [
+        "scan",
+        "athena",
+        "--name",
+        "athena_cli",
+        "--region-name",
+        "us-east-1",
+        "--s3-staging-dir",
+        "s3://dummy",
+    ]
+
+
 @parametrize_with_cases("args", cases=".")
 def test_cli(mocker, temp_sqlite_path, args):
     mocker.patch("piicatcher.api.scan_database")
