@@ -330,8 +330,8 @@ def snowflake(
 @app.command()
 def athena(
     name: str = typer.Option(..., help="A memorable name for the database"),
-    aws_access_key_id: str = typer.Option(..., help="AWS Access Key"),
-    aws_secret_access_key: str = typer.Option(..., help="AWS Secret Key"),
+    aws_access_key_id: str = typer.Option(None, help="AWS Access Key"),
+    aws_secret_access_key: str = typer.Option(None, help="AWS Secret Key"),
     region_name: str = typer.Option(..., help="AWS Region Name"),
     s3_staging_dir: str = typer.Option(..., help="S3 Staging Dir"),
     scan_type: ScanTypeEnum = typer.Option(
