@@ -10,6 +10,7 @@ from dbcat.api import catalog_connection_yaml, init_db, scan_sources
 from dbcat.catalog.catalog import Catalog
 from pytest_cases import fixture, parametrize_with_cases
 from sqlalchemy import create_engine
+from sqlalchemy.orm.exc import NoResultFound
 
 postgres_conf = """
 catalog:
@@ -130,14 +131,17 @@ def source_mysql(open_catalog_connection, request) -> Tuple[Catalog, int]:
     catalog = open_catalog_connection
     host = request.config.getoption("--mysql-host")
     with catalog.managed_session:
-        source = catalog.add_source(
-            name="mysql_src",
-            source_type="mysql",
-            uri=host,
-            username="piiuser",
-            password="p11secret",
-            database="piidb",
-        )
+        try:
+            source = catalog.get_source("mysql_src")
+        except NoResultFound:
+            source = catalog.add_source(
+                name="mysql_src",
+                source_type="mysql",
+                uri=host,
+                username="piiuser",
+                password="p11secret",
+                database="piidb",
+            )
         source_id = source.id
 
     return catalog, source_id
@@ -147,15 +151,18 @@ def source_pg(open_catalog_connection, request) -> Tuple[Catalog, int]:
     catalog = open_catalog_connection
     host = request.config.getoption("--pg-host")
     with catalog.managed_session:
-        source = catalog.add_source(
-            name="pg_src",
-            source_type="postgresql",
-            uri=host,
-            username="piiuser",
-            password="p11secret",
-            database="piidb",
-            cluster="public",
-        )
+        try:
+            source = catalog.get_source("pg_src")
+        except NoResultFound:
+            source = catalog.add_source(
+                name="pg_src",
+                source_type="postgresql",
+                uri=host,
+                username="piiuser",
+                password="p11secret",
+                database="piidb",
+                cluster="public",
+            )
         source_id = source.id
 
     return catalog, source_id
@@ -178,9 +185,12 @@ def source_sqlite(
     catalog = open_catalog_connection
     sqlite_path = temp_sqlite
     with catalog.managed_session:
-        source = catalog.add_source(
-            name="sqlite_src", source_type="sqlite", uri=str(sqlite_path)
-        )
+        try:
+            source = catalog.get_source("sqlite_src")
+        except NoResultFound:
+            source = catalog.add_source(
+                name="sqlite_src", source_type="sqlite", uri=str(sqlite_path)
+            )
         yield catalog, source.id
 
 

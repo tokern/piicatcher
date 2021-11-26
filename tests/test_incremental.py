@@ -18,14 +18,17 @@ def setup_incremental(
     load_sample_data, load_data
 ) -> Generator[Tuple[Catalog, int], None, None]:
     catalog, source_id, name = load_sample_data
-    scan_sources(catalog, [name], include_table_regex=["sample"])
+    with catalog.managed_session:
+        scan_sources(catalog, [name], include_table_regex=["sample"])
     time.sleep(1)
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         scan_database(catalog=catalog, source=source, include_table_regex=["sample"])
-        time.sleep(1)
+    time.sleep(1)
+    with catalog.managed_session:
         scan_sources(catalog, [name])
-        time.sleep(1)
+    time.sleep(1)
+    with catalog.managed_session:
         scan_database(catalog=catalog, source=source, include_table_regex=["partial.*"])
         yield catalog, source_id
 
@@ -557,7 +560,7 @@ def test_full_scan(setup_incremental):
         source = catalog.get_source_by_id(source_id)
         time.sleep(1)
         scan_database(catalog=catalog, source=source, incremental=False)
-        # there should be 3 tasks
+        # there should be 3 tasks.
         tasks = catalog.get_tasks_by_app_name("piicatcher.{}".format(source.name))
         assert len(tasks) == 3
 
