@@ -68,7 +68,7 @@ def version_callback(value: bool):
 
 
 # pylint: disable=too-many-arguments
-@app.callback()
+@app.callback(invoke_without_command=True)
 def cli(
     log_level: str = typer.Option("WARNING", help="Logging Level"),
     log_data: bool = typer.Option(False, help="Choose output format type"),
@@ -95,7 +95,7 @@ def cli(
         None, help="database of Postgres database. Use if catalog is a database."
     ),
     version: Optional[bool] = typer.Option(
-        None, "--version", callback=version_callback
+        None, "--version", callback=version_callback, is_eager=True
     ),
 ):
     logging.config.dictConfig(log_config(log_level=log_level.upper()))
