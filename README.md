@@ -8,30 +8,34 @@
 
 ## Overview
 
-PIICatcher is a data catalog and scanner for PII and PHI information. It finds PII data in your databases and file systems
-and tracks critical data. The data catalog can be used as a foundation to build governance, compliance and security
-applications.
+PIICatcher is a scanner for PII and PHI information. It finds PII data in your databases and file systems
+and tracks critical data. PIICatcher uses two techniques to detect PII:
 
-Check out [AWS Glue & Lake Formation Privilege Analyzer](https://tokern.io/blog/lake-glue-access-analyzer) for an example of how piicatcher is used in production.
+* Match regular expressions with column names
+* Match regular expressions and using NLP libraries to match sample data in columns.
+
+Read more in the [blog post](https://tokern.io/blog/scan-pii-data-warehouse/) on both these strategies.
+
+PIICatcher is *battery-included* with a growing set of
+regular expressions for scanning column names as well as data. It also include [Spacy](https://spacy.io).
+
+PIICatcher supports incremental scans and will only scan new or not-yet scanned columns. Incremental scans allow easy
+scheduling of scans. It also provides powerful options to include or exclude schema and tables to manage compute resources.
+
+There are ingestion functions for both [Datahub](https://datahubproject.io) and [Amundsen](https://amundsen.io) which will tag columns 
+and tables with PII and the type of PII tags.
+
+![PIIcatcher Screencast](https://user-images.githubusercontent.com/1638298/143765818-87c7059a-f971-447b-83ca-e21182e28051.gif)
+
+
+## Resources
+
+* [AWS Glue & Lake Formation Privilege Analyzer](https://tokern.io/blog/lake-glue-access-analyzer/) for an example of how piicatcher is used in production.
+* [Two strategies to scan data warehouses](https://tokern.io/blog/scan-pii-data-warehouse/)
 
 ## Quick Start
 
 PIICatcher is available as a docker image or command-line application.
-
-### Docker
-
-    docker run tokern/piicatcher:latest scan sqlite --path '/db/sqlqb'
-
-    ╭─────────────┬─────────────┬─────────────┬─────────────╮
-    │   schema    │    table    │   column    │   has_pii   │
-    ├─────────────┼─────────────┼─────────────┼─────────────┤
-    │        main │    full_pii │           a │           1 │
-    │        main │    full_pii │           b │           1 │
-    │        main │      no_pii │           a │           0 │
-    │        main │      no_pii │           b │           0 │
-    │        main │ partial_pii │           a │           1 │
-    │        main │ partial_pii │           b │           0 │
-    ╰─────────────┴─────────────┴─────────────┴─────────────╯
 
 ### Command-line
 To install use pip:
