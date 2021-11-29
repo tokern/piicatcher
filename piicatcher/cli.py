@@ -16,7 +16,7 @@ from piicatcher.api import (
     scan_sqlite,
 )
 from piicatcher.app_state import app_state
-from piicatcher.generators import NoMatchesError
+from piicatcher.generators import SMALL_TABLE_MAX, NoMatchesError
 from piicatcher.output import PiiTypeEncoder
 
 app = typer.Typer()
@@ -91,6 +91,9 @@ def sqlite(
     exclude_table: Optional[List[str]] = typer.Option(
         None, help=exclude_table_help_text
     ),
+    sample_size: int = typer.Option(
+        SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
+    ),
 ):
     try:
         op = scan_sqlite(
@@ -105,6 +108,7 @@ def sqlite(
             exclude_schema_regex=exclude_schema,
             include_table_regex=include_table,
             exclude_table_regex=exclude_table,
+            sample_size=sample_size,
         )
 
         typer.echo(message=str_output(op, app_state["output_format"]))
@@ -140,6 +144,9 @@ def postgresql(
     exclude_table: Optional[List[str]] = typer.Option(
         None, help=exclude_table_help_text
     ),
+    sample_size: int = typer.Option(
+        SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
+    ),
 ):
     try:
         op = scan_postgresql(
@@ -158,6 +165,7 @@ def postgresql(
             exclude_schema_regex=exclude_schema,
             include_table_regex=include_table,
             exclude_table_regex=exclude_table,
+            sample_size=sample_size,
         )
 
         typer.echo(message=str_output(op, app_state["output_format"]))
@@ -193,6 +201,9 @@ def mysql(
     exclude_table: Optional[List[str]] = typer.Option(
         None, help=exclude_table_help_text
     ),
+    sample_size: int = typer.Option(
+        SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
+    ),
 ):
     try:
         op = scan_mysql(
@@ -211,6 +222,7 @@ def mysql(
             exclude_schema_regex=exclude_schema,
             include_table_regex=include_table,
             exclude_table_regex=exclude_table,
+            sample_size=sample_size,
         )
 
         typer.echo(message=str_output(op, app_state["output_format"]))
@@ -246,6 +258,9 @@ def redshift(
     exclude_table: Optional[List[str]] = typer.Option(
         None, help=exclude_table_help_text
     ),
+    sample_size: int = typer.Option(
+        SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
+    ),
 ):
     try:
         op = scan_redshift(
@@ -264,6 +279,7 @@ def redshift(
             exclude_schema_regex=exclude_schema,
             include_table_regex=include_table,
             exclude_table_regex=exclude_table,
+            sample_size=sample_size,
         )
 
         typer.echo(message=str_output(op, app_state["output_format"]))
@@ -300,6 +316,9 @@ def snowflake(
     exclude_table: Optional[List[str]] = typer.Option(
         None, help=exclude_table_help_text
     ),
+    sample_size: int = typer.Option(
+        SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
+    ),
 ):
     try:
         op = scan_snowflake(
@@ -319,6 +338,7 @@ def snowflake(
             exclude_schema_regex=exclude_schema,
             include_table_regex=include_table,
             exclude_table_regex=exclude_table,
+            sample_size=sample_size,
         )
 
         typer.echo(message=str_output(op, app_state["output_format"]))
@@ -353,6 +373,9 @@ def athena(
     exclude_table: Optional[List[str]] = typer.Option(
         None, help=exclude_table_help_text
     ),
+    sample_size: int = typer.Option(
+        SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
+    ),
 ):
     try:
         op = scan_athena(
@@ -370,6 +393,7 @@ def athena(
             exclude_schema_regex=exclude_schema,
             include_table_regex=include_table,
             exclude_table_regex=exclude_table,
+            sample_size=sample_size,
         )
 
         typer.echo(message=str_output(op, app_state["output_format"]))

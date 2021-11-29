@@ -10,7 +10,12 @@ from dbcat.catalog import Catalog, CatSource
 from dbcat.catalog.db import DbScanner
 from sqlalchemy.orm.exc import NoResultFound
 
-from piicatcher.generators import NoMatchesError, column_generator, data_generator
+from piicatcher.generators import (
+    SMALL_TABLE_MAX,
+    NoMatchesError,
+    column_generator,
+    data_generator,
+)
 from piicatcher.output import output_dict, output_tabular
 from piicatcher.scanner import deep_scan, shallow_scan
 
@@ -38,6 +43,7 @@ def scan_database(
     exclude_schema_regex: List[str] = None,
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     message = "Source: {source_name}, scan_type: {scan_type}, include_schema: {include_schema}, \
             exclude_schema: {exclude_schema}, include_table: {include_table}, exclude_schema: {exclude_table}".format(
@@ -117,7 +123,9 @@ def scan_database(
                         include_schema_regex_str=include_schema_regex,
                         exclude_table_regex_str=exclude_table_regex,
                         include_table_regex_str=include_table_regex,
+                        sample_size=sample_size,
                     ),
+                    sample_size=sample_size,
                 )
 
             if output_format == OutputFormat.tabular:
@@ -152,6 +160,7 @@ def scan_sqlite(
     exclude_schema_regex: List[str] = None,
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     catalog = open_catalog(**catalog_params)
 
@@ -177,6 +186,7 @@ def scan_sqlite(
                 exclude_schema_regex=exclude_schema_regex,
                 include_table_regex=include_table_regex,
                 exclude_table_regex=exclude_table_regex,
+                sample_size=sample_size,
             )
 
 
@@ -196,6 +206,7 @@ def scan_postgresql(
     exclude_schema_regex: List[str] = None,
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     catalog = open_catalog(**catalog_params)
 
@@ -227,6 +238,7 @@ def scan_postgresql(
                 exclude_schema_regex=exclude_schema_regex,
                 include_table_regex=include_table_regex,
                 exclude_table_regex=exclude_table_regex,
+                sample_size=sample_size,
             )
 
 
@@ -246,6 +258,7 @@ def scan_mysql(
     exclude_schema_regex: List[str] = None,
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     catalog = open_catalog(**catalog_params)
 
@@ -279,6 +292,7 @@ def scan_mysql(
                 exclude_schema_regex=exclude_schema_regex,
                 include_table_regex=include_table_regex,
                 exclude_table_regex=exclude_table_regex,
+                sample_size=sample_size,
             )
 
 
@@ -298,6 +312,7 @@ def scan_redshift(
     exclude_schema_regex: List[str] = None,
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     catalog = open_catalog(**catalog_params)
 
@@ -329,6 +344,7 @@ def scan_redshift(
                 exclude_schema_regex=exclude_schema_regex,
                 include_table_regex=include_table_regex,
                 exclude_table_regex=exclude_table_regex,
+                sample_size=sample_size,
             )
 
 
@@ -349,6 +365,7 @@ def scan_snowflake(
     exclude_schema_regex: List[str] = None,
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     catalog = open_catalog(**catalog_params)
 
@@ -381,6 +398,7 @@ def scan_snowflake(
                 exclude_schema_regex=exclude_schema_regex,
                 include_table_regex=include_table_regex,
                 exclude_table_regex=exclude_table_regex,
+                sample_size=sample_size,
             )
 
 
@@ -399,6 +417,7 @@ def scan_athena(
     exclude_schema_regex: List[str] = None,
     include_table_regex: List[str] = None,
     exclude_table_regex: List[str] = None,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     catalog = open_catalog(**catalog_params)
 
@@ -429,4 +448,5 @@ def scan_athena(
                 exclude_schema_regex=exclude_schema_regex,
                 include_table_regex=include_table_regex,
                 exclude_table_regex=exclude_table_regex,
+                sample_size=sample_size,
             )

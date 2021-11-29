@@ -146,7 +146,7 @@ def test_get_sample_query(sqlalchemy_engine):
         column_list=catalog.get_columns_for_table(table),
         dbinfo=get_dbinfo(source.source_type),
         connection=conn,
-        sample_boundary=1,
+        sample_size=1,
     )
 
     if source.source_type == "mysql":
@@ -187,7 +187,7 @@ def test_get_sample_query_redshift(mocker, source_type, expected_query):
         column_list=[column],
         dbinfo=get_dbinfo(source_type=source.source_type),
         connection=None,
-        sample_boundary=1,
+        sample_size=1,
     )
 
     assert query == expected_query

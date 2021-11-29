@@ -61,17 +61,17 @@ def _get_query(
     column_list: List[CatColumn],
     dbinfo: Type[DbInfo],
     connection,
-    sample_boundary: int = SMALL_TABLE_MAX,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> str:
     count = _get_table_count(schema, table, dbinfo, connection)
     LOGGER.debug("No. of rows in {}.{} is {}".format(schema.name, table.name, count))
     column_name_list: List[str] = [col.name for col in column_list]
     query = dbinfo.get_select_query(schema.name, table.name, column_name_list)
 
-    if count > sample_boundary:
+    if count > sample_size:
         try:
             query = dbinfo.get_sample_query(
-                schema.name, table.name, column_name_list, sample_boundary
+                schema.name, table.name, column_name_list, sample_size
             )
             LOGGER.debug("Choosing a SAMPLE query as table size is big")
         except NotImplementedError:
@@ -82,7 +82,11 @@ def _get_query(
 
 
 def _row_generator(
-    source: CatSource, schema: CatSchema, table: CatTable, column_list: List[CatColumn]
+    source: CatSource,
+    schema: CatSchema,
+    table: CatTable,
+    column_list: List[CatColumn],
+    sample_size=SMALL_TABLE_MAX,
 ):
     engine = create_engine(source.conn_string)
     with engine.connect() as conn:
@@ -93,6 +97,7 @@ def _row_generator(
             column_list=column_list,
             dbinfo=dbinfo,
             connection=conn,
+            sample_size=sample_size,
         )
         LOGGER.debug(query)
         result = conn.execute(query)
@@ -125,6 +130,7 @@ def data_generator(
     exclude_schema_regex_str: List[str] = None,
     include_table_regex_str: List[str] = None,
     exclude_table_regex_str: List[str] = None,
+    sample_size=SMALL_TABLE_MAX,
 ) -> Generator[Tuple[CatSchema, CatTable, CatColumn, str], None, None]:
 
     for schema, table in table_generator(
@@ -142,7 +148,11 @@ def data_generator(
             )
             if len(columns) > 0:
                 for row in _row_generator(
-                    column_list=columns, schema=schema, table=table, source=source
+                    column_list=columns,
+                    schema=schema,
+                    table=table,
+                    source=source,
+                    sample_size=sample_size,
                 ):
                     for col, val in zip(columns, row):
                         yield schema, table, col, val
