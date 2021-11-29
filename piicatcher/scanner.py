@@ -128,13 +128,18 @@ class ColumnNameScanner(Scanner):
 
 def shallow_scan(
     catalog: Catalog,
+    work_generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],
     generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],
 ):
     scanner = ColumnNameScanner()
 
+    total_columns = len([c for s, t, c in work_generator])
+
     counter = 0
     set_number = 0
-    for schema, table, column in generator:
+    for schema, table, column in tqdm(
+        generator, total=total_columns, desc="columns", unit="columns"
+    ):
         counter += 1
         LOGGER.debug("Scanning column name %s", column.fqdn)
         types = scanner.scan(column.name)

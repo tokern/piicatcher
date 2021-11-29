@@ -93,6 +93,15 @@ def scan_database(
             if scan_type == ScanTypeEnum.shallow:
                 shallow_scan(
                     catalog=catalog,
+                    work_generator=column_generator(
+                        catalog=catalog,
+                        source=source,
+                        last_run=last_run,
+                        exclude_schema_regex_str=exclude_schema_regex,
+                        include_schema_regex_str=include_schema_regex,
+                        exclude_table_regex_str=exclude_table_regex,
+                        include_table_regex_str=include_table_regex,
+                    ),
                     generator=column_generator(
                         catalog=catalog,
                         source=source,
