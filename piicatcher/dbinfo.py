@@ -28,7 +28,7 @@ class DbInfo(ABC):
 
     @classmethod
     @abstractmethod
-    def get_sample_query(cls, schema_name, table_name, column_list) -> str:
+    def get_sample_query(cls, schema_name, table_name, column_list, num_rows) -> str:
         pass
 
 
@@ -46,55 +46,62 @@ class Sqlite(DbInfo):
         )
 
     @classmethod
-    def get_sample_query(cls, schema_name, table_name, column_list) -> str:
+    def get_sample_query(cls, schema_name, table_name, column_list, num_rows) -> str:
         raise NotImplementedError
 
 
 class MySQL(DbInfo):
     _sample_query_template = (
-        "select {column_list} from {schema_name}.{table_name} limit 10"
+        "select {column_list} from {schema_name}.{table_name} limit {num_rows}"
     )
     _column_escape = "`"
 
     @classmethod
-    def get_sample_query(cls, schema_name, table_name, column_list) -> str:
+    def get_sample_query(cls, schema_name, table_name, column_list, num_rows) -> str:
         return cls._sample_query_template.format(
             column_list="`{0}`".format("`,`".join(col for col in column_list)),
             schema_name=schema_name,
             table_name=table_name,
+            num_rows=num_rows,
         )
 
 
 class Postgres(DbInfo):
-    _sample_query_template = "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI (10)"
+    _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} TABLESAMPLE BERNOULLI (10) LIMIT {num_rows}"
 
     @classmethod
     def get_sample_query(
-        cls, schema_name: str, table_name: str, column_list: List[str]
+        cls, schema_name: str, table_name: str, column_list: List[str], num_rows
     ) -> str:
         return cls._sample_query_template.format(
             column_list='"{0}"'.format('","'.join(col for col in column_list)),
             schema_name=schema_name,
             table_name=table_name,
+            num_rows=num_rows,
         )
 
 
 class Redshift(Postgres):
-    _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} ORDER BY random() LIMIT 10"
+    _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} TABLESAMPLE BERNOULLI (10) LIMIT {num_rows}"
 
 
 class Snowflake(DbInfo):
-    _sample_query_template = "select {column_list} from {schema_name}.{table_name} TABLESAMPLE BERNOULLI (10 ROWS)"
+    _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} TABLESAMPLE BERNOULLI ({num_rows} ROWS)"
 
     @classmethod
     def get_sample_query(
-        cls, schema_name: str, table_name: str, column_list: List[str]
+        cls, schema_name: str, table_name: str, column_list: List[str], num_rows
     ) -> str:
         return cls._sample_query_template.format(
             column_list=",".join(column_list),
             schema_name=schema_name,
             table_name=table_name,
+            num_rows=num_rows,
         )
+
+
+class Athena(Postgres):
+    pass
 
 
 def get_dbinfo(source_type: str) -> Type[DbInfo]:
@@ -108,4 +115,6 @@ def get_dbinfo(source_type: str) -> Type[DbInfo]:
         return Redshift
     elif source_type == "snowflake":
         return Snowflake
+    elif source_type == "athena":
+        return Athena
     raise AttributeError

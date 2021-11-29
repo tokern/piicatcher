@@ -1,7 +1,7 @@
 from typing import Any, Generator, Tuple
 
 import pytest
-from dbcat.catalog import Catalog, CatSource
+from dbcat.catalog import Catalog, CatColumn, CatSchema, CatSource, CatTable
 from sqlalchemy import create_engine
 
 from piicatcher.dbinfo import get_dbinfo
@@ -150,14 +150,47 @@ def test_get_sample_query(sqlalchemy_engine):
     )
 
     if source.source_type == "mysql":
-        assert query == """select `name`,`state` from piidb.full_pii limit 10"""
+        assert query == """select `name`,`state` from piidb.full_pii limit 1"""
     elif source.source_type == "postgresql":
         assert (
             query
-            == """select "name","state" from public.full_pii TABLESAMPLE BERNOULLI (10)"""
+            == """SELECT "name","state" FROM public.full_pii TABLESAMPLE BERNOULLI (10) LIMIT 1"""
         )
     elif source.source_type == "sqlite":
         assert query == """select "name","state" from full_pii"""
+
+
+@pytest.mark.parametrize(
+    ("source_type", "expected_query"),
+    [
+        (
+            "redshift",
+            'SELECT "column" FROM public.table TABLESAMPLE BERNOULLI (10) LIMIT 1',
+        ),
+        ("snowflake", "SELECT column FROM public.table TABLESAMPLE BERNOULLI (1 ROWS)"),
+        (
+            "athena",
+            'SELECT "column" FROM public.table TABLESAMPLE BERNOULLI (10) LIMIT 1',
+        ),
+    ],
+)
+def test_get_sample_query_redshift(mocker, source_type, expected_query):
+    source = CatSource(name="src", source_type=source_type)
+    schema = CatSchema(source=source, name="public")
+    table = CatTable(schema=schema, name="table")
+    column = CatColumn(table=table, name="column")
+
+    mocker.patch("piicatcher.generators._get_table_count", return_value=100)
+    query = _get_query(
+        schema=schema,
+        table=table,
+        column_list=[column],
+        dbinfo=get_dbinfo(source_type=source.source_type),
+        connection=None,
+        sample_boundary=1,
+    )
+
+    assert query == expected_query
 
 
 def test_row_generator(sqlalchemy_engine):

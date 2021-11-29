@@ -65,7 +65,10 @@ def scan_database(
         if incremental:
             last_task = catalog.get_latest_task("piicatcher.{}".format(source.name))
             last_run = last_task.updated_at if last_task is not None else None
-            LOGGER.debug("Last Run at {}", last_run)
+            if last_run is not None:
+                LOGGER.debug("Last Run at {}", last_run)
+            else:
+                LOGGER.debug("No last run found")
 
         try:
             scanner = DbScanner(
@@ -97,6 +100,15 @@ def scan_database(
             else:
                 deep_scan(
                     catalog=catalog,
+                    work_generator=column_generator(
+                        catalog=catalog,
+                        source=source,
+                        last_run=last_run,
+                        exclude_schema_regex_str=exclude_schema_regex,
+                        include_schema_regex_str=include_schema_regex,
+                        exclude_table_regex_str=exclude_table_regex,
+                        include_table_regex_str=include_table_regex,
+                    ),
                     generator=data_generator(
                         catalog=catalog,
                         source=source,
