@@ -8,6 +8,9 @@ import spacy
 from commonregex import CommonRegex
 from dbcat.catalog import Catalog
 from dbcat.catalog.models import CatColumn, CatSchema, CatTable, PiiTypes
+from tqdm import tqdm
+
+from piicatcher.generators import SMALL_TABLE_MAX, _filter_text_columns
 
 LOGGER = logging.getLogger(__name__)
 
@@ -146,37 +149,41 @@ def shallow_scan(
 
 def deep_scan(
     catalog: Catalog,
+    work_generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],
     generator: Generator[Tuple[CatSchema, CatTable, CatColumn, str], None, None],
 ):
     scanners = [RegexScanner(), NERScanner()]
 
+    total_columns = _filter_text_columns([c for s, t, c in work_generator])
+    total_work = len(total_columns) * SMALL_TABLE_MAX
+
     counter = 0
     set_number = 0
 
-    for schema, table, column, val in generator:
+    for schema, table, column, val in tqdm(
+        generator, total=total_work, desc="datum", unit="datum"
+    ):
         counter += 1
         LOGGER.debug("Scanning column name %s", column.fqdn)
         if val is not None:
-            pii_types = set()
             for scanner in scanners:
                 for pii in scanner.scan(val):
-                    pii_types.add(pii)
+                    set_number += 1
 
-            if len(pii_types) > 0:
-                set_number += 1
+                    catalog.set_column_pii_type(
+                        column=column, pii_type=pii, pii_plugin=scanner.name()
+                    )
+                    LOGGER.debug("{} has {}".format(column.fqdn, pii))
 
-                top = pii_types.pop()
-                catalog.set_column_pii_type(
-                    column=column, pii_type=top, pii_plugin=scanner.name()
-                )
-                LOGGER.debug("{} has {}".format(column.fqdn, top))
-
-                scan_logger.info(
-                    "deep_scan", extra={"column": column.fqdn, "pii_types": top}
-                )
-                data_logger.info(
-                    "deep_scan",
-                    extra={"column": column.fqdn, "data": val, "pii_types": top},
-                )
-
+                    scan_logger.info(
+                        "deep_scan", extra={"column": column.fqdn, "pii_types": pii}
+                    )
+                    data_logger.info(
+                        "deep_scan",
+                        extra={"column": column.fqdn, "data": val, "pii_types": pii},
+                    )
+                    break
+                else:
+                    continue
+                break
     LOGGER.info("Columns Scanned: %d, Columns Labeled: %d", counter, set_number)

@@ -70,7 +70,9 @@ def _get_query(
 
     if count > sample_boundary:
         try:
-            query = dbinfo.get_sample_query(schema.name, table.name, column_name_list)
+            query = dbinfo.get_sample_query(
+                schema.name, table.name, column_name_list, sample_boundary
+            )
             LOGGER.debug("Choosing a SAMPLE query as table size is big")
         except NotImplementedError:
             LOGGER.warning(

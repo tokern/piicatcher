@@ -2936,7 +2936,7 @@ datahub = ["acryl-datahub", "great-expectations"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<3.9"
-content-hash = "0791e569f5b93da980a033f4f1152b5d2943dfd286c8c7f8532d546b2afce1d1"
+content-hash = "386eacc4c2710fccabcd4900e20367a790a829b2e338ef8ba90ed21fc2387c79"
 
 [metadata.files]
 acryl-datahub = [

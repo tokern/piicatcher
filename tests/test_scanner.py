@@ -160,7 +160,9 @@ def test_deep_scan(load_data_and_pull):
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         deep_scan(
-            catalog=catalog, generator=data_generator(catalog=catalog, source=source)
+            catalog=catalog,
+            work_generator=column_generator(catalog=catalog, source=source),
+            generator=data_generator(catalog=catalog, source=source),
         )
 
         schemata = catalog.search_schema(source_like=source.name, schema_like="%")
