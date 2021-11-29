@@ -7,6 +7,7 @@ from typer.testing import CliRunner
 import piicatcher
 from piicatcher.api import OutputFormat, ScanTypeEnum
 from piicatcher.command_line import app
+from piicatcher.generators import SMALL_TABLE_MAX
 
 
 def case_sqlite_cli():
@@ -165,6 +166,7 @@ def test_include_exclude(mocker, temp_sqlite_path, args):
         exclude_table_regex=("etable",),
         include_schema_regex=("ischema",),
         include_table_regex=("itable",),
+        sample_size=SMALL_TABLE_MAX,
     )
     piicatcher.cli.str_output.assert_called_once()
     Catalog.add_source.assert_called_once()
@@ -212,6 +214,41 @@ def test_multiple_include_exclude(mocker, temp_sqlite_path, args):
         exclude_table_regex=("etable_1", "etable_2"),
         include_schema_regex=("ischema_1", "ischema_2"),
         include_table_regex=("itable_1", "itable_2"),
+        sample_size=SMALL_TABLE_MAX,
+    )
+    piicatcher.cli.str_output.assert_called_once()
+    Catalog.add_source.assert_called_once()
+
+
+@parametrize_with_cases("args", cases=".")
+def test_sample_size(mocker, temp_sqlite_path, args):
+    mocker.patch("piicatcher.api.scan_database")
+    mocker.patch.object(Catalog, "add_source")
+    mocker.patch("piicatcher.cli.str_output")
+
+    extended_args = args + [
+        "--sample-size",
+        "10",
+    ]
+
+    catalog_args = ["--catalog-path", temp_sqlite_path]
+    runner = CliRunner()
+    result = runner.invoke(app, catalog_args + extended_args)
+
+    print(result.stdout)
+    assert result.exit_code == 0
+    piicatcher.api.scan_database.assert_called_once_with(
+        catalog=ANY,
+        source=ANY,
+        scan_type=ScanTypeEnum.shallow,
+        incremental=True,
+        output_format=OutputFormat.tabular,
+        list_all=False,
+        exclude_schema_regex=(),
+        exclude_table_regex=(),
+        include_schema_regex=(),
+        include_table_regex=(),
+        sample_size=10,
     )
     piicatcher.cli.str_output.assert_called_once()
     Catalog.add_source.assert_called_once()

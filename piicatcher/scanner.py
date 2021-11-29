@@ -151,11 +151,12 @@ def deep_scan(
     catalog: Catalog,
     work_generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],
     generator: Generator[Tuple[CatSchema, CatTable, CatColumn, str], None, None],
+    sample_size: int = SMALL_TABLE_MAX,
 ):
     scanners = [RegexScanner(), NERScanner()]
 
     total_columns = _filter_text_columns([c for s, t, c in work_generator])
-    total_work = len(total_columns) * SMALL_TABLE_MAX
+    total_work = len(total_columns) * sample_size
 
     counter = 0
     set_number = 0
