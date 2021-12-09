@@ -37,6 +37,12 @@ and tables with PII and the type of PII tags.
 
 PIICatcher is available as a docker image or command-line application.
 
+### Docker (preferred)
+
+    alias piicatcher='docker run -v ${HOME}/.config/tokern:/config -u $(id -u ${USER}):$(id -g ${USER}) -it --add-host=host.docker.internal:host-gateway tokern/piicatcher:latest'
+    piicatcher --help
+    piicatcher scan sqlite --name sqldb --path '/db/sqldb'
+
 ### Command-line
 To install use pip:
 
@@ -48,7 +54,7 @@ To install use pip:
     python -m spacy download en_core_web_sm
     
     # run piicatcher on a sqlite db and print report to console
-    piicatcher scan sqlite --path '/db/sqlqb'
+    piicatcher scan sqlite --name sqldb --path '/db/sqldb'
     ╭─────────────┬─────────────┬─────────────┬─────────────╮
     │   schema    │    table    │   column    │   has_pii   │
     ├─────────────┼─────────────┼─────────────┼─────────────┤

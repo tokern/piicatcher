@@ -73,6 +73,9 @@ def cli(
     log_level: str = typer.Option("WARNING", help="Logging Level"),
     log_data: bool = typer.Option(False, help="Choose output format type"),
     log_scan: bool = typer.Option(False, help="Log data that was scanned"),
+    config_path: Path = typer.Option(
+        typer.get_app_dir("tokern"), help="Path to config directory"
+    ),
     output_format: OutputFormat = typer.Option(
         OutputFormat.tabular, case_sensitive=False
     ),
@@ -114,8 +117,7 @@ def cli(
         data_logger.addHandler(handler)
         LOGGER.debug("DATA LOG setup")
 
-    app_dir = typer.get_app_dir("tokern")
-    app_dir_path = Path(app_dir)
+    app_dir_path = Path(config_path)
     app_dir_path.mkdir(parents=True, exist_ok=True)
 
     app_state["catalog_connection"] = {

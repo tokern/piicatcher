@@ -35,7 +35,7 @@ echo "Building Docker image ${DOCKER_IMAGE} from official Tokern release ${TAG}"
 
 # now tell docker to build our image
 
-docker build -t "${DOCKER_IMAGE}" -f "$PROJECT_ROOT"/Dockerfile "${PROJECT_ROOT}"
+docker build -t "${DOCKER_IMAGE}" -f "$PROJECT_ROOT"/docker/Dockerfile "${PROJECT_ROOT}"
 
 if [ "$PUBLISH" == "YES" ]; then
     echo "Publishing image ${DOCKER_IMAGE} to Dockerhub"
