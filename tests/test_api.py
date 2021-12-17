@@ -2,11 +2,11 @@ from pathlib import Path
 
 import pytest
 from dbcat.catalog import Catalog
-from dbcat.catalog.models import PiiTypes
 
 import piicatcher
 from piicatcher.api import (
     ScanTypeEnum,
+    list_detectors,
     scan_athena,
     scan_database,
     scan_mysql,
@@ -15,6 +15,10 @@ from piicatcher.api import (
     scan_snowflake,
     scan_sqlite,
 )
+
+
+def test_detector_list():
+    assert list(list_detectors()) == ["ColumnNameRegexDetector", "DatumRegexDetector"]
 
 
 def test_scan_database_shallow(load_sample_data_and_pull):
@@ -26,14 +30,14 @@ def test_scan_database_shallow(load_sample_data_and_pull):
         schemata = catalog.search_schema(source_like=source.name, schema_like="%")
 
         for column_name, pii_type in [
-            ("address", PiiTypes.ADDRESS),
-            ("city", PiiTypes.ADDRESS),
-            ("email", PiiTypes.EMAIL),
-            ("fname", PiiTypes.PERSON),
-            ("gender", PiiTypes.GENDER),
-            ("lname", PiiTypes.PERSON),
-            ("maiden_name", PiiTypes.PERSON),
-            ("state", PiiTypes.ADDRESS),
+            ("address", piicatcher.Address()),
+            ("city", piicatcher.Address()),
+            ("email", piicatcher.Email()),
+            ("fname", piicatcher.Person()),
+            ("gender", piicatcher.Gender()),
+            ("lname", piicatcher.Person()),
+            ("maiden_name", piicatcher.Person()),
+            ("state", piicatcher.Address()),
         ]:
             column = catalog.get_column(
                 source_name=source.name,
@@ -63,7 +67,7 @@ def test_scan_database_deep(load_sample_data_and_pull):
 
         schemata = catalog.search_schema(source_like=source.name, schema_like="%")
 
-        for column_name, pii_type in [("id", PiiTypes.BIRTH_DATE)]:
+        for column_name, pii_type in [("id", piicatcher.BirthDate)]:
             column = catalog.get_column(
                 source_name=source.name,
                 schema_name=schemata[0].name,

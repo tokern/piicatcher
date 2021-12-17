@@ -10,6 +10,7 @@ from piicatcher import __version__
 from piicatcher.api import OutputFormat
 from piicatcher.app_state import app_state
 from piicatcher.cli import app as scan_app
+from piicatcher.cli import detector_app
 from piicatcher.scanner import data_logger, scan_logger
 
 app = typer.Typer()
@@ -133,3 +134,4 @@ def cli(
 
 
 app.add_typer(scan_app, name="scan")
+app.add_typer(detector_app, name="detectors")

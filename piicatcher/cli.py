@@ -8,6 +8,8 @@ from tabulate import tabulate
 from piicatcher.api import (
     OutputFormat,
     ScanTypeEnum,
+    list_detector_entry_points,
+    list_detectors,
     scan_athena,
     scan_mysql,
     scan_postgresql,
@@ -17,7 +19,6 @@ from piicatcher.api import (
 )
 from piicatcher.app_state import app_state
 from piicatcher.generators import SMALL_TABLE_MAX, NoMatchesError
-from piicatcher.output import PiiTypeEncoder
 
 app = typer.Typer()
 
@@ -65,7 +66,7 @@ def str_output(op, output_format: OutputFormat):
             headers=("schema", "table", "column", "PII Type", "Scanner"),
         )
     else:
-        return json.dumps(op, sort_keys=True, indent=2, cls=PiiTypeEncoder)
+        return json.dumps(op, sort_keys=True, indent=2)
 
 
 @app.command()
@@ -400,3 +401,25 @@ def athena(
     except NoMatchesError:
         typer.echo(message=NoMatchesError.message)
         typer.Exit(1)
+
+
+detector_app = typer.Typer()
+
+
+@detector_app.command(name="list")
+def cli_list_detectors():
+    typer.echo(
+        message=tabulate(
+            tabular_data=[(d,) for d in list_detectors()], headers=("detectors",)
+        )
+    )
+
+
+@detector_app.command(name="entry-points")
+def cli_list_entry_points():
+    typer.echo(
+        message=tabulate(
+            tabular_data=[(e,) for e in list_detector_entry_points()],
+            headers=("entry points",),
+        )
+    )
