@@ -5,6 +5,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
+import dbcat.settings
 from dbcat.api import init_db, open_catalog, scan_sources
 from dbcat.catalog import Catalog, CatSource
 from sqlalchemy.orm.exc import NoResultFound
@@ -172,7 +173,6 @@ def list_detector_entry_points() -> List[str]:
 
 
 def scan_sqlite(
-    catalog_params: Dict[str, Any],
     name: str,
     path: Path,
     scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
@@ -185,7 +185,16 @@ def scan_sqlite(
     exclude_table_regex: List[str] = None,
     sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = open_catalog(**catalog_params)
+    catalog = open_catalog(
+        app_dir=dbcat.settings.APP_DIR,
+        secret=dbcat.settings.CATALOG_SECRET,
+        path=dbcat.settings.CATALOG_PATH,
+        host=dbcat.settings.CATALOG_HOST,
+        port=dbcat.settings.CATALOG_PORT,
+        user=dbcat.settings.CATALOG_USER,
+        password=dbcat.settings.CATALOG_PASSWORD,
+        database=dbcat.settings.CATALOG_DB,
+    )
 
     with closing(catalog) as catalog:
         init_db(catalog)
@@ -214,7 +223,6 @@ def scan_sqlite(
 
 
 def scan_postgresql(
-    catalog_params: Dict[str, Any],
     name: str,
     username: str,
     password: str,
@@ -231,7 +239,16 @@ def scan_postgresql(
     exclude_table_regex: List[str] = None,
     sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = open_catalog(**catalog_params)
+    catalog = open_catalog(
+        app_dir=dbcat.settings.APP_DIR,
+        secret=dbcat.settings.CATALOG_SECRET,
+        path=dbcat.settings.CATALOG_PATH,
+        host=dbcat.settings.CATALOG_HOST,
+        port=dbcat.settings.CATALOG_PORT,
+        user=dbcat.settings.CATALOG_USER,
+        password=dbcat.settings.CATALOG_PASSWORD,
+        database=dbcat.settings.CATALOG_DB,
+    )
 
     with closing(catalog) as catalog:
         init_db(catalog)
@@ -266,7 +283,6 @@ def scan_postgresql(
 
 
 def scan_mysql(
-    catalog_params: Dict[str, Any],
     name: str,
     username: str,
     password: str,
@@ -283,7 +299,16 @@ def scan_mysql(
     exclude_table_regex: List[str] = None,
     sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = open_catalog(**catalog_params)
+    catalog = open_catalog(
+        app_dir=dbcat.settings.APP_DIR,
+        secret=dbcat.settings.CATALOG_SECRET,
+        path=dbcat.settings.CATALOG_PATH,
+        host=dbcat.settings.CATALOG_HOST,
+        port=dbcat.settings.CATALOG_PORT,
+        user=dbcat.settings.CATALOG_USER,
+        password=dbcat.settings.CATALOG_PASSWORD,
+        database=dbcat.settings.CATALOG_DB,
+    )
 
     with closing(catalog) as catalog:
         init_db(catalog)
@@ -320,7 +345,6 @@ def scan_mysql(
 
 
 def scan_redshift(
-    catalog_params: Dict[str, Any],
     name: str,
     username: str,
     password: str,
@@ -337,7 +361,16 @@ def scan_redshift(
     exclude_table_regex: List[str] = None,
     sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = open_catalog(**catalog_params)
+    catalog = open_catalog(
+        app_dir=dbcat.settings.APP_DIR,
+        secret=dbcat.settings.CATALOG_SECRET,
+        path=dbcat.settings.CATALOG_PATH,
+        host=dbcat.settings.CATALOG_HOST,
+        port=dbcat.settings.CATALOG_PORT,
+        user=dbcat.settings.CATALOG_USER,
+        password=dbcat.settings.CATALOG_PASSWORD,
+        database=dbcat.settings.CATALOG_DB,
+    )
 
     with closing(catalog) as catalog:
         init_db(catalog)
@@ -372,7 +405,6 @@ def scan_redshift(
 
 
 def scan_snowflake(
-    catalog_params: Dict[str, Any],
     name: str,
     account: str,
     username: str,
@@ -390,7 +422,16 @@ def scan_snowflake(
     exclude_table_regex: List[str] = None,
     sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = open_catalog(**catalog_params)
+    catalog = open_catalog(
+        app_dir=dbcat.settings.APP_DIR,
+        secret=dbcat.settings.CATALOG_SECRET,
+        path=dbcat.settings.CATALOG_PATH,
+        host=dbcat.settings.CATALOG_HOST,
+        port=dbcat.settings.CATALOG_PORT,
+        user=dbcat.settings.CATALOG_USER,
+        password=dbcat.settings.CATALOG_PASSWORD,
+        database=dbcat.settings.CATALOG_DB,
+    )
 
     with closing(catalog) as catalog:
         init_db(catalog)
@@ -426,7 +467,6 @@ def scan_snowflake(
 
 
 def scan_athena(
-    catalog_params: Dict[str, Any],
     name: str,
     region_name: str,
     s3_staging_dir: str,
@@ -442,7 +482,16 @@ def scan_athena(
     exclude_table_regex: List[str] = None,
     sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
-    catalog = open_catalog(**catalog_params)
+    catalog = open_catalog(
+        app_dir=dbcat.settings.APP_DIR,
+        secret=dbcat.settings.CATALOG_SECRET,
+        path=dbcat.settings.CATALOG_PATH,
+        host=dbcat.settings.CATALOG_HOST,
+        port=dbcat.settings.CATALOG_PORT,
+        user=dbcat.settings.CATALOG_USER,
+        password=dbcat.settings.CATALOG_PASSWORD,
+        database=dbcat.settings.CATALOG_DB,
+    )
 
     with closing(catalog) as catalog:
         init_db(catalog)
