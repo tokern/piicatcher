@@ -1,16 +1,33 @@
+import json
 import logging
 import logging.config
+from contextlib import closing
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import dbcat.settings
 import typer
+from dbcat.api import init_db, open_catalog
+from dbcat.cli import app as catalog_app
+from dbcat.cli import (
+    exclude_schema_help_text,
+    exclude_table_help_text,
+    schema_help_text,
+    table_help_text,
+)
+from dbcat.generators import NoMatchesError
 from pythonjsonlogger import jsonlogger
+from tabulate import tabulate
 
 from piicatcher import __version__
-from piicatcher.api import OutputFormat
-from piicatcher.cli import app as scan_app
-from piicatcher.cli import detector_app
+from piicatcher.api import (
+    OutputFormat,
+    ScanTypeEnum,
+    list_detector_entry_points,
+    list_detectors,
+    scan_database,
+)
+from piicatcher.generators import SMALL_TABLE_MAX
 from piicatcher.scanner import data_logger, scan_logger
 
 app = typer.Typer()
@@ -136,5 +153,98 @@ def cli(
     dbcat.settings.OUTPUT_FORMAT = output_format
 
 
-app.add_typer(scan_app, name="scan")
+@app.command()
+def detect(
+    source_name: str = typer.Option(..., help="Name of database to scan."),
+    scan_type: ScanTypeEnum = typer.Option(
+        ScanTypeEnum.shallow,
+        help="Choose deep(scan data) or shallow(scan column names only)",
+    ),
+    incremental: bool = typer.Option(
+        True, help="Scan columns updated or created since last run",
+    ),
+    list_all: bool = typer.Option(
+        False,
+        help="List all columns. By default only columns with PII information is listed",
+    ),
+    include_schema: Optional[List[str]] = typer.Option(None, help=schema_help_text),
+    exclude_schema: Optional[List[str]] = typer.Option(
+        None, help=exclude_schema_help_text
+    ),
+    include_table: Optional[List[str]] = typer.Option(None, help=table_help_text),
+    exclude_table: Optional[List[str]] = typer.Option(
+        None, help=exclude_table_help_text
+    ),
+    sample_size: int = typer.Option(
+        SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
+    ),
+):
+    catalog = open_catalog(
+        app_dir=dbcat.settings.APP_DIR,
+        secret=dbcat.settings.CATALOG_SECRET,
+        path=dbcat.settings.CATALOG_PATH,
+        host=dbcat.settings.CATALOG_HOST,
+        port=dbcat.settings.CATALOG_PORT,
+        user=dbcat.settings.CATALOG_USER,
+        password=dbcat.settings.CATALOG_PASSWORD,
+        database=dbcat.settings.CATALOG_DB,
+    )
+
+    with closing(catalog) as catalog:
+        init_db(catalog)
+        with catalog.managed_session:
+            source = catalog.get_source(source_name)
+            try:
+                op = scan_database(
+                    catalog=catalog,
+                    source=source,
+                    scan_type=scan_type,
+                    incremental=incremental,
+                    output_format=dbcat.settings.OUTPUT_FORMAT,
+                    list_all=list_all,
+                    include_schema_regex=include_schema,
+                    exclude_schema_regex=exclude_schema,
+                    include_table_regex=include_table,
+                    exclude_table_regex=exclude_table,
+                    sample_size=sample_size,
+                )
+                typer.echo(message=str_output(op, dbcat.settings.OUTPUT_FORMAT))
+            except NoMatchesError:
+                typer.echo(message=NoMatchesError.message)
+                typer.Exit(1)
+
+
+detector_app = typer.Typer()
+
+
+@detector_app.command(name="list")
+def cli_list_detectors():
+    typer.echo(
+        message=tabulate(
+            tabular_data=[(d,) for d in list_detectors()], headers=("detectors",)
+        )
+    )
+
+
+@detector_app.command(name="entry-points")
+def cli_list_entry_points():
+    typer.echo(
+        message=tabulate(
+            tabular_data=[(e,) for e in list_detector_entry_points()],
+            headers=("entry points",),
+        )
+    )
+
+
 app.add_typer(detector_app, name="detectors")
+app.add_typer(catalog_app, name="catalog")
+
+
+def str_output(op, output_format: OutputFormat):
+    if output_format == OutputFormat.tabular:
+        return tabulate(
+            tabular_data=op,
+            headers=("schema", "table", "column", "PII Type", "Scanner"),
+        )
+    else:
+        return json.dumps(op, sort_keys=True, indent=2)
