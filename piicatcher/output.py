@@ -1,20 +1,9 @@
 import datetime
-import json
 from typing import Any, Dict, List, Optional
 
 from dbcat.catalog import Catalog, CatSchema, CatSource, CatTable
-from dbcat.catalog.models import PiiTypes
 
 from piicatcher.generators import column_generator
-
-
-# Ref: https://stackoverflow.com/questions/24481852/serialising-an-enum-member-to-json
-class PiiTypeEncoder(json.JSONEncoder):
-    # pylint: disable=method-hidden
-    def default(self, obj):
-        if type(obj) == PiiTypes:
-            return {"__enum__": str(obj)}
-        return json.JSONEncoder.default(self, obj)
 
 
 def output_dict(
@@ -65,7 +54,9 @@ def output_dict(
                     "name": column.name,
                     "data_type": column.data_type,
                     "sort_order": column.sort_order,
-                    "pii_type": column.pii_type,
+                    "pii_type": column.pii_type.name
+                    if column.pii_type is not None
+                    else None,
                     "pii_plugin": column.pii_plugin,
                 }
             )
@@ -104,7 +95,7 @@ def output_tabular(
                     schema.name,
                     table.name,
                     column.name,
-                    str(column.pii_type),
+                    column.pii_type.name if column.pii_type is not None else None,
                     column.pii_plugin,
                 ]
             )

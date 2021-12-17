@@ -5,17 +5,13 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from dbcat.api import init_db, open_catalog
+from dbcat.api import init_db, open_catalog, scan_sources
 from dbcat.catalog import Catalog, CatSource
-from dbcat.catalog.db import DbScanner
 from sqlalchemy.orm.exc import NoResultFound
 
-from piicatcher.generators import (
-    SMALL_TABLE_MAX,
-    NoMatchesError,
-    column_generator,
-    data_generator,
-)
+from piicatcher import detectors
+from piicatcher.detectors import DatumDetector, MetadataDetector, detector_registry
+from piicatcher.generators import SMALL_TABLE_MAX, column_generator, data_generator
 from piicatcher.output import output_dict, output_tabular
 from piicatcher.scanner import deep_scan, shallow_scan
 
@@ -77,22 +73,25 @@ def scan_database(
                 LOGGER.debug("No last run found")
 
         try:
-            scanner = DbScanner(
+            scan_sources(
                 catalog=catalog,
-                source=source,
-                include_schema_regex_str=include_schema_regex,
-                exclude_schema_regex_str=exclude_schema_regex,
-                include_table_regex_str=include_table_regex,
-                exclude_table_regex_str=exclude_table_regex,
+                source_names=[source.name],
+                include_schema_regex=include_schema_regex,
+                exclude_schema_regex=exclude_schema_regex,
+                include_table_regex=include_table_regex,
+                exclude_table_regex=exclude_table_regex,
             )
-            try:
-                scanner.scan()
-            except StopIteration:
-                raise NoMatchesError
 
             if scan_type == ScanTypeEnum.shallow:
+                detector_list = [
+                    detector()
+                    for detector in detectors.detector_registry.get_all().values()
+                    if issubclass(detector, MetadataDetector)
+                ]
+
                 shallow_scan(
                     catalog=catalog,
+                    detectors=detector_list,
                     work_generator=column_generator(
                         catalog=catalog,
                         source=source,
@@ -113,8 +112,15 @@ def scan_database(
                     ),
                 )
             else:
+                detector_list = [
+                    detector()
+                    for detector in detectors.detector_registry.get_all().values()
+                    if issubclass(detector, DatumDetector)
+                ]
+
                 deep_scan(
                     catalog=catalog,
+                    detectors=detector_list,
                     work_generator=column_generator(
                         catalog=catalog,
                         source=source,
@@ -155,6 +161,14 @@ def scan_database(
                 exit_code,
                 "{}.{}".format(message, status_message),
             )
+
+
+def list_detectors() -> List[str]:
+    return list(detector_registry.get_all().keys())
+
+
+def list_detector_entry_points() -> List[str]:
+    return list(detector_registry.get_entry_points().keys())
 
 
 def scan_sqlite(
