@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from typing import List, Optional
 
+import dbcat.settings
 import typer
 from tabulate import tabulate
 
@@ -17,7 +18,6 @@ from piicatcher.api import (
     scan_snowflake,
     scan_sqlite,
 )
-from piicatcher.app_state import app_state
 from piicatcher.generators import SMALL_TABLE_MAX, NoMatchesError
 
 app = typer.Typer()
@@ -98,12 +98,11 @@ def sqlite(
 ):
     try:
         op = scan_sqlite(
-            catalog_params=app_state["catalog_connection"],
             name=name,
             path=path,
             scan_type=scan_type,
             incremental=incremental,
-            output_format=app_state["output_format"],
+            output_format=dbcat.settings.OUTPUT_FORMAT,
             list_all=list_all,
             include_schema_regex=include_schema,
             exclude_schema_regex=exclude_schema,
@@ -112,7 +111,7 @@ def sqlite(
             sample_size=sample_size,
         )
 
-        typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, dbcat.settings.OUTPUT_FORMAT))
     except NoMatchesError:
         typer.echo(message=NoMatchesError.message)
         typer.Exit(1)
@@ -151,7 +150,6 @@ def postgresql(
 ):
     try:
         op = scan_postgresql(
-            catalog_params=app_state["catalog_connection"],
             name=name,
             username=username,
             password=password,
@@ -160,7 +158,7 @@ def postgresql(
             port=port,
             scan_type=scan_type,
             incremental=incremental,
-            output_format=app_state["output_format"],
+            output_format=dbcat.settings.OUTPUT_FORMAT,
             list_all=list_all,
             include_schema_regex=include_schema,
             exclude_schema_regex=exclude_schema,
@@ -169,7 +167,7 @@ def postgresql(
             sample_size=sample_size,
         )
 
-        typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, dbcat.settings.OUTPUT_FORMAT))
     except NoMatchesError:
         typer.echo(message=NoMatchesError.message)
         typer.Exit(1)
@@ -208,7 +206,6 @@ def mysql(
 ):
     try:
         op = scan_mysql(
-            catalog_params=app_state["catalog_connection"],
             name=name,
             username=username,
             password=password,
@@ -217,7 +214,7 @@ def mysql(
             port=port,
             scan_type=scan_type,
             incremental=incremental,
-            output_format=app_state["output_format"],
+            output_format=dbcat.settings.OUTPUT_FORMAT,
             list_all=list_all,
             include_schema_regex=include_schema,
             exclude_schema_regex=exclude_schema,
@@ -226,7 +223,7 @@ def mysql(
             sample_size=sample_size,
         )
 
-        typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, dbcat.settings.OUTPUT_FORMAT))
     except NoMatchesError:
         typer.echo(message=NoMatchesError.message)
         typer.Exit(1)
@@ -265,7 +262,6 @@ def redshift(
 ):
     try:
         op = scan_redshift(
-            catalog_params=app_state["catalog_connection"],
             name=name,
             username=username,
             password=password,
@@ -274,7 +270,7 @@ def redshift(
             port=port,
             scan_type=scan_type,
             incremental=incremental,
-            output_format=app_state["output_format"],
+            output_format=dbcat.settings.OUTPUT_FORMAT,
             list_all=list_all,
             include_schema_regex=include_schema,
             exclude_schema_regex=exclude_schema,
@@ -283,7 +279,7 @@ def redshift(
             sample_size=sample_size,
         )
 
-        typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, dbcat.settings.OUTPUT_FORMAT))
     except NoMatchesError:
         typer.echo(message=NoMatchesError.message)
         typer.Exit(1)
@@ -323,7 +319,6 @@ def snowflake(
 ):
     try:
         op = scan_snowflake(
-            catalog_params=app_state["catalog_connection"],
             name=name,
             username=username,
             password=password,
@@ -333,7 +328,7 @@ def snowflake(
             role=role,
             scan_type=scan_type,
             incremental=incremental,
-            output_format=app_state["output_format"],
+            output_format=dbcat.settings.OUTPUT_FORMAT,
             list_all=list_all,
             include_schema_regex=include_schema,
             exclude_schema_regex=exclude_schema,
@@ -342,7 +337,7 @@ def snowflake(
             sample_size=sample_size,
         )
 
-        typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, dbcat.settings.OUTPUT_FORMAT))
     except NoMatchesError:
         typer.echo(message=NoMatchesError.message)
         typer.Exit(1)
@@ -380,7 +375,6 @@ def athena(
 ):
     try:
         op = scan_athena(
-            catalog_params=app_state["catalog_connection"],
             name=name,
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
@@ -388,7 +382,7 @@ def athena(
             s3_staging_dir=s3_staging_dir,
             scan_type=scan_type,
             incremental=incremental,
-            output_format=app_state["output_format"],
+            output_format=dbcat.settings.OUTPUT_FORMAT,
             list_all=list_all,
             include_schema_regex=include_schema,
             exclude_schema_regex=exclude_schema,
@@ -397,7 +391,7 @@ def athena(
             sample_size=sample_size,
         )
 
-        typer.echo(message=str_output(op, app_state["output_format"]))
+        typer.echo(message=str_output(op, dbcat.settings.OUTPUT_FORMAT))
     except NoMatchesError:
         typer.echo(message=NoMatchesError.message)
         typer.Exit(1)
