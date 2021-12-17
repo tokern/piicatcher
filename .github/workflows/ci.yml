@@ -57,5 +57,4 @@ jobs:
         python -m poetry install
     - name: Test with pytest
       run: |
-        python -m poetry run python -m spacy download en_core_web_sm
         python -m poetry run pytest --pg-host localhost --mysql-host localhost --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
