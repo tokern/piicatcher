@@ -57,7 +57,7 @@ def test_include_exclude(mocker, temp_sqlite_path, args):
     piicatcher.command_line.scan_database.assert_called_once_with(
         catalog=ANY,
         source=ANY,
-        scan_type=ScanTypeEnum.shallow,
+        scan_type=ScanTypeEnum.metadata,
         incremental=True,
         output_format=OutputFormat.tabular,
         list_all=False,
@@ -105,7 +105,7 @@ def test_multiple_include_exclude(mocker, temp_sqlite_path, args):
     piicatcher.command_line.scan_database.assert_called_once_with(
         catalog=ANY,
         source=ANY,
-        scan_type=ScanTypeEnum.shallow,
+        scan_type=ScanTypeEnum.metadata,
         incremental=True,
         output_format=OutputFormat.tabular,
         list_all=False,
@@ -139,7 +139,7 @@ def test_sample_size(mocker, temp_sqlite_path, args):
     piicatcher.command_line.scan_database.assert_called_once_with(
         catalog=ANY,
         source=ANY,
-        scan_type=ScanTypeEnum.shallow,
+        scan_type=ScanTypeEnum.metadata,
         incremental=True,
         output_format=OutputFormat.tabular,
         list_all=False,

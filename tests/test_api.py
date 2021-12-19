@@ -49,7 +49,7 @@ def test_scan_database_deep(load_sample_data_and_pull):
             catalog=catalog,
             source=source,
             include_table_regex=["sample"],
-            scan_type=ScanTypeEnum.deep,
+            scan_type=ScanTypeEnum.data,
         )
 
         schemata = catalog.search_schema(source_like=source.name, schema_like="%")

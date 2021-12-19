@@ -10,14 +10,14 @@ from piicatcher import detectors
 from piicatcher.detectors import DatumDetector, MetadataDetector, detector_registry
 from piicatcher.generators import SMALL_TABLE_MAX, column_generator, data_generator
 from piicatcher.output import output_dict, output_tabular
-from piicatcher.scanner import deep_scan, shallow_scan
+from piicatcher.scanner import data_scan, metadata_scan
 
 LOGGER = logging.getLogger(__name__)
 
 
 class ScanTypeEnum(str, Enum):
-    shallow = "shallow"
-    deep = "deep"
+    metadata = "metadata"
+    data = "data"
 
 
 class OutputFormat(str, Enum):
@@ -28,7 +28,7 @@ class OutputFormat(str, Enum):
 def scan_database(
     catalog: Catalog,
     source: CatSource,
-    scan_type: ScanTypeEnum = ScanTypeEnum.shallow,
+    scan_type: ScanTypeEnum = ScanTypeEnum.metadata,
     incremental: bool = True,
     output_format: OutputFormat = OutputFormat.tabular,
     list_all: bool = False,
@@ -88,14 +88,14 @@ def scan_database(
                 exclude_table_regex=exclude_table_regex,
             )
 
-            if scan_type == ScanTypeEnum.shallow:
+            if scan_type == ScanTypeEnum.metadata:
                 detector_list = [
                     detector()
                     for detector in detectors.detector_registry.get_all().values()
                     if issubclass(detector, MetadataDetector)
                 ]
 
-                shallow_scan(
+                metadata_scan(
                     catalog=catalog,
                     detectors=detector_list,
                     work_generator=column_generator(
@@ -124,7 +124,7 @@ def scan_database(
                     if issubclass(detector, DatumDetector)
                 ]
 
-                deep_scan(
+                data_scan(
                     catalog=catalog,
                     detectors=detector_list,
                     work_generator=column_generator(

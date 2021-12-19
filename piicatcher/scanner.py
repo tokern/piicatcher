@@ -75,7 +75,7 @@ class ColumnNameRegexDetector(MetadataDetector):
         return None
 
 
-def shallow_scan(
+def metadata_scan(
     catalog: Catalog,
     detectors: List[MetadataDetector],
     work_generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],
@@ -124,7 +124,7 @@ class DatumRegexDetector(DatumDetector):
         return None
 
 
-def deep_scan(
+def data_scan(
     catalog: Catalog,
     detectors: List[DatumDetector],
     work_generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],

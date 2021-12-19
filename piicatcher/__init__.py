@@ -1,5 +1,5 @@
 # flake8: noqa
-__version__ = "0.18.2"
+__version__ = "0.19.1"
 
 from dbcat.catalog.pii_types import PiiType
 
