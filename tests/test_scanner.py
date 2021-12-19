@@ -19,8 +19,8 @@ from piicatcher.generators import column_generator, data_generator
 from piicatcher.scanner import (
     ColumnNameRegexDetector,
     DatumRegexDetector,
-    deep_scan,
-    shallow_scan,
+    data_scan,
+    metadata_scan,
 )
 
 
@@ -139,7 +139,7 @@ def test_shallow_scan(load_data_and_pull):
     catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
-        shallow_scan(
+        metadata_scan(
             catalog=catalog,
             detectors=[ColumnNameRegexDetector()],
             work_generator=column_generator(catalog=catalog, source=source),
@@ -168,7 +168,7 @@ def test_deep_scan(load_data_and_pull):
     catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
-        deep_scan(
+        data_scan(
             catalog=catalog,
             detectors=[DatumRegexDetector()],
             work_generator=column_generator(catalog=catalog, source=source),

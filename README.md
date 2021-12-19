@@ -16,8 +16,9 @@ and tracks critical data. PIICatcher uses two techniques to detect PII:
 
 Read more in the [blog post](https://tokern.io/blog/scan-pii-data-warehouse/) on both these strategies.
 
-PIICatcher is *battery-included* with a growing set of
-regular expressions for scanning column names as well as data. It also include [Spacy](https://spacy.io).
+PIICatcher is *batteries-included* with a growing set of plugins to scan column metadata as well as metadata. 
+For example, [piicatcher_spacy](https://github.com/tokern/piicatcher_spacy) uses [Spacy](https://spacy.io) to detect
+PII in column data.
 
 PIICatcher supports incremental scans and will only scan new or not-yet scanned columns. Incremental scans allow easy
 scheduling of scans. It also provides powerful options to include or exclude schema and tables to manage compute resources.
@@ -37,24 +38,32 @@ and tables with PII and the type of PII tags.
 
 PIICatcher is available as a docker image or command-line application.
 
-### Docker (preferred)
+### Installation
+
+Docker:
 
     alias piicatcher='docker run -v ${HOME}/.config/tokern:/config -u $(id -u ${USER}):$(id -g ${USER}) -it --add-host=host.docker.internal:host-gateway tokern/piicatcher:latest'
-    piicatcher --help
-    piicatcher scan sqlite --name sqldb --path '/db/sqldb'
 
-### Command-line
-To install use pip:
+
+Pypi:
+    # Install development libraries for compiling dependencies.
+    # On Amazon Linux
+    sudo yum install mysql-devel gcc gcc-devel python-devel
 
     python3 -m venv .env
     source .env/bin/activate
     pip install piicatcher
 
-    # Install Spacy English package
-    python -m spacy download en_core_web_sm
-    
+    # Install Spacy plugin
+    pip install piicatcher_spacy
+
+
+### Command Line Usage
+    # add a sqlite source
+    piicatcher catalog add_sqlite --name sqldb --path '/db/sqldb'
+
     # run piicatcher on a sqlite db and print report to console
-    piicatcher scan sqlite --name sqldb --path '/db/sqldb'
+    piicatcher detect --source-name sqldb
     ╭─────────────┬─────────────┬─────────────┬─────────────╮
     │   schema    │    table    │   column    │   has_pii   │
     ├─────────────┼─────────────┼─────────────┼─────────────┤
@@ -67,16 +76,22 @@ To install use pip:
     ╰─────────────┴─────────────┴─────────────┴─────────────╯
 
 
-### API
-    from piicatcher.api import scan_postgresql
+### API Usage
+
+    from dbcat.api import open_catalog, add_postgresql_source
+    from piicatcher.api import scan_database
 
     # PIICatcher uses a catalog to store its state. 
     # The easiest option is to use a sqlite memory database.
     # For production usage check, https://tokern.io/docs/data-catalog
-    catalog_params={'catalog_path': ':memory:'}
-    output = scan_postrgresql(catalog_params=catalog_params, name="pg_db", uri="127.0.0.1", 
-                              username="piiuser", password="p11secret", database="piidb", 
-                              include_table_regex=["sample"])
+    catalog = open_catalog(app_dir='/tmp/.config/piicatcher', path=':memory:', secret='my_secret')
+
+    with catalog.managed_session:
+        # Add a postgresql source
+        source = add_postgresql_source(catalog=catalog, name="pg_db", uri="127.0.0.1", username="piiuser",
+                                        password="p11secret", database="piidb")
+        output = scan_database(catalog=catalog, source=source)
+
     print(output)
 
     # Example Output
@@ -88,6 +103,24 @@ To install use pip:
      ['public', 'sample', 'city', 'PiiTypes.ADDRESS'], 
      ['public', 'sample', 'state', 'PiiTypes.ADDRESS'], 
      ['public', 'sample', 'email', 'PiiTypes.EMAIL']]
+
+
+## Plugins
+
+PIICatcher can be extended by creating new detectors. PIICatcher supports two scanning techniques:
+* Metadata
+* Data
+
+Plugins can be created for either of these two techniques. Plugins are then registered using an API or using
+[Python Entry Points](https://packaging.python.org/en/latest/specifications/entry-points/).
+
+To create a new detector, simply create a new class that inherits from [`MetadataDetector`](https://github.com/tokern/piicatcher/blob/master/piicatcher/detectors.py)
+or [`DatumDetector`](https://github.com/tokern/piicatcher/blob/master/piicatcher/detectors.py).
+
+In the new class, define a function `detect` that will return a [`PIIType`](https://github.com/tokern/dbcat/blob/main/dbcat/catalog/pii_types.py) 
+If you are detecting a new PII type, then you can define a new class that inherits from PIIType.
+
+For detailed documentation, check [piicatcher plugin docs](https://tokern.io/docs/piicatcher/detectors/plugins).
 
 
 ## Supported Databases

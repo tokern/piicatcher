@@ -157,7 +157,7 @@ def cli(
 def detect(
     source_name: str = typer.Option(..., help="Name of database to scan."),
     scan_type: ScanTypeEnum = typer.Option(
-        ScanTypeEnum.shallow,
+        ScanTypeEnum.metadata,
         help="Choose deep(scan data) or shallow(scan column names only)",
     ),
     incremental: bool = typer.Option(
