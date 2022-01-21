@@ -115,7 +115,7 @@ def _filter_text_columns(column_list: List[CatColumn]) -> List[CatColumn]:
     matched_set = set()
     for regex in data_type_regex:
         matched_set |= set(
-            list(filter(lambda m: regex.search(m.data_type) is not None, column_list,))
+            list(filter(lambda m: regex.search(repr(m.data_type)) is not None, column_list))
         )
 
     LOGGER.debug(f"{len(matched_set)} text columns found")
