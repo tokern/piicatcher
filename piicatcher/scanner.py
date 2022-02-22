@@ -110,7 +110,7 @@ class DatumRegexDetector(DatumDetector):
 
     def detect(self, column: CatColumn, datum: str) -> Optional[PiiType]:
         """Scan the text and return an array of PiiTypes that are found"""
-        regex_result = CommonRegex(datum)
+        regex_result = CommonRegex(repr(datum))
 
         if regex_result.phones:  # pylint: disable=no-member
             return Phone()
