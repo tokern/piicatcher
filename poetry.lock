@@ -209,7 +209,7 @@ name = "appnope"
 version = "0.1.2"
 description = "Disable App Nap on macOS >= 10.9"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -217,7 +217,7 @@ name = "argon2-cffi"
 version = "21.1.0"
 description = "The secure Argon2 password hashing algorithm."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -255,7 +255,7 @@ name = "async-generator"
 version = "1.10"
 description = "Async generators and context managers for Python 3.5+"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [[package]]
@@ -314,7 +314,7 @@ name = "backcall"
 version = "0.2.0"
 description = "Specifications for callback functions passed in to an API"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -605,7 +605,7 @@ name = "decorator"
 version = "5.1.0"
 description = "Decorators for Humans"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [[package]]
@@ -613,7 +613,7 @@ name = "defusedxml"
 version = "0.7.1"
 description = "XML bomb protection for Python stdlib modules"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
@@ -673,7 +673,7 @@ name = "entrypoints"
 version = "0.3"
 description = "Discover and load entry points from installed packages."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7"
 
 [[package]]
@@ -945,7 +945,7 @@ name = "ipykernel"
 version = "5.5.6"
 description = "IPython Kernel for Jupyter"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -964,7 +964,7 @@ name = "ipython"
 version = "7.16.1"
 description = "IPython: Productive Interactive Computing"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -995,7 +995,7 @@ name = "ipython-genutils"
 version = "0.2.0"
 description = "Vestigial utilities from IPython"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1044,7 +1044,7 @@ name = "jedi"
 version = "0.18.1"
 description = "An autocompletion tool for Python that can be used for text editors."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1112,7 +1112,7 @@ name = "jsonschema"
 version = "4.0.0"
 description = "An implementation of JSON Schema validation for Python"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -1129,7 +1129,7 @@ name = "jupyter-client"
 version = "6.1.13"
 description = "Jupyter protocol implementation and client libraries"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -1149,7 +1149,7 @@ name = "jupyter-core"
 version = "4.9.1"
 description = "Jupyter core package. A base package on which Jupyter projects rely."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1161,7 +1161,7 @@ name = "jupyterlab-pygments"
 version = "0.1.2"
 description = "Pygments theme using JupyterLab CSS variables"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -1273,7 +1273,7 @@ name = "mistune"
 version = "0.8.4"
 description = "The fastest markdown parser in pure Python"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1323,7 +1323,7 @@ name = "nbclient"
 version = "0.5.1"
 description = "A client library for executing notebooks. Formerly nbconvert's ExecutePreprocessor."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1343,7 +1343,7 @@ name = "nbconvert"
 version = "6.0.7"
 description = "Converting Jupyter Notebooks"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1373,7 +1373,7 @@ name = "nbformat"
 version = "5.1.3"
 description = "The Jupyter Notebook format"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -1423,7 +1423,7 @@ name = "nest-asyncio"
 version = "1.5.1"
 description = "Patch asyncio to allow nested event loops"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [[package]]
@@ -1439,7 +1439,7 @@ name = "notebook"
 version = "6.4.10"
 description = "A web-based notebook environment for interactive computing"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1515,7 +1515,7 @@ name = "pandocfilters"
 version = "1.5.0"
 description = "Utilities for writing pandoc filters in python"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
@@ -1523,7 +1523,7 @@ name = "parso"
 version = "0.8.2"
 description = "A Python Parser"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.extras]
@@ -1543,7 +1543,7 @@ name = "pexpect"
 version = "4.8.0"
 description = "Pexpect allows easy control of interactive console applications."
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -1554,7 +1554,7 @@ name = "pickleshare"
 version = "0.7.5"
 description = "Tiny 'shelve'-like database with concurrency support"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1634,7 +1634,7 @@ name = "prometheus-client"
 version = "0.12.0"
 description = "Python client for the Prometheus monitoring system."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
@@ -1645,7 +1645,7 @@ name = "prompt-toolkit"
 version = "3.0.3"
 description = "Library for building powerful interactive command lines in Python"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1672,7 +1672,7 @@ name = "ptyprocess"
 version = "0.7.0"
 description = "Run a subprocess in a pseudo terminal"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1793,7 +1793,7 @@ Duration = ["python-dateutil (>=2.8.0)"]
 
 [[package]]
 name = "pyjwt"
-version = "2.3.0"
+version = "2.4.0"
 description = "JSON Web Token implementation in Python"
 category = "main"
 optional = false
@@ -1874,7 +1874,7 @@ name = "pyrsistent"
 version = "0.18.0"
 description = "Persistent/Functional/Immutable data structures"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [[package]]
@@ -2019,7 +2019,7 @@ name = "pywin32"
 version = "301"
 description = "Python for Window Extensions"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -2035,7 +2035,7 @@ name = "pywinpty"
 version = "1.1.6"
 description = "Pseudo terminal support for Windows from Python."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [[package]]
@@ -2051,7 +2051,7 @@ name = "pyzmq"
 version = "22.3.0"
 description = "Python bindings for 0MQ"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -2222,7 +2222,7 @@ name = "send2trash"
 version = "1.8.0"
 description = "Send file to trash natively under Mac OS X, Windows and Linux."
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.extras]
@@ -2390,7 +2390,7 @@ name = "terminado"
 version = "0.12.1"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -2406,7 +2406,7 @@ name = "testpath"
 version = "0.5.0"
 description = "Test utilities for code working with files and commands"
 category = "main"
-optional = false
+optional = true
 python-versions = ">= 3.5"
 
 [package.extras]
@@ -2441,7 +2441,7 @@ name = "tornado"
 version = "6.1"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
 category = "main"
-optional = false
+optional = true
 python-versions = ">= 3.5"
 
 [[package]]
@@ -2465,7 +2465,7 @@ name = "traitlets"
 version = "4.3.3"
 description = "Traitlets Python config system"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -2660,7 +2660,7 @@ name = "wcwidth"
 version = "0.2.5"
 description = "Measures the displayed width of unicode strings in a terminal"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -3658,8 +3658,8 @@ pyhocon = [
     {file = "pyhocon-0.3.58.tar.gz", hash = "sha256:9639e29069dd67c31a7afb14ec972c68765ddee3439b43f6b08f25f4371b6209"},
 ]
 pyjwt = [
-    {file = "PyJWT-2.3.0-py3-none-any.whl", hash = "sha256:e0c4bb8d9f0af0c7f5b1ec4c5036309617d03d56932877f2f7a0beeb5318322f"},
-    {file = "PyJWT-2.3.0.tar.gz", hash = "sha256:b888b4d56f06f6dcd777210c334e69c737be74755d3e5e9ee3fe67dc18a0ee41"},
+    {file = "PyJWT-2.4.0-py3-none-any.whl", hash = "sha256:72d1d253f32dbd4f5c88eaf1fdc62f3a19f676ccbadb9dbc5d07e951b2b26daf"},
+    {file = "PyJWT-2.4.0.tar.gz", hash = "sha256:d42908208c699b3b973cbeb01a969ba6a96c821eefb1c5bfe4c390c01d67abba"},
 ]
 pylint = [
     {file = "pylint-2.11.1-py3-none-any.whl", hash = "sha256:0f358e221c45cbd4dad2a1e4b883e75d28acdcccd29d40c76eb72b307269b126"},
