@@ -62,9 +62,3 @@ jobs:
         context: docker
         push: true
         tags: tokern/piicatcher:latest tokern/piicatcher:${{ github.event.release.tag_name }}
-    - name: Docker Hub Description
-      uses: peter-evans/dockerhub-description@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-        repository: tokern/piicatcher
