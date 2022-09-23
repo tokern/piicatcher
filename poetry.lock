@@ -27,47 +27,47 @@ typing-extensions = {version = ">=3.7.4", markers = "python_version < \"3.8\""}
 typing-inspect = "*"
 
 [package.extras]
-airflow = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "apache-airflow (>=1.10.2)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-all = ["acryl-pyhive[hive] (>=0.6.11)", "looker-sdk (==21.6.0)", "snowflake-sqlalchemy (<=1.2.4)", "sqlalchemy-redshift", "requests", "tabulate", "sqlalchemy (==1.3.24)", "fastavro (>=1.2.0)", "sqlalchemy-pytds (>=0.3)", "botocore (!=1.23.0)", "apache-airflow (>=1.10.2)", "geoalchemy2", "sqlalchemy-trino", "great-expectations", "pydruid (>=0.6.2)", "sql-metadata (==2.2.2)", "cx-oracle", "python-ldap (>=2.4)", "pyyaml", "pymongo (>=3.11)", "progressbar2", "click-default-group", "lkml (>=1.1.0)", "pymysql (>=1.0.2)", "expandvars (>=0.6.5)", "entrypoints", "docker", "cachetools", "pyathena", "confluent-kafka (>=1.5.0)", "stackprinter", "python-dateutil (>=2.8.0)", "google-cloud-logging", "psycopg2-binary", "toml (>=0.10.0)", "redash-toolbelt", "avro (>=1.10.2)", "boto3", "click (>=6.0.0)", "okta (>=1.7.0,<1.8.0)", "jpype1", "avro-gen3 (==0.7.1)", "sql-metadata", "pybigquery (>=0.6.0)"]
-athena = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "pyathena", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-azure-ad = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-base = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-bigquery = ["avro (>=1.10.2)", "docker", "great-expectations", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "google-cloud-logging", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "pybigquery (>=0.6.0)"]
-bigquery-usage = ["avro (>=1.10.2)", "docker", "cachetools", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "google-cloud-logging", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-datahub-business-glossary = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-datahub-kafka = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "confluent-kafka (>=1.5.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "fastavro (>=1.2.0)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-datahub-rest = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "requests", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-dbt = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-dev = ["twine", "pytest-cov (>=2.8.1)", "types-dataclasses", "tabulate", "pytest (>=6.2.2)", "sqlalchemy (==1.3.24)", "types-python-dateutil", "types-six", "sql-metadata (==2.2.2)", "types-click (==0.1.12)", "typing-inspect", "types-pymysql", "types-tabulate", "black (>=19.10b0)", "click-default-group", "lkml (>=1.1.0)", "expandvars (>=0.6.5)", "pymysql (>=1.0.2)", "apache-airflow[snowflake] (>=2.0.2)", "docker", "cachetools", "freezegun", "jsonpickle", "mypy (>=0.901)", "coverage (>=5.1)", "deepdiff", "google-cloud-logging", "python-dateutil (>=2.8.0)", "toml (>=0.10.0)", "redash-toolbelt", "types-freezegun", "avro (>=1.10.2)", "boto3", "click (>=6.0.0)", "types-pyyaml", "okta (>=1.7.0,<1.8.0)", "flake8-tidy-imports (>=4.3.0)", "avro-gen3 (==0.7.1)", "mypy-extensions (>=0.4.3)", "sql-metadata", "looker-sdk (==21.6.0)", "snowflake-sqlalchemy (<=1.2.4)", "sqlalchemy-redshift", "requests", "fastavro (>=1.2.0)", "isort (>=5.7.0)", "sqlalchemy-trino", "botocore (!=1.23.0)", "geoalchemy2", "types-toml", "great-expectations", "cx-oracle", "pydantic (>=1.5.1)", "pyyaml", "types-cachetools", "progressbar2", "entrypoints", "build", "sqlalchemy-stubs", "types-pkg-resources", "confluent-kafka (>=1.5.0)", "stackprinter", "requests-mock", "pytest-docker (>=0.10.3)", "psycopg2-binary", "types-requests", "flake8 (>=3.8.3)", "boto3-stubs", "tox", "pybigquery (>=0.6.0)", "dataclasses (>=0.6)", "typing-extensions (>=3.7.4)"]
-dev-airflow1 = ["twine", "pytest-cov (>=2.8.1)", "types-dataclasses", "WTForms (==2.3.3)", "tabulate", "pytest (>=6.2.2)", "sqlalchemy (==1.3.24)", "types-python-dateutil", "types-six", "sql-metadata (==2.2.2)", "types-click (==0.1.12)", "typing-inspect", "types-pymysql", "types-tabulate", "black (>=19.10b0)", "click-default-group", "lkml (>=1.1.0)", "expandvars (>=0.6.5)", "pymysql (>=1.0.2)", "docker", "cachetools", "freezegun", "jsonpickle", "mypy (>=0.901)", "coverage (>=5.1)", "deepdiff", "google-cloud-logging", "python-dateutil (>=2.8.0)", "toml (>=0.10.0)", "redash-toolbelt", "types-freezegun", "avro (>=1.10.2)", "boto3", "click (>=6.0.0)", "types-pyyaml", "okta (>=1.7.0,<1.8.0)", "flake8-tidy-imports (>=4.3.0)", "avro-gen3 (==0.7.1)", "mypy-extensions (>=0.4.3)", "sql-metadata", "looker-sdk (==21.6.0)", "snowflake-sqlalchemy (<=1.2.4)", "apache-airflow-backport-providers-snowflake", "sqlalchemy-redshift", "requests", "fastavro (>=1.2.0)", "isort (>=5.7.0)", "sqlalchemy-trino", "botocore (!=1.23.0)", "geoalchemy2", "types-toml", "great-expectations", "cx-oracle", "pydantic (>=1.5.1)", "pyyaml", "types-cachetools", "progressbar2", "entrypoints", "build", "sqlalchemy-stubs", "types-pkg-resources", "confluent-kafka (>=1.5.0)", "stackprinter", "requests-mock", "pytest-docker (>=0.10.3)", "psycopg2-binary", "types-requests", "apache-airflow (==1.10.15)", "flake8 (>=3.8.3)", "boto3-stubs", "tox", "pybigquery (>=0.6.0)", "dataclasses (>=0.6)", "typing-extensions (>=3.7.4)"]
-druid = ["pydruid (>=0.6.2)", "avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-feast = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-glue = ["avro (>=1.10.2)", "docker", "botocore (!=1.23.0)", "boto3", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-hive = ["avro (>=1.10.2)", "docker", "acryl-pyhive[hive] (>=0.6.11)", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-integration-tests = ["pydruid (>=0.6.2)", "docker", "acryl-pyhive[hive] (>=0.6.11)", "snowflake-sqlalchemy (<=1.2.4)", "python-ldap (>=2.4)", "redash-toolbelt", "requests", "sqlalchemy (==1.3.24)", "pymongo (>=3.11)", "jpype1", "sqlalchemy-pytds (>=0.3)", "pymysql (>=1.0.2)", "sql-metadata", "great-expectations"]
-kafka = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "confluent-kafka (>=1.5.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "fastavro (>=1.2.0)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-kafka-connect = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "jpype1", "requests", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-ldap = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "python-ldap (>=2.4)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-looker = ["avro (>=1.10.2)", "docker", "looker-sdk (==21.6.0)", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-lookml = ["avro (>=1.10.2)", "sql-metadata (==2.2.2)", "docker", "looker-sdk (==21.6.0)", "expandvars (>=0.6.5)", "click (>=6.0.0)", "lkml (>=1.1.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-mariadb = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "pymysql (>=1.0.2)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-mongodb = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "pymongo (>=3.11)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-mssql = ["avro (>=1.10.2)", "docker", "sqlalchemy-pytds (>=0.3)", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-mssql-odbc = ["avro (>=1.10.2)", "docker", "pyodbc", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-mysql = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "pymysql (>=1.0.2)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-okta = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "okta (>=1.7.0,<1.8.0)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-oracle = ["avro (>=1.10.2)", "cx-oracle", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-postgres = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "psycopg2-binary", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "geoalchemy2", "great-expectations"]
-redash = ["avro (>=1.10.2)", "docker", "sql-metadata", "expandvars (>=0.6.5)", "click (>=6.0.0)", "redash-toolbelt", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-redshift = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "sqlalchemy-redshift", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "psycopg2-binary", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "geoalchemy2", "great-expectations"]
-redshift-usage = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "sqlalchemy-redshift", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "psycopg2-binary", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "geoalchemy2", "great-expectations"]
-sagemaker = ["avro (>=1.10.2)", "docker", "botocore (!=1.23.0)", "boto3", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-snowflake = ["avro (>=1.10.2)", "docker", "snowflake-sqlalchemy (<=1.2.4)", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-snowflake-usage = ["avro (>=1.10.2)", "docker", "snowflake-sqlalchemy (<=1.2.4)", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-sqlalchemy = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-starburst-trino-usage = ["avro (>=1.10.2)", "docker", "sqlalchemy-trino", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
-superset = ["avro (>=1.10.2)", "docker", "expandvars (>=0.6.5)", "click (>=6.0.0)", "requests", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints"]
-trino = ["avro (>=1.10.2)", "docker", "sqlalchemy-trino", "expandvars (>=0.6.5)", "click (>=6.0.0)", "stackprinter", "python-dateutil (>=2.8.0)", "pyyaml", "tabulate", "progressbar2", "click-default-group", "sqlalchemy (==1.3.24)", "avro-gen3 (==0.7.1)", "toml (>=0.10.0)", "entrypoints", "great-expectations"]
+airflow = ["PyYAML", "apache-airflow (>=1.10.2)", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+all = ["GeoAlchemy2", "JPype1", "PyAthena[sqlalchemy]", "PyYAML", "acryl-pyhive[hive] (>=0.6.11)", "apache-airflow (>=1.10.2)", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "boto3", "botocore (!=1.23.0)", "cachetools", "click (>=6.0.0)", "click-default-group", "confluent-kafka (>=1.5.0)", "cx-Oracle", "docker", "entrypoints", "expandvars (>=0.6.5)", "fastavro (>=1.2.0)", "google-cloud-logging", "great-expectations", "lkml (>=1.1.0)", "looker-sdk (==21.6.0)", "okta (>=1.7.0,<1.8.0)", "progressbar2", "psycopg2-binary", "pybigquery (>=0.6.0)", "pydruid (>=0.6.2)", "pymongo (>=3.11)", "pymysql (>=1.0.2)", "python-dateutil (>=2.8.0)", "python-ldap (>=2.4)", "redash-toolbelt", "requests", "snowflake-sqlalchemy (<=1.2.4)", "sql-metadata", "sql-metadata (==2.2.2)", "sqlalchemy (==1.3.24)", "sqlalchemy-pytds (>=0.3)", "sqlalchemy-redshift", "sqlalchemy-trino", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+athena = ["PyAthena[sqlalchemy]", "PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+azure-ad = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+base = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+bigquery = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "google-cloud-logging", "great-expectations", "progressbar2", "pybigquery (>=0.6.0)", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+bigquery-usage = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "cachetools", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "google-cloud-logging", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+datahub-business-glossary = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+datahub-kafka = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "confluent-kafka (>=1.5.0)", "docker", "entrypoints", "expandvars (>=0.6.5)", "fastavro (>=1.2.0)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+datahub-rest = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "requests", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+dbt = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+dev = ["GeoAlchemy2", "PyYAML", "apache-airflow[snowflake] (>=2.0.2)", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "black (>=19.10b0)", "boto3", "boto3-stubs[glue,s3,sagemaker]", "botocore (!=1.23.0)", "build", "cachetools", "click (>=6.0.0)", "click-default-group", "confluent-kafka (>=1.5.0)", "coverage (>=5.1)", "cx-Oracle", "dataclasses (>=0.6)", "deepdiff", "docker", "entrypoints", "expandvars (>=0.6.5)", "fastavro (>=1.2.0)", "flake8 (>=3.8.3)", "flake8-tidy-imports (>=4.3.0)", "freezegun", "google-cloud-logging", "great-expectations", "isort (>=5.7.0)", "jsonpickle", "lkml (>=1.1.0)", "looker-sdk (==21.6.0)", "mypy (>=0.901)", "mypy-extensions (>=0.4.3)", "okta (>=1.7.0,<1.8.0)", "progressbar2", "psycopg2-binary", "pybigquery (>=0.6.0)", "pydantic (>=1.5.1)", "pymysql (>=1.0.2)", "pytest (>=6.2.2)", "pytest-cov (>=2.8.1)", "pytest-docker (>=0.10.3)", "python-dateutil (>=2.8.0)", "redash-toolbelt", "requests", "requests-mock", "snowflake-sqlalchemy (<=1.2.4)", "sql-metadata", "sql-metadata (==2.2.2)", "sqlalchemy (==1.3.24)", "sqlalchemy-redshift", "sqlalchemy-stubs", "sqlalchemy-trino", "stackprinter", "tabulate", "toml (>=0.10.0)", "tox", "twine", "types-PyMySQL", "types-PyYAML", "types-cachetools", "types-click (==0.1.12)", "types-dataclasses", "types-freezegun", "types-pkg-resources", "types-python-dateutil", "types-requests", "types-six", "types-tabulate", "types-toml", "typing-extensions (>=3.7.4)", "typing-inspect"]
+dev-airflow1 = ["GeoAlchemy2", "PyYAML", "WTForms (==2.3.3)", "apache-airflow (==1.10.15)", "apache-airflow-backport-providers-snowflake", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "black (>=19.10b0)", "boto3", "boto3-stubs[glue,s3,sagemaker]", "botocore (!=1.23.0)", "build", "cachetools", "click (>=6.0.0)", "click-default-group", "confluent-kafka (>=1.5.0)", "coverage (>=5.1)", "cx-Oracle", "dataclasses (>=0.6)", "deepdiff", "docker", "entrypoints", "expandvars (>=0.6.5)", "fastavro (>=1.2.0)", "flake8 (>=3.8.3)", "flake8-tidy-imports (>=4.3.0)", "freezegun", "google-cloud-logging", "great-expectations", "isort (>=5.7.0)", "jsonpickle", "lkml (>=1.1.0)", "looker-sdk (==21.6.0)", "mypy (>=0.901)", "mypy-extensions (>=0.4.3)", "okta (>=1.7.0,<1.8.0)", "progressbar2", "psycopg2-binary", "pybigquery (>=0.6.0)", "pydantic (>=1.5.1)", "pymysql (>=1.0.2)", "pytest (>=6.2.2)", "pytest-cov (>=2.8.1)", "pytest-docker (>=0.10.3)", "python-dateutil (>=2.8.0)", "redash-toolbelt", "requests", "requests-mock", "snowflake-sqlalchemy (<=1.2.4)", "sql-metadata", "sql-metadata (==2.2.2)", "sqlalchemy (==1.3.24)", "sqlalchemy-redshift", "sqlalchemy-stubs", "sqlalchemy-trino", "stackprinter", "tabulate", "toml (>=0.10.0)", "tox", "twine", "types-PyMySQL", "types-PyYAML", "types-cachetools", "types-click (==0.1.12)", "types-dataclasses", "types-freezegun", "types-pkg-resources", "types-python-dateutil", "types-requests", "types-six", "types-tabulate", "types-toml", "typing-extensions (>=3.7.4)", "typing-inspect"]
+druid = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "pydruid (>=0.6.2)", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+feast = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+glue = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "boto3", "botocore (!=1.23.0)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+hive = ["PyYAML", "acryl-pyhive[hive] (>=0.6.11)", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+integration-tests = ["JPype1", "acryl-pyhive[hive] (>=0.6.11)", "docker", "great-expectations", "pydruid (>=0.6.2)", "pymongo (>=3.11)", "pymysql (>=1.0.2)", "python-ldap (>=2.4)", "redash-toolbelt", "requests", "snowflake-sqlalchemy (<=1.2.4)", "sql-metadata", "sqlalchemy (==1.3.24)", "sqlalchemy-pytds (>=0.3)"]
+kafka = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "confluent-kafka (>=1.5.0)", "docker", "entrypoints", "expandvars (>=0.6.5)", "fastavro (>=1.2.0)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+kafka-connect = ["JPype1", "PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "requests", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+ldap = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "python-ldap (>=2.4)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+looker = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "looker-sdk (==21.6.0)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+lookml = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "lkml (>=1.1.0)", "looker-sdk (==21.6.0)", "progressbar2", "python-dateutil (>=2.8.0)", "sql-metadata (==2.2.2)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+mariadb = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "pymysql (>=1.0.2)", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+mongodb = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "pymongo (>=3.11)", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+mssql = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "sqlalchemy-pytds (>=0.3)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+mssql-odbc = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "pyodbc", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+mysql = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "pymysql (>=1.0.2)", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+okta = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "okta (>=1.7.0,<1.8.0)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+oracle = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "cx-Oracle", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+postgres = ["GeoAlchemy2", "PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "psycopg2-binary", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+redash = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "redash-toolbelt", "sql-metadata", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+redshift = ["GeoAlchemy2", "PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "psycopg2-binary", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "sqlalchemy-redshift", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+redshift-usage = ["GeoAlchemy2", "PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "psycopg2-binary", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "sqlalchemy-redshift", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+sagemaker = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "boto3", "botocore (!=1.23.0)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+snowflake = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "snowflake-sqlalchemy (<=1.2.4)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+snowflake-usage = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "snowflake-sqlalchemy (<=1.2.4)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+sqlalchemy = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+starburst-trino-usage = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "sqlalchemy-trino", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+superset = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "progressbar2", "python-dateutil (>=2.8.0)", "requests", "stackprinter", "tabulate", "toml (>=0.10.0)"]
+trino = ["PyYAML", "avro (>=1.10.2)", "avro-gen3 (==0.7.1)", "click (>=6.0.0)", "click-default-group", "docker", "entrypoints", "expandvars (>=0.6.5)", "great-expectations", "progressbar2", "python-dateutil (>=2.8.0)", "sqlalchemy (==1.3.24)", "sqlalchemy-trino", "stackprinter", "tabulate", "toml (>=0.10.0)"]
 
 [[package]]
 name = "alembic"
@@ -103,7 +103,7 @@ pandas = ">=0.18"
 toolz = "*"
 
 [package.extras]
-dev = ["black", "docutils", "ipython", "flake8", "pytest", "sphinx", "m2r", "vega-datasets", "recommonmark"]
+dev = ["black", "docutils", "flake8", "ipython", "m2r", "pytest", "recommonmark", "sphinx", "vega-datasets"]
 
 [[package]]
 name = "amundsen-common"
@@ -162,12 +162,13 @@ sqlalchemy = ">=1.3.6,<1.4"
 statsd = ">=3.2.1"
 unicodecsv = ">=0.14.1,<1.0"
 unidecode = "*"
+wheel = ">=0.31.1"
 
 [package.extras]
-all = ["elasticsearch (>=6.2.0,<8.0)", "neo4j-driver (>=1.7.2,<2.0)", "requests (>=2.25.0,<3.0)", "freezegun (>=1.1.0)", "atomicwrites (>=1.1.5)", "more-itertools (>=4.2.0)", "pluggy (>=0.6.0)", "py (>=1.10.0)", "pyhocon (>=0.3.42)", "pyparsing (>=2.2.0)", "sqlalchemy (>=1.3.6,<1.4)", "wheel (>=0.31.1)", "neotime (>=1.7.1)", "pytz (>=2018.4)", "statsd (>=3.2.1)", "retrying (>=1.3.3)", "unicodecsv (>=0.14.1,<1.0)", "httplib2 (>=0.18.0)", "unidecode", "Jinja2 (>=2.10.0,<4)", "pandas (>=0.21.0,<1.2.0)", "responses (>=0.10.6)", "amundsen-common (>=0.16.0)", "amundsen-rds (==0.0.6)", "flake8 (>=3.9.2)", "flake8-tidy-imports (>=4.3.0)", "isort[colors] (>=5.8.0,<5.9.0)", "mock (>=4.0.3)", "mypy (>=0.812,<0.900)", "pytest (>=6.2.4)", "pytest-cov (>=2.12.0)", "pytest-env (>=0.6.2)", "pytest-mock (>=3.6.1)", "typed-ast (>=1.4.3)", "confluent-kafka (==1.0.0)", "cassandra-driver (==3.20.1)", "boto3 (==1.17.23)", "snowflake-connector-python", "snowflake-sqlalchemy", "PyAthena[sqlalchemy] (>=1.0.0,<2.0.0)", "google-api-python-client (>=1.6.0,<2.0.0dev)", "google-auth-httplib2 (>=0.0.1)", "google-auth (>=1.0.0,<2.0.0dev)", "jsonpath-rw (==1.4.0)", "ibm-db (==3.0.1)", "ibm-db-sa-py3 (==0.3.1-1)", "pyodbc (==4.0.30)", "pydruid", "pyspark (==3.0.1)", "feast (==0.8.0)", "amundsen-gremlin (>=0.0.9)", "Flask (==1.0.2)", "gremlinpython (==3.4.3)", "requests-aws4auth (==1.1.0)", "typing-extensions (==3.7.4)", "overrides (==2.5)", "mysqlclient (>=1.3.6,<3)", "pyatlasclient (>=1.1.2)", "apache-atlas (>=0.0.11)", "simple-salesforce (>=1.11.2)", "cx-Oracle (==8.2.1)"]
+all = ["Flask (==1.0.2)", "Jinja2 (>=2.10.0,<4)", "PyAthena[sqlalchemy] (>=1.0.0,<2.0.0)", "amundsen-common (>=0.16.0)", "amundsen-gremlin (>=0.0.9)", "amundsen-rds (==0.0.6)", "apache-atlas (>=0.0.11)", "atomicwrites (>=1.1.5)", "boto3 (==1.17.23)", "cassandra-driver (==3.20.1)", "confluent-kafka (==1.0.0)", "cx-Oracle (==8.2.1)", "elasticsearch (>=6.2.0,<8.0)", "feast (==0.8.0)", "flake8 (>=3.9.2)", "flake8-tidy-imports (>=4.3.0)", "freezegun (>=1.1.0)", "google-api-python-client (>=1.6.0,<2.0.0dev)", "google-auth (>=1.0.0,<2.0.0dev)", "google-auth-httplib2 (>=0.0.1)", "gremlinpython (==3.4.3)", "httplib2 (>=0.18.0)", "ibm-db (==3.0.1)", "ibm-db-sa-py3 (==0.3.1-1)", "isort[colors] (>=5.8.0,<5.9.0)", "jsonpath-rw (==1.4.0)", "mock (>=4.0.3)", "more-itertools (>=4.2.0)", "mypy (>=0.812,<0.900)", "mysqlclient (>=1.3.6,<3)", "neo4j-driver (>=1.7.2,<2.0)", "neotime (>=1.7.1)", "overrides (==2.5)", "pandas (>=0.21.0,<1.2.0)", "pluggy (>=0.6.0)", "py (>=1.10.0)", "pyatlasclient (>=1.1.2)", "pydruid", "pyhocon (>=0.3.42)", "pyodbc (==4.0.30)", "pyparsing (>=2.2.0)", "pyspark (==3.0.1)", "pytest (>=6.2.4)", "pytest-cov (>=2.12.0)", "pytest-env (>=0.6.2)", "pytest-mock (>=3.6.1)", "pytz (>=2018.4)", "requests (>=2.25.0,<3.0)", "requests-aws4auth (==1.1.0)", "responses (>=0.10.6)", "retrying (>=1.3.3)", "simple-salesforce (>=1.11.2)", "snowflake-connector-python", "snowflake-sqlalchemy", "sqlalchemy (>=1.3.6,<1.4)", "statsd (>=3.2.1)", "typed-ast (>=1.4.3)", "typing-extensions (==3.7.4)", "unicodecsv (>=0.14.1,<1.0)", "unidecode", "wheel (>=0.31.1)"]
 athena = ["PyAthena[sqlalchemy] (>=1.0.0,<2.0.0)"]
-atlas = ["pyatlasclient (>=1.1.2)", "apache-atlas (>=0.0.11)"]
-bigquery = ["google-api-python-client (>=1.6.0,<2.0.0dev)", "google-auth-httplib2 (>=0.0.1)", "google-auth (>=1.0.0,<2.0.0dev)"]
+atlas = ["apache-atlas (>=0.0.11)", "pyatlasclient (>=1.1.2)"]
+bigquery = ["google-api-python-client (>=1.6.0,<2.0.0dev)", "google-auth (>=1.0.0,<2.0.0dev)", "google-auth-httplib2 (>=0.0.1)"]
 cassandra = ["cassandra-driver (==3.20.1)"]
 db2 = ["ibm-db (==3.0.1)", "ibm-db-sa-py3 (==0.3.1-1)"]
 delta = ["pyspark (==3.0.1)"]
@@ -178,9 +179,9 @@ feast = ["feast (==0.8.0)"]
 glue = ["boto3 (==1.17.23)"]
 jsonpath = ["jsonpath-rw (==1.4.0)"]
 kafka = ["confluent-kafka (==1.0.0)"]
-neptune = ["amundsen-gremlin (>=0.0.9)", "Flask (==1.0.2)", "gremlinpython (==3.4.3)", "requests-aws4auth (==1.1.0)", "typing-extensions (==3.7.4)", "overrides (==2.5)", "boto3 (==1.17.23)"]
+neptune = ["Flask (==1.0.2)", "amundsen-gremlin (>=0.0.9)", "boto3 (==1.17.23)", "gremlinpython (==3.4.3)", "overrides (==2.5)", "requests-aws4auth (==1.1.0)", "typing-extensions (==3.7.4)"]
 oracle = ["cx-Oracle (==8.2.1)"]
-rds = ["sqlalchemy (>=1.3.6,<1.4)", "mysqlclient (>=1.3.6,<3)"]
+rds = ["mysqlclient (>=1.3.6,<3)", "sqlalchemy (>=1.3.6,<1.4)"]
 salesforce = ["simple-salesforce (>=1.11.2)"]
 snowflake = ["snowflake-connector-python", "snowflake-sqlalchemy"]
 
@@ -209,7 +210,7 @@ name = "appnope"
 version = "0.1.2"
 description = "Disable App Nap on macOS >= 10.9"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -217,15 +218,15 @@ name = "argon2-cffi"
 version = "21.1.0"
 description = "The secure Argon2 password hashing algorithm."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
 cffi = ">=1.0.0"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pytest", "sphinx", "furo", "wheel", "pre-commit"]
-docs = ["sphinx", "furo"]
+dev = ["coverage[toml] (>=5.0.2)", "furo", "hypothesis", "pre-commit", "pytest", "sphinx", "wheel"]
+docs = ["furo", "sphinx"]
 tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pytest"]
 
 [[package]]
@@ -246,6 +247,7 @@ python-versions = "~=3.6"
 
 [package.dependencies]
 lazy-object-proxy = ">=1.4.0"
+setuptools = ">=20.0"
 typed-ast = {version = ">=1.4.0,<2.0", markers = "implementation_name == \"cpython\" and python_version < \"3.8\""}
 typing-extensions = {version = ">=3.10", markers = "python_version < \"3.10\""}
 wrapt = ">=1.11,<1.14"
@@ -255,7 +257,7 @@ name = "async-generator"
 version = "1.10"
 description = "Async generators and context managers for Python 3.5+"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [[package]]
@@ -275,10 +277,10 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit"]
-docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
-tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface"]
-tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins"]
+dev = ["coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six", "sphinx", "sphinx-notfound-page", "zope.interface"]
+docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
+tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "mypy", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six", "zope.interface"]
+tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "mypy", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six"]
 
 [[package]]
 name = "avro"
@@ -314,7 +316,7 @@ name = "backcall"
 version = "0.2.0"
 description = "Specifications for callback functions passed in to an API"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -329,8 +331,8 @@ python-versions = ">=2.7"
 importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest", "pytest-flake8", "pytest-cov", "pytest-black (>=0.3.7)", "pytest-mypy", "pytest-checkdocs (>=2.4)", "pytest-enabler (>=1.0.1)"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["pytest", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [[package]]
 name = "backports.zoneinfo"
@@ -543,12 +545,12 @@ python-versions = ">=3.6"
 cffi = ">=1.12"
 
 [package.extras]
-docs = ["sphinx (>=1.6.5,!=1.8.0,!=3.1.0,!=3.1.1)", "sphinx-rtd-theme"]
-docstest = ["doc8", "pyenchant (>=1.6.11)", "twine (>=1.12.0)", "sphinxcontrib-spelling (>=4.0.1)"]
+docs = ["sphinx (>=1.6.5,!=1.8.0,!=3.1.0,!=3.1.1)", "sphinx_rtd_theme"]
+docstest = ["doc8", "pyenchant (>=1.6.11)", "sphinxcontrib-spelling (>=4.0.1)", "twine (>=1.12.0)"]
 pep8test = ["black", "flake8", "flake8-import-order", "pep8-naming"]
 sdist = ["setuptools-rust (>=0.11.4)"]
 ssh = ["bcrypt (>=3.1.5)"]
-test = ["pytest (>=6.0)", "pytest-cov", "pytest-subtests", "pytest-xdist", "pretend", "iso8601", "pytz", "hypothesis (>=1.11.4,!=3.79.2)"]
+test = ["hypothesis (>=1.11.4,!=3.79.2)", "iso8601", "pretend", "pytest (>=6.0)", "pytest-cov", "pytest-subtests", "pytest-xdist", "pytz"]
 
 [[package]]
 name = "dataclasses"
@@ -605,7 +607,7 @@ name = "decorator"
 version = "5.1.0"
 description = "Decorators for Humans"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [[package]]
@@ -613,7 +615,7 @@ name = "defusedxml"
 version = "0.7.1"
 description = "XML bomb protection for Python stdlib modules"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
@@ -640,7 +642,7 @@ websocket-client = ">=0.32.0"
 
 [package.extras]
 ssh = ["paramiko (>=2.4.2)"]
-tls = ["pyOpenSSL (>=17.5.0)", "cryptography (>=1.3.4)", "idna (>=2.0.0)"]
+tls = ["cryptography (>=1.3.4)", "idna (>=2.0.0)", "pyOpenSSL (>=17.5.0)"]
 
 [[package]]
 name = "docutils"
@@ -664,7 +666,7 @@ urllib3 = ">=1.21.1,<2"
 
 [package.extras]
 async = ["aiohttp (>=3,<4)"]
-develop = ["requests (>=2.0.0,<3.0.0)", "coverage", "mock", "pyyaml", "pytest", "pytest-cov", "sphinx (<1.7)", "sphinx-rtd-theme", "black", "jinja2"]
+develop = ["black", "coverage", "jinja2", "mock", "pytest", "pytest-cov", "pyyaml", "requests (>=2.0.0,<3.0.0)", "sphinx (<1.7)", "sphinx-rtd-theme"]
 docs = ["sphinx (<1.7)", "sphinx-rtd-theme"]
 requests = ["requests (>=2.4.0,<3.0.0)"]
 
@@ -673,7 +675,7 @@ name = "entrypoints"
 version = "0.3"
 description = "Discover and load entry points from installed packages."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7"
 
 [[package]]
@@ -762,6 +764,7 @@ packaging = ">=14.3"
 protobuf = {version = ">=3.12.0", markers = "python_version > \"3\""}
 pytz = "*"
 requests = ">=2.18.0,<3.0.0dev"
+setuptools = ">=40.3.0"
 six = ">=1.13.0"
 
 [package.extras]
@@ -797,10 +800,11 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 cachetools = ">=2.0.0,<5.0"
 pyasn1-modules = ">=0.2.1"
 rsa = {version = ">=3.1.4,<5", markers = "python_version >= \"3.6\""}
+setuptools = ">=40.3.0"
 six = ">=1.9.0"
 
 [package.extras]
-aiohttp = ["requests (>=2.20.0,<3.0.0dev)", "aiohttp (>=3.6.2,<4.0.0dev)"]
+aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)", "requests (>=2.20.0,<3.0.0dev)"]
 pyopenssl = ["pyopenssl (>=20.0.0)"]
 reauth = ["pyu2f (>=0.1.5)"]
 
@@ -864,7 +868,7 @@ tzlocal = ">=1.2"
 airflow = ["apache-airflow[s3] (>=1.9.0)", "boto3 (>=1.7.3)"]
 aws_secrets = ["boto3 (>=1.8.7)"]
 azure_secrets = ["azure-identity (>=1.0.0)", "azure-keyvault-secrets (>=4.0.0)"]
-gcp = ["google-cloud (>=0.34.0)", "google-cloud-storage (>=1.28.0)", "google-cloud-secret-manager (>=1.0.0)", "pybigquery (==0.4.15)"]
+gcp = ["google-cloud (>=0.34.0)", "google-cloud-secret-manager (>=1.0.0)", "google-cloud-storage (>=1.28.0)", "pybigquery (==0.4.15)"]
 redshift = ["psycopg2 (>=2.8)"]
 s3 = ["boto3 (>=1.14)"]
 snowflake = ["snowflake-sqlalchemy (>=1.2)"]
@@ -914,8 +918,8 @@ typing-extensions = {version = ">=3.6.4", markers = "python_version < \"3.8\""}
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pep517", "pyfakefs", "pytest (>=4.6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [[package]]
 name = "importlib-resources"
@@ -929,8 +933,8 @@ python-versions = ">=3.6"
 zipp = {version = ">=3.1.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-black (>=0.3.7)", "pytest-mypy"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [[package]]
 name = "iniconfig"
@@ -945,7 +949,7 @@ name = "ipykernel"
 version = "5.5.6"
 description = "IPython Kernel for Jupyter"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -957,14 +961,14 @@ tornado = ">=4.2"
 traitlets = ">=4.1.0"
 
 [package.extras]
-test = ["pytest (!=5.3.4)", "pytest-cov", "flaky", "nose", "jedi (<=0.17.2)"]
+test = ["flaky", "jedi (<=0.17.2)", "nose", "pytest (!=5.3.4)", "pytest-cov"]
 
 [[package]]
 name = "ipython"
 version = "7.16.1"
 description = "IPython: Productive Interactive Computing"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -977,6 +981,7 @@ pexpect = {version = "*", markers = "sys_platform != \"win32\""}
 pickleshare = "*"
 prompt-toolkit = ">=2.0.0,<3.0.0 || >3.0.0,<3.0.1 || >3.0.1,<3.1.0"
 pygments = "*"
+setuptools = ">=18.5"
 traitlets = ">=4.2"
 
 [package.extras]
@@ -985,17 +990,17 @@ doc = ["Sphinx (>=1.3)"]
 kernel = ["ipykernel"]
 nbconvert = ["nbconvert"]
 nbformat = ["nbformat"]
-notebook = ["notebook", "ipywidgets"]
+notebook = ["ipywidgets", "notebook"]
 parallel = ["ipyparallel"]
 qtconsole = ["qtconsole"]
-test = ["nose (>=0.10.1)", "requests", "testpath", "pygments", "nbformat", "ipykernel", "numpy (>=1.14)"]
+test = ["ipykernel", "nbformat", "nose (>=0.10.1)", "numpy (>=1.14)", "pygments", "requests", "testpath"]
 
 [[package]]
 name = "ipython-genutils"
 version = "0.2.0"
 description = "Vestigial utilities from IPython"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1016,7 +1021,7 @@ traitlets = ">=4.3.1"
 widgetsnbextension = ">=3.5.0,<3.6.0"
 
 [package.extras]
-test = ["pytest (>=3.6.0)", "pytest-cov", "mock"]
+test = ["mock", "pytest (>=3.6.0)", "pytest-cov"]
 
 [[package]]
 name = "isort"
@@ -1027,9 +1032,9 @@ optional = false
 python-versions = ">=3.6,<4.0"
 
 [package.extras]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
-requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama (>=0.4.3,<0.5.0)"]
+pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
+requirements_deprecated_finder = ["pip-api", "pipreqs"]
 
 [[package]]
 name = "itsdangerous"
@@ -1044,7 +1049,7 @@ name = "jedi"
 version = "0.18.1"
 description = "An autocompletion tool for Python that can be used for text editors."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1063,8 +1068,8 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-test = ["pytest", "pytest-trio", "pytest-asyncio", "testpath", "trio", "async-timeout"]
-trio = ["trio", "async-generator"]
+test = ["async-timeout", "pytest", "pytest-asyncio", "pytest-trio", "testpath", "trio"]
+trio = ["async_generator", "trio"]
 
 [[package]]
 name = "jinja2"
@@ -1112,7 +1117,7 @@ name = "jsonschema"
 version = "4.0.0"
 description = "An implementation of JSON Schema validation for Python"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -1129,7 +1134,7 @@ name = "jupyter-client"
 version = "6.1.13"
 description = "Jupyter protocol implementation and client libraries"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -1142,14 +1147,14 @@ traitlets = "*"
 
 [package.extras]
 doc = ["sphinx (>=1.3.6)", "sphinx-rtd-theme", "sphinxcontrib-github-alt"]
-test = ["async-generator", "ipykernel", "ipython", "mock", "pytest-asyncio", "pytest-timeout", "pytest", "mypy", "pre-commit", "jedi (<0.18)"]
+test = ["async-generator", "ipykernel", "ipython", "jedi (<0.18)", "mock", "mypy", "pre-commit", "pytest", "pytest-asyncio", "pytest-timeout"]
 
 [[package]]
 name = "jupyter-core"
 version = "4.9.1"
 description = "Jupyter core package. A base package on which Jupyter projects rely."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1161,7 +1166,7 @@ name = "jupyterlab-pygments"
 version = "0.1.2"
 description = "Pygments theme using JupyterLab CSS variables"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -1190,8 +1195,8 @@ pywin32-ctypes = {version = "<0.1.0 || >0.1.0,<0.1.1 || >0.1.1", markers = "sys_
 SecretStorage = {version = ">=3.2", markers = "sys_platform == \"linux\""}
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-black (>=0.3.7)", "pytest-mypy"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["pytest (>=4.6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [[package]]
 name = "lazy-object-proxy"
@@ -1221,7 +1226,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 MarkupSafe = ">=0.9.2"
 
 [package.extras]
-babel = ["babel"]
+babel = ["Babel"]
 lingua = ["lingua"]
 
 [[package]]
@@ -1241,9 +1246,9 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-dev = ["pytest", "pytz", "simplejson", "mypy (==0.910)", "flake8 (==4.0.1)", "flake8-bugbear (==21.9.2)", "pre-commit (>=2.4,<3.0)", "tox"]
-docs = ["sphinx (==4.3.0)", "sphinx-issues (==1.2.0)", "alabaster (==0.7.12)", "sphinx-version-warning (==1.1.2)", "autodocsumm (==0.2.7)"]
-lint = ["mypy (==0.910)", "flake8 (==4.0.1)", "flake8-bugbear (==21.9.2)", "pre-commit (>=2.4,<3.0)"]
+dev = ["flake8 (==4.0.1)", "flake8-bugbear (==21.9.2)", "mypy (==0.910)", "pre-commit (>=2.4,<3.0)", "pytest", "pytz", "simplejson", "tox"]
+docs = ["alabaster (==0.7.12)", "autodocsumm (==0.2.7)", "sphinx (==4.3.0)", "sphinx-issues (==1.2.0)", "sphinx-version-warning (==1.1.2)"]
+lint = ["flake8 (==4.0.1)", "flake8-bugbear (==21.9.2)", "mypy (==0.910)", "pre-commit (>=2.4,<3.0)"]
 tests = ["pytest", "pytz", "simplejson"]
 
 [[package]]
@@ -1273,7 +1278,7 @@ name = "mistune"
 version = "0.8.4"
 description = "The fastest markdown parser in pure Python"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1323,7 +1328,7 @@ name = "nbclient"
 version = "0.5.1"
 description = "A client library for executing notebooks. Formerly nbconvert's ExecutePreprocessor."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1334,16 +1339,16 @@ nest-asyncio = "*"
 traitlets = ">=4.2"
 
 [package.extras]
-dev = ["codecov", "coverage", "ipython", "ipykernel", "ipywidgets", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "check-manifest", "flake8", "mypy", "tox", "bumpversion", "xmltodict", "pip (>=18.1)", "wheel (>=0.31.0)", "setuptools (>=38.6.0)", "twine (>=1.11.0)", "black"]
-sphinx = ["Sphinx (>=1.7)", "sphinx-book-theme", "mock", "moto", "myst-parser"]
-test = ["codecov", "coverage", "ipython", "ipykernel", "ipywidgets", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "check-manifest", "flake8", "mypy", "tox", "bumpversion", "xmltodict", "pip (>=18.1)", "wheel (>=0.31.0)", "setuptools (>=38.6.0)", "twine (>=1.11.0)", "black"]
+dev = ["black", "bumpversion", "check-manifest", "codecov", "coverage", "flake8", "ipykernel", "ipython", "ipywidgets", "mypy", "pip (>=18.1)", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "setuptools (>=38.6.0)", "tox", "twine (>=1.11.0)", "wheel (>=0.31.0)", "xmltodict"]
+sphinx = ["Sphinx (>=1.7)", "mock", "moto", "myst-parser", "sphinx-book-theme"]
+test = ["black", "bumpversion", "check-manifest", "codecov", "coverage", "flake8", "ipykernel", "ipython", "ipywidgets", "mypy", "pip (>=18.1)", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "setuptools (>=38.6.0)", "tox", "twine (>=1.11.0)", "wheel (>=0.31.0)", "xmltodict"]
 
 [[package]]
 name = "nbconvert"
 version = "6.0.7"
 description = "Converting Jupyter Notebooks"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1362,10 +1367,10 @@ testpath = "*"
 traitlets = ">=4.2"
 
 [package.extras]
-all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)", "tornado (>=4.0)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
-docs = ["sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
+all = ["ipykernel", "ipython", "ipywidgets (>=7)", "nbsphinx (>=0.2.12)", "pyppeteer (==0.2.2)", "pytest", "pytest-cov", "pytest-dependency", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "tornado (>=4.0)"]
+docs = ["ipython", "nbsphinx (>=0.2.12)", "sphinx (>=1.5.1)", "sphinx-rtd-theme"]
 serve = ["tornado (>=4.0)"]
-test = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)"]
+test = ["ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)", "pytest", "pytest-cov", "pytest-dependency"]
 webpdf = ["pyppeteer (==0.2.2)"]
 
 [[package]]
@@ -1373,7 +1378,7 @@ name = "nbformat"
 version = "5.1.3"
 description = "The Jupyter Notebook format"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -1384,7 +1389,7 @@ traitlets = ">=4.1"
 
 [package.extras]
 fast = ["fastjsonschema"]
-test = ["check-manifest", "fastjsonschema", "testpath", "pytest", "pytest-cov"]
+test = ["check-manifest", "fastjsonschema", "pytest", "pytest-cov", "testpath"]
 
 [[package]]
 name = "neo4j-driver"
@@ -1423,7 +1428,7 @@ name = "nest-asyncio"
 version = "1.5.1"
 description = "Patch asyncio to allow nested event loops"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [[package]]
@@ -1439,7 +1444,7 @@ name = "notebook"
 version = "6.4.10"
 description = "A web-based notebook environment for interactive computing"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1460,9 +1465,9 @@ tornado = ">=6.1"
 traitlets = ">=4.2.1"
 
 [package.extras]
-docs = ["sphinx", "nbsphinx", "sphinxcontrib-github-alt", "sphinx-rtd-theme", "myst-parser"]
+docs = ["myst-parser", "nbsphinx", "sphinx", "sphinx-rtd-theme", "sphinxcontrib-github-alt"]
 json-logging = ["json-logging"]
-test = ["pytest", "coverage", "requests", "nbval", "selenium", "pytest-cov", "requests-unixsocket"]
+test = ["coverage", "nbval", "pytest", "pytest-cov", "requests", "requests-unixsocket", "selenium"]
 
 [[package]]
 name = "numpy"
@@ -1508,14 +1513,14 @@ python-dateutil = ">=2.6.1"
 pytz = ">=2017.2"
 
 [package.extras]
-test = ["pytest (>=4.0.2)", "pytest-xdist", "hypothesis (>=3.58)"]
+test = ["hypothesis (>=3.58)", "pytest (>=4.0.2)", "pytest-xdist"]
 
 [[package]]
 name = "pandocfilters"
 version = "1.5.0"
 description = "Utilities for writing pandoc filters in python"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
@@ -1523,7 +1528,7 @@ name = "parso"
 version = "0.8.2"
 description = "A Python Parser"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.extras]
@@ -1543,7 +1548,7 @@ name = "pexpect"
 version = "4.8.0"
 description = "Pexpect allows easy control of interactive console applications."
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -1554,7 +1559,7 @@ name = "pickleshare"
 version = "0.7.5"
 description = "Tiny 'shelve'-like database with concurrency support"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1566,7 +1571,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-testing = ["nose", "coverage"]
+testing = ["coverage", "nose"]
 
 [[package]]
 name = "platformdirs"
@@ -1627,14 +1632,14 @@ six = "*"
 
 [package.extras]
 docs = ["sphinx (>=1.7.4)"]
-tests = ["flake8 (>=3.7.7)", "pytest (>=4.6.9)", "pytest-cov (>=2.6.1)", "freezegun (>=0.3.11)", "sphinx (>=1.8.5)"]
+tests = ["flake8 (>=3.7.7)", "freezegun (>=0.3.11)", "pytest (>=4.6.9)", "pytest-cov (>=2.6.1)", "sphinx (>=1.8.5)"]
 
 [[package]]
 name = "prometheus-client"
 version = "0.12.0"
 description = "Python client for the Prometheus monitoring system."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
@@ -1645,7 +1650,7 @@ name = "prompt-toolkit"
 version = "3.0.3"
 description = "Library for building powerful interactive command lines in Python"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1653,7 +1658,7 @@ wcwidth = "*"
 
 [[package]]
 name = "protobuf"
-version = "3.19.1"
+version = "3.19.5"
 description = "Protocol Buffers"
 category = "main"
 optional = false
@@ -1672,7 +1677,7 @@ name = "ptyprocess"
 version = "0.7.0"
 description = "Run a subprocess in a pseudo terminal"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1801,9 +1806,9 @@ python-versions = ">=3.6"
 
 [package.extras]
 crypto = ["cryptography (>=3.3.1)"]
-dev = ["sphinx", "sphinx-rtd-theme", "zope.interface", "cryptography (>=3.3.1)", "pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)", "mypy", "pre-commit"]
+dev = ["coverage[toml] (==5.0.4)", "cryptography (>=3.3.1)", "mypy", "pre-commit", "pytest (>=6.0.0,<7.0.0)", "sphinx", "sphinx-rtd-theme", "zope.interface"]
 docs = ["sphinx", "sphinx-rtd-theme", "zope.interface"]
-tests = ["pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)"]
+tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
 name = "pylint"
@@ -1874,7 +1879,7 @@ name = "pyrsistent"
 version = "0.18.0"
 description = "Persistent/Functional/Immutable data structures"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [[package]]
@@ -1924,7 +1929,7 @@ coverage = {version = ">=5.2.1", extras = ["toml"]}
 pytest = ">=4.6"
 
 [package.extras]
-testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
+testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
 name = "pytest-mock"
@@ -1938,7 +1943,7 @@ python-versions = ">=3.6"
 pytest = ">=5.0"
 
 [package.extras]
-dev = ["pre-commit", "tox", "pytest-asyncio"]
+dev = ["pre-commit", "pytest-asyncio", "tox"]
 
 [[package]]
 name = "pytest-order"
@@ -2019,7 +2024,7 @@ name = "pywin32"
 version = "301"
 description = "Python for Window Extensions"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -2035,7 +2040,7 @@ name = "pywinpty"
 version = "1.1.6"
 description = "Pseudo terminal support for Windows from Python."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [[package]]
@@ -2051,7 +2056,7 @@ name = "pyzmq"
 version = "22.3.0"
 description = "Python bindings for 0MQ"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -2125,7 +2130,7 @@ six = "*"
 urllib3 = ">=1.25.10"
 
 [package.extras]
-tests = ["coverage (>=3.7.1,<6.0.0)", "pytest-cov", "pytest-localserver", "flake8", "types-mock", "types-requests", "types-six", "pytest (>=4.6,<5.0)", "pytest (>=4.6)", "mypy"]
+tests = ["coverage (>=3.7.1,<6.0.0)", "flake8", "mypy", "pytest (>=4.6)", "pytest (>=4.6,<5.0)", "pytest-cov", "pytest-localserver", "types-mock", "types-requests", "types-six"]
 
 [[package]]
 name = "retrying"
@@ -2222,13 +2227,25 @@ name = "send2trash"
 version = "1.8.0"
 description = "Send file to trash natively under Mac OS X, Windows and Linux."
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.extras]
-nativelib = ["pyobjc-framework-cocoa", "pywin32"]
-objc = ["pyobjc-framework-cocoa"]
+nativelib = ["pyobjc-framework-Cocoa", "pywin32"]
+objc = ["pyobjc-framework-Cocoa"]
 win32 = ["pywin32"]
+
+[[package]]
+name = "setuptools"
+version = "59.6.0"
+description = "Easily download, build, install, upgrade, and uninstall Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+docs = ["furo", "jaraco.packaging (>=8.2)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx", "sphinx-inline-tabs", "sphinxcontrib-towncrier"]
+testing = ["flake8-2020", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mock", "paver", "pip (>=19.1)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy", "pytest-virtualenv (>=1.2.7)", "pytest-xdist", "sphinx", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
 name = "six"
@@ -2260,10 +2277,11 @@ pyjwt = "<3.0.0"
 pyOpenSSL = ">=16.2.0,<21.0.0"
 pytz = "*"
 requests = "<3.0.0"
+setuptools = ">34.0.0"
 
 [package.extras]
-development = ["pytest (<6.3.0)", "pytest-cov", "pytest-rerunfailures", "pytest-timeout", "pytest-xdist", "coverage", "pexpect", "mock", "pytz", "pytzdata", "cython", "pendulum (!=2.1.1)", "more-itertools", "numpy (<1.21.0)"]
-pandas = ["pyarrow (>=5.0.0,<5.1.0)", "pandas (>=1.0.0,<1.4.0)"]
+development = ["Cython", "coverage", "mock", "more-itertools", "numpy (<1.21.0)", "pendulum (!=2.1.1)", "pexpect", "pytest (<6.3.0)", "pytest-cov", "pytest-rerunfailures", "pytest-timeout", "pytest-xdist", "pytz", "pytzdata"]
+pandas = ["pandas (>=1.0.0,<1.4.0)", "pyarrow (>=5.0.0,<5.1.0)"]
 secure-local-storage = ["keyring (!=16.1.0,<22.0.0)"]
 
 [[package]]
@@ -2279,7 +2297,7 @@ snowflake-connector-python = "<3.0.0"
 sqlalchemy = "<2.0.0"
 
 [package.extras]
-development = ["pytest (<6.1.0)", "pytest-cov", "pytest-rerunfailures", "pytest-timeout", "coverage", "pexpect", "mock", "pytz", "pytzdata", "cython", "more-itertools", "numpy", "pandas (==0.24.2)", "pandas (>=1.0.0,<1.1.0)"]
+development = ["Cython", "coverage", "mock", "more-itertools", "numpy", "pandas (==0.24.2)", "pandas (>=1.0.0,<1.1.0)", "pexpect", "pytest (<6.1.0)", "pytest-cov", "pytest-rerunfailures", "pytest-timeout", "pytz", "pytzdata"]
 
 [[package]]
 name = "sqlalchemy"
@@ -2294,12 +2312,12 @@ mssql = ["pyodbc"]
 mssql_pymssql = ["pymssql"]
 mssql_pyodbc = ["pyodbc"]
 mysql = ["mysqlclient"]
-oracle = ["cx-oracle"]
+oracle = ["cx_oracle"]
 postgresql = ["psycopg2"]
 postgresql_pg8000 = ["pg8000 (<1.16.6)"]
 postgresql_psycopg2binary = ["psycopg2-binary"]
 postgresql_psycopg2cffi = ["psycopg2cffi"]
-pymysql = ["pymysql (<1)", "pymysql"]
+pymysql = ["pymysql", "pymysql (<1)"]
 
 [[package]]
 name = "sqlalchemy-mixins"
@@ -2334,8 +2352,8 @@ intervals = ["intervals (>=0.7.1)"]
 password = ["passlib (>=1.6,<2.0)"]
 pendulum = ["pendulum (>=2.0.5)"]
 phone = ["phonenumbers (>=5.9.2)"]
-test = ["pytest (>=2.7.1)", "Pygments (>=1.2)", "Jinja2 (>=2.3)", "docutils (>=0.10)", "flexmock (>=0.9.7)", "mock (==2.0.0)", "psycopg2 (>=2.5.1)", "psycopg2cffi (>=2.8.1)", "pg8000 (>=1.12.4)", "pytz (>=2014.2)", "python-dateutil (>=2.6)", "pymysql", "flake8 (>=2.4.0)", "isort (>=4.2.2)", "pyodbc", "backports.zoneinfo"]
-test_all = ["Babel (>=1.3)", "Jinja2 (>=2.3)", "Pygments (>=1.2)", "arrow (>=0.3.4)", "colour (>=0.0.4)", "cryptography (>=0.6)", "docutils (>=0.10)", "flake8 (>=2.4.0)", "flexmock (>=0.9.7)", "furl (>=0.4.1)", "intervals (>=0.7.1)", "isort (>=4.2.2)", "mock (==2.0.0)", "passlib (>=1.6,<2.0)", "pendulum (>=2.0.5)", "pg8000 (>=1.12.4)", "phonenumbers (>=5.9.2)", "psycopg2 (>=2.5.1)", "psycopg2cffi (>=2.8.1)", "pymysql", "pyodbc", "pytest (>=2.7.1)", "python-dateutil", "python-dateutil (>=2.6)", "pytz (>=2014.2)", "backports.zoneinfo"]
+test = ["Jinja2 (>=2.3)", "Pygments (>=1.2)", "backports.zoneinfo", "docutils (>=0.10)", "flake8 (>=2.4.0)", "flexmock (>=0.9.7)", "isort (>=4.2.2)", "mock (==2.0.0)", "pg8000 (>=1.12.4)", "psycopg2 (>=2.5.1)", "psycopg2cffi (>=2.8.1)", "pymysql", "pyodbc", "pytest (>=2.7.1)", "python-dateutil (>=2.6)", "pytz (>=2014.2)"]
+test_all = ["Babel (>=1.3)", "Jinja2 (>=2.3)", "Pygments (>=1.2)", "arrow (>=0.3.4)", "backports.zoneinfo", "colour (>=0.0.4)", "cryptography (>=0.6)", "docutils (>=0.10)", "flake8 (>=2.4.0)", "flexmock (>=0.9.7)", "furl (>=0.4.1)", "intervals (>=0.7.1)", "isort (>=4.2.2)", "mock (==2.0.0)", "passlib (>=1.6,<2.0)", "pendulum (>=2.0.5)", "pg8000 (>=1.12.4)", "phonenumbers (>=5.9.2)", "psycopg2 (>=2.5.1)", "psycopg2cffi (>=2.8.1)", "pymysql", "pyodbc", "pytest (>=2.7.1)", "python-dateutil", "python-dateutil (>=2.6)", "pytz (>=2014.2)"]
 timezone = ["python-dateutil"]
 url = ["furl (>=0.4.1)"]
 
@@ -2390,7 +2408,7 @@ name = "terminado"
 version = "0.12.1"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -2406,11 +2424,11 @@ name = "testpath"
 version = "0.5.0"
 description = "Test utilities for code working with files and commands"
 category = "main"
-optional = false
+optional = true
 python-versions = ">= 3.5"
 
 [package.extras]
-test = ["pytest", "pathlib2"]
+test = ["pathlib2", "pytest"]
 
 [[package]]
 name = "toml"
@@ -2441,7 +2459,7 @@ name = "tornado"
 version = "6.1"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
 category = "main"
-optional = false
+optional = true
 python-versions = ">= 3.5"
 
 [[package]]
@@ -2465,7 +2483,7 @@ name = "traitlets"
 version = "4.3.3"
 description = "Traitlets Python config system"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -2474,7 +2492,7 @@ ipython-genutils = "*"
 six = "*"
 
 [package.extras]
-test = ["pytest", "mock"]
+test = ["mock", "pytest"]
 
 [[package]]
 name = "twine"
@@ -2517,8 +2535,8 @@ click = ">=7.1.1,<9.0.0"
 [package.extras]
 all = ["colorama (>=0.4.3,<0.5.0)", "shellingham (>=1.3.0,<2.0.0)"]
 dev = ["autoflake (>=1.3.1,<2.0.0)", "flake8 (>=3.8.3,<4.0.0)"]
-doc = ["mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=5.4.0,<6.0.0)", "markdown-include (>=0.5.1,<0.6.0)"]
-test = ["shellingham (>=1.3.0,<2.0.0)", "pytest (>=4.4.0,<5.4.0)", "pytest-cov (>=2.10.0,<3.0.0)", "coverage (>=5.2,<6.0)", "pytest-xdist (>=1.32.0,<2.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "mypy (==0.910)", "black (>=19.10b0,<20.0b0)", "isort (>=5.0.6,<6.0.0)"]
+doc = ["markdown-include (>=0.5.1,<0.6.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=5.4.0,<6.0.0)"]
+test = ["black (>=19.10b0,<20.0b0)", "coverage (>=5.2,<6.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.910)", "pytest (>=4.4.0,<5.4.0)", "pytest-cov (>=2.10.0,<3.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<2.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
 
 [[package]]
 name = "types-pymysql"
@@ -2595,7 +2613,7 @@ tzdata = {version = "*", markers = "platform_system == \"Windows\""}
 
 [package.extras]
 devenv = ["black", "pyroma", "pytest-cov", "zest.releaser"]
-test = ["pytest-mock (>=3.3)", "pytest (>=4.3)"]
+test = ["pytest (>=4.3)", "pytest-mock (>=3.3)"]
 
 [[package]]
 name = "unicodecsv"
@@ -2631,7 +2649,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
-secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "pyOpenSSL (>=0.14)"]
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
@@ -2653,14 +2671,14 @@ six = ">=1.9.0,<2"
 
 [package.extras]
 docs = ["proselint (>=0.10.2)", "sphinx (>=3)", "sphinx-argparse (>=0.2.5)", "sphinx-rtd-theme (>=0.4.3)", "towncrier (>=21.3)"]
-testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", "pytest (>=4)", "pytest-env (>=0.6.2)", "pytest-freezegun (>=0.4.1)", "pytest-mock (>=2)", "pytest-randomly (>=1)", "pytest-timeout (>=1)", "packaging (>=20.0)"]
+testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", "packaging (>=20.0)", "pytest (>=4)", "pytest-env (>=0.6.2)", "pytest-freezegun (>=0.4.1)", "pytest-mock (>=2)", "pytest-randomly (>=1)", "pytest-timeout (>=1)"]
 
 [[package]]
 name = "wcwidth"
 version = "0.2.5"
 description = "Measures the displayed width of unicode strings in a terminal"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -2698,6 +2716,17 @@ dataclasses = {version = "*", markers = "python_version < \"3.7\""}
 watchdog = ["watchdog"]
 
 [[package]]
+name = "wheel"
+version = "0.37.1"
+description = "A built-package format for Python"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+
+[package.extras]
+test = ["pytest (>=3.0.0)", "pytest-cov"]
+
+[[package]]
 name = "widgetsnbextension"
 version = "3.5.2"
 description = "IPython HTML widgets for Jupyter"
@@ -2725,8 +2754,8 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["func-timeout", "jaraco.itertools", "pytest (>=4.6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [extras]
 datahub = ["acryl-datahub", "great-expectations"]
@@ -2760,7 +2789,6 @@ amundsen-databuilder = [
 amundsen-rds = [
     {file = "amundsen-rds-0.0.6.tar.gz", hash = "sha256:9e365885c0ef064b3298a6013fd2b9a3385a475b4814bdfcef1b23fc5a1d811c"},
     {file = "amundsen_rds-0.0.6-py3-none-any.whl", hash = "sha256:aeaaff1530eec453bb11702d16625a73db7c1da898f073594b588664c013895e"},
-    {file = "amundsen_rds-0.0.6-py3.6.egg", hash = "sha256:0c959b3ffad36f82ae2bf4d3c75b66d5aea8c5a3fd48ead293a7ae51392b976d"},
 ]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
@@ -2933,7 +2961,6 @@ click-default-group = [
 ]
 codecov = [
     {file = "codecov-2.1.12-py2.py3-none-any.whl", hash = "sha256:585dc217dc3d8185198ceb402f85d5cb5dbfa0c5f350a5abcdf9e347776a5b47"},
-    {file = "codecov-2.1.12-py3.8.egg", hash = "sha256:782a8e5352f22593cbc5427a35320b99490eb24d9dcfa2155fd99d2b75cfb635"},
     {file = "codecov-2.1.12.tar.gz", hash = "sha256:a0da46bb5025426da895af90938def8ee12d37fcbcbbbc15b6dc64cf7ebc51c1"},
 ]
 colorama = [
@@ -3502,30 +3529,32 @@ prompt-toolkit = [
     {file = "prompt_toolkit-3.0.3.tar.gz", hash = "sha256:a402e9bf468b63314e37460b68ba68243d55b2f8c4d0192f85a019af3945050e"},
 ]
 protobuf = [
-    {file = "protobuf-3.19.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d80f80eb175bf5f1169139c2e0c5ada98b1c098e2b3c3736667f28cbbea39fc8"},
-    {file = "protobuf-3.19.1-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:a529e7df52204565bcd33738a7a5f288f3d2d37d86caa5d78c458fa5fabbd54d"},
-    {file = "protobuf-3.19.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:28ccea56d4dc38d35cd70c43c2da2f40ac0be0a355ef882242e8586c6d66666f"},
-    {file = "protobuf-3.19.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:8b30a7de128c46b5ecb343917d9fa737612a6e8280f440874e5cc2ba0d79b8f6"},
-    {file = "protobuf-3.19.1-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5935c8ce02e3d89c7900140a8a42b35bc037ec07a6aeb61cc108be8d3c9438a6"},
-    {file = "protobuf-3.19.1-cp36-cp36m-win32.whl", hash = "sha256:74f33edeb4f3b7ed13d567881da8e5a92a72b36495d57d696c2ea1ae0cfee80c"},
-    {file = "protobuf-3.19.1-cp36-cp36m-win_amd64.whl", hash = "sha256:038daf4fa38a7e818dd61f51f22588d61755160a98db087a046f80d66b855942"},
-    {file = "protobuf-3.19.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:8e51561d72efd5bd5c91490af1f13e32bcba8dab4643761eb7de3ce18e64a853"},
-    {file = "protobuf-3.19.1-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:6e8ea9173403219239cdfd8d946ed101f2ab6ecc025b0fda0c6c713c35c9981d"},
-    {file = "protobuf-3.19.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:db3532d9f7a6ebbe2392041350437953b6d7a792de10e629c1e4f5a6b1fe1ac6"},
-    {file = "protobuf-3.19.1-cp37-cp37m-win32.whl", hash = "sha256:615b426a177780ce381ecd212edc1e0f70db8557ed72560b82096bd36b01bc04"},
-    {file = "protobuf-3.19.1-cp37-cp37m-win_amd64.whl", hash = "sha256:d8919368410110633717c406ab5c97e8df5ce93020cfcf3012834f28b1fab1ea"},
-    {file = "protobuf-3.19.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:71b0250b0cfb738442d60cab68abc166de43411f2a4f791d31378590bfb71bd7"},
-    {file = "protobuf-3.19.1-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:3cd0458870ea7d1c58e948ac8078f6ba8a7ecc44a57e03032ed066c5bb318089"},
-    {file = "protobuf-3.19.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:655264ed0d0efe47a523e2255fc1106a22f6faab7cc46cfe99b5bae085c2a13e"},
-    {file = "protobuf-3.19.1-cp38-cp38-win32.whl", hash = "sha256:b691d996c6d0984947c4cf8b7ae2fe372d99b32821d0584f0b90277aa36982d3"},
-    {file = "protobuf-3.19.1-cp38-cp38-win_amd64.whl", hash = "sha256:e7e8d2c20921f8da0dea277dfefc6abac05903ceac8e72839b2da519db69206b"},
-    {file = "protobuf-3.19.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:fd390367fc211cc0ffcf3a9e149dfeca78fecc62adb911371db0cec5c8b7472d"},
-    {file = "protobuf-3.19.1-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:d83e1ef8cb74009bebee3e61cc84b1c9cd04935b72bca0cbc83217d140424995"},
-    {file = "protobuf-3.19.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:36d90676d6f426718463fe382ec6274909337ca6319d375eebd2044e6c6ac560"},
-    {file = "protobuf-3.19.1-cp39-cp39-win32.whl", hash = "sha256:e7b24c11df36ee8e0c085e5b0dc560289e4b58804746fb487287dda51410f1e2"},
-    {file = "protobuf-3.19.1-cp39-cp39-win_amd64.whl", hash = "sha256:77d2fadcf369b3f22859ab25bd12bb8e98fb11e05d9ff9b7cd45b711c719c002"},
-    {file = "protobuf-3.19.1-py2.py3-none-any.whl", hash = "sha256:e813b1c9006b6399308e917ac5d298f345d95bb31f46f02b60cd92970a9afa17"},
-    {file = "protobuf-3.19.1.tar.gz", hash = "sha256:62a8e4baa9cb9e064eb62d1002eca820857ab2138440cb4b3ea4243830f94ca7"},
+    {file = "protobuf-3.19.5-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6eca9ae238ba615d702387a2ddea635d535d769994a9968c09a4ca920c487ab9"},
+    {file = "protobuf-3.19.5-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:f2b599a21c9a32e171ec29a2ac54e03297736c578698e11b099d031f79da114b"},
+    {file = "protobuf-3.19.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f976234e20ab2785f54224bcdafa027674e23663b132fa3ca0caa291a6cfbde7"},
+    {file = "protobuf-3.19.5-cp310-cp310-win32.whl", hash = "sha256:4ee2af7051d3b10c8a4fe6fd1a2c69f201fea36aeee7086cf202a692e1b99ee1"},
+    {file = "protobuf-3.19.5-cp310-cp310-win_amd64.whl", hash = "sha256:dca2284378a5f2a86ffed35c6ac147d14c48b525eefcd1083e5a9ce28dfa8657"},
+    {file = "protobuf-3.19.5-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:c0f80876a8ff0ae7064084ed094eb86497bd5a3812e6fc96a05318b92301674e"},
+    {file = "protobuf-3.19.5-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3c4160b601220627f7e91154e572baf5e161a9c3f445a8242d536ee3d0b7b17c"},
+    {file = "protobuf-3.19.5-cp36-cp36m-win32.whl", hash = "sha256:f2bde37667b18c2b5280df83bc799204394a5d2d774e4deaf9de0eb741df6833"},
+    {file = "protobuf-3.19.5-cp36-cp36m-win_amd64.whl", hash = "sha256:1867f93b06a183f87696871bb8d1e99ee71dbb69d468ce1f0cc8bf3d30f982f3"},
+    {file = "protobuf-3.19.5-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:a89aa0c042e61e11ade320b802d6db4ee5391d8d973e46d3a48172c1597789f8"},
+    {file = "protobuf-3.19.5-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:f9cebda093c2f6bfed88f1c17cdade09d4d96096421b344026feee236532d4de"},
+    {file = "protobuf-3.19.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:67efb5d20618020aa9596e17bfc37ca068c28ec0c1507d9507f73c93d46c9855"},
+    {file = "protobuf-3.19.5-cp37-cp37m-win32.whl", hash = "sha256:950abd6c00e7b51f87ae8b18a0ce4d69fea217f62f171426e77de5061f6d9850"},
+    {file = "protobuf-3.19.5-cp37-cp37m-win_amd64.whl", hash = "sha256:d3973a2d58aefc7d1230725c2447ce7f86a71cbc094b86a77c6ee1505ac7cdb1"},
+    {file = "protobuf-3.19.5-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9e1d74032f56ff25f417cfe84c8147047732e5059137ca42efad20cbbd25f5e0"},
+    {file = "protobuf-3.19.5-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:d249519ba5ecf5dd6b18150c9b6bcde510b273714b696f3923ff8308fc11ae49"},
+    {file = "protobuf-3.19.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9f957ef53e872d58a0afd3bf6d80d48535d28c99b40e75e6634cbc33ea42fd54"},
+    {file = "protobuf-3.19.5-cp38-cp38-win32.whl", hash = "sha256:5470f892961af464ae6eaf0f3099e2c1190ae8c7f36f174b89491281341f79ca"},
+    {file = "protobuf-3.19.5-cp38-cp38-win_amd64.whl", hash = "sha256:c44e3282cff74ad18c7e8a0375f407f69ee50c2116364b44492a196293e08b21"},
+    {file = "protobuf-3.19.5-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:66d14b5b90090353efe75c9fb1bf65ef7267383034688d255b500822e37d5c2f"},
+    {file = "protobuf-3.19.5-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:f4f909f4dde413dec435a44b0894956d55bb928ded7d6e3c726556ca4c796e84"},
+    {file = "protobuf-3.19.5-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5266c36cc0af3bb3dbf44f199d225b33da66a9a5c3bdc2b14865ad10eddf0e37"},
+    {file = "protobuf-3.19.5-cp39-cp39-win32.whl", hash = "sha256:6a02172b9650f819d01fb8e224fc69b0706458fc1ab4f1c669281243c71c1a5e"},
+    {file = "protobuf-3.19.5-cp39-cp39-win_amd64.whl", hash = "sha256:696e6cfab94cc15a14946f2bf72719dced087d437adbd994fff34f38986628bc"},
+    {file = "protobuf-3.19.5-py2.py3-none-any.whl", hash = "sha256:9e42b1cf2ecd8a1bd161239e693f22035ba99905ae6d7efeac8a0546c7ec1a27"},
+    {file = "protobuf-3.19.5.tar.gz", hash = "sha256:e63b0b3c42e51c94add62b010366cd4979cb6d5f06158bcae8faac4c294f91e1"},
 ]
 psycopg2 = [
     {file = "psycopg2-2.9.2-cp310-cp310-win32.whl", hash = "sha256:6796ac614412ce374587147150e56d03b7845c9e031b88aacdcadc880e81bb38"},
@@ -3549,34 +3578,12 @@ py = [
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
 ]
 pyasn1 = [
-    {file = "pyasn1-0.4.8-py2.4.egg", hash = "sha256:fec3e9d8e36808a28efb59b489e4528c10ad0f480e57dcc32b4de5c9d8c9fdf3"},
-    {file = "pyasn1-0.4.8-py2.5.egg", hash = "sha256:0458773cfe65b153891ac249bcf1b5f8f320b7c2ce462151f8fa74de8934becf"},
-    {file = "pyasn1-0.4.8-py2.6.egg", hash = "sha256:5c9414dcfede6e441f7e8f81b43b34e834731003427e5b09e4e00e3172a10f00"},
-    {file = "pyasn1-0.4.8-py2.7.egg", hash = "sha256:6e7545f1a61025a4e58bb336952c5061697da694db1cae97b116e9c46abcf7c8"},
     {file = "pyasn1-0.4.8-py2.py3-none-any.whl", hash = "sha256:39c7e2ec30515947ff4e87fb6f456dfc6e84857d34be479c9d4a4ba4bf46aa5d"},
-    {file = "pyasn1-0.4.8-py3.1.egg", hash = "sha256:78fa6da68ed2727915c4767bb386ab32cdba863caa7dbe473eaae45f9959da86"},
-    {file = "pyasn1-0.4.8-py3.2.egg", hash = "sha256:08c3c53b75eaa48d71cf8c710312316392ed40899cb34710d092e96745a358b7"},
-    {file = "pyasn1-0.4.8-py3.3.egg", hash = "sha256:03840c999ba71680a131cfaee6fab142e1ed9bbd9c693e285cc6aca0d555e576"},
-    {file = "pyasn1-0.4.8-py3.4.egg", hash = "sha256:7ab8a544af125fb704feadb008c99a88805126fb525280b2270bb25cc1d78a12"},
-    {file = "pyasn1-0.4.8-py3.5.egg", hash = "sha256:e89bf84b5437b532b0803ba5c9a5e054d21fec423a89952a74f87fa2c9b7bce2"},
-    {file = "pyasn1-0.4.8-py3.6.egg", hash = "sha256:014c0e9976956a08139dc0712ae195324a75e142284d5f87f1a87ee1b068a359"},
-    {file = "pyasn1-0.4.8-py3.7.egg", hash = "sha256:99fcc3c8d804d1bc6d9a099921e39d827026409a58f2a720dcdb89374ea0c776"},
     {file = "pyasn1-0.4.8.tar.gz", hash = "sha256:aef77c9fb94a3ac588e87841208bdec464471d9871bd5050a287cc9a475cd0ba"},
 ]
 pyasn1-modules = [
     {file = "pyasn1-modules-0.2.8.tar.gz", hash = "sha256:905f84c712230b2c592c19470d3ca8d552de726050d1d1716282a1f6146be65e"},
-    {file = "pyasn1_modules-0.2.8-py2.4.egg", hash = "sha256:0fe1b68d1e486a1ed5473f1302bd991c1611d319bba158e98b106ff86e1d7199"},
-    {file = "pyasn1_modules-0.2.8-py2.5.egg", hash = "sha256:fe0644d9ab041506b62782e92b06b8c68cca799e1a9636ec398675459e031405"},
-    {file = "pyasn1_modules-0.2.8-py2.6.egg", hash = "sha256:a99324196732f53093a84c4369c996713eb8c89d360a496b599fb1a9c47fc3eb"},
-    {file = "pyasn1_modules-0.2.8-py2.7.egg", hash = "sha256:0845a5582f6a02bb3e1bde9ecfc4bfcae6ec3210dd270522fee602365430c3f8"},
     {file = "pyasn1_modules-0.2.8-py2.py3-none-any.whl", hash = "sha256:a50b808ffeb97cb3601dd25981f6b016cbb3d31fbf57a8b8a87428e6158d0c74"},
-    {file = "pyasn1_modules-0.2.8-py3.1.egg", hash = "sha256:f39edd8c4ecaa4556e989147ebf219227e2cd2e8a43c7e7fcb1f1c18c5fd6a3d"},
-    {file = "pyasn1_modules-0.2.8-py3.2.egg", hash = "sha256:b80486a6c77252ea3a3e9b1e360bc9cf28eaac41263d173c032581ad2f20fe45"},
-    {file = "pyasn1_modules-0.2.8-py3.3.egg", hash = "sha256:65cebbaffc913f4fe9e4808735c95ea22d7a7775646ab690518c056784bc21b4"},
-    {file = "pyasn1_modules-0.2.8-py3.4.egg", hash = "sha256:15b7c67fabc7fc240d87fb9aabf999cf82311a6d6fb2c70d00d3d0604878c811"},
-    {file = "pyasn1_modules-0.2.8-py3.5.egg", hash = "sha256:426edb7a5e8879f1ec54a1864f16b882c2837bfd06eee62f2c982315ee2473ed"},
-    {file = "pyasn1_modules-0.2.8-py3.6.egg", hash = "sha256:cbac4bc38d117f2a49aeedec4407d23e8866ea4ac27ff2cf7fb3e5b570df19e0"},
-    {file = "pyasn1_modules-0.2.8-py3.7.egg", hash = "sha256:c29a5e5cc7a3f05926aff34e097e84f8589cd790ce0ed41b67aed6857b26aafd"},
 ]
 pyathena = [
     {file = "PyAthena-1.11.5-py2.py3-none-any.whl", hash = "sha256:8cc5d40236993fe5241bb625e78d0a0a149e629b74569a9636b49168448a7ac8"},
@@ -3780,6 +3787,13 @@ pyyaml = [
     {file = "PyYAML-6.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:f84fbc98b019fef2ee9a1cb3ce93e3187a6df0b2538a651bfb890254ba9f90b5"},
     {file = "PyYAML-6.0-cp310-cp310-win32.whl", hash = "sha256:2cd5df3de48857ed0544b34e2d40e9fac445930039f3cfe4bcc592a1f836d513"},
     {file = "PyYAML-6.0-cp310-cp310-win_amd64.whl", hash = "sha256:daf496c58a8c52083df09b80c860005194014c3698698d1a57cbcfa182142a3a"},
+    {file = "PyYAML-6.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:d4b0ba9512519522b118090257be113b9468d804b19d63c71dbcf4a48fa32358"},
+    {file = "PyYAML-6.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:81957921f441d50af23654aa6c5e5eaf9b06aba7f0a19c18a538dc7ef291c5a1"},
+    {file = "PyYAML-6.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:afa17f5bc4d1b10afd4466fd3a44dc0e245382deca5b3c353d8b757f9e3ecb8d"},
+    {file = "PyYAML-6.0-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:dbad0e9d368bb989f4515da330b88a057617d16b6a8245084f1b05400f24609f"},
+    {file = "PyYAML-6.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:432557aa2c09802be39460360ddffd48156e30721f5e8d917f01d31694216782"},
+    {file = "PyYAML-6.0-cp311-cp311-win32.whl", hash = "sha256:bfaef573a63ba8923503d27530362590ff4f576c626d86a9fed95822a8255fd7"},
+    {file = "PyYAML-6.0-cp311-cp311-win_amd64.whl", hash = "sha256:01b45c0191e6d66c470b6cf1b9531a771a83c1c4208272ead47a3ae4f2f603bf"},
     {file = "PyYAML-6.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:897b80890765f037df3403d22bab41627ca8811ae55e9a722fd0392850ec4d86"},
     {file = "PyYAML-6.0-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:50602afada6d6cbfad699b0c7bb50d5ccffa7e46a3d738092afddc1f9758427f"},
     {file = "PyYAML-6.0-cp36-cp36m-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:48c346915c114f5fdb3ead70312bd042a953a8ce5c7106d5bfb1a5254e47da92"},
@@ -3965,6 +3979,7 @@ rsa = [
 ]
 "ruamel.yaml.clib" = [
     {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6e7be2c5bcb297f5b82fee9c665eb2eb7001d1050deaba8471842979293a80b0"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:066f886bc90cc2ce44df8b5f7acfc6a7e2b2e672713f027136464492b0c34d7c"},
     {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:221eca6f35076c6ae472a531afa1c223b9c29377e62936f61bc8e6e8bdc5f9e7"},
     {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win32.whl", hash = "sha256:1070ba9dd7f9370d0513d649420c3b362ac2d687fe78c6e888f5b12bf8bc7bee"},
     {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win_amd64.whl", hash = "sha256:77df077d32921ad46f34816a9a16e6356d8100374579bc35e15bab5d4e9377de"},
@@ -3974,18 +3989,22 @@ rsa = [
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-win_amd64.whl", hash = "sha256:de9c6b8a1ba52919ae919f3ae96abb72b994dd0350226e28f3686cb4f142165c"},
     {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:d67f273097c368265a7b81e152e07fb90ed395df6e552b9fa858c6d2c9f42502"},
     {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:72a2b8b2ff0a627496aad76f37a652bcef400fd861721744201ef1b45199ab78"},
+    {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:d3c620a54748a3d4cf0bcfe623e388407c8e85a4b06b8188e126302bcab93ea8"},
     {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-win32.whl", hash = "sha256:9efef4aab5353387b07f6b22ace0867032b900d8e91674b5d8ea9150db5cae94"},
     {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-win_amd64.whl", hash = "sha256:846fc8336443106fe23f9b6d6b8c14a53d38cef9a375149d61f99d78782ea468"},
     {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:0847201b767447fc33b9c235780d3aa90357d20dd6108b92be544427bea197dd"},
     {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:78988ed190206672da0f5d50c61afef8f67daa718d614377dcd5e3ed85ab4a99"},
+    {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:210c8fcfeff90514b7133010bf14e3bad652c8efde6b20e00c43854bf94fa5a6"},
     {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-win32.whl", hash = "sha256:a49e0161897901d1ac9c4a79984b8410f450565bbad64dbfcbf76152743a0cdb"},
     {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-win_amd64.whl", hash = "sha256:bf75d28fa071645c529b5474a550a44686821decebdd00e21127ef1fd566eabe"},
     {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:a32f8d81ea0c6173ab1b3da956869114cae53ba1e9f72374032e33ba3118c233"},
     {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:7f7ecb53ae6848f959db6ae93bdff1740e651809780822270eab111500842a84"},
+    {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:61bc5e5ca632d95925907c569daa559ea194a4d16084ba86084be98ab1cec1c6"},
     {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-win32.whl", hash = "sha256:89221ec6d6026f8ae859c09b9718799fea22c0e8da8b766b0b2c9a9ba2db326b"},
     {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-win_amd64.whl", hash = "sha256:31ea73e564a7b5fbbe8188ab8b334393e06d997914a4e184975348f204790277"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:dc6a613d6c74eef5a14a214d433d06291526145431c3b964f5e16529b1842bed"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:1866cf2c284a03b9524a5cc00daca56d80057c5ce3cdc86a52020f4c720856f0"},
+    {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:1b4139a6ffbca8ef60fdaf9b33dec05143ba746a6f0ae0f9d11d38239211d335"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-win32.whl", hash = "sha256:3fb9575a5acd13031c57a62cc7823e5d2ff8bc3835ba4d94b921b4e6ee664104"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-win_amd64.whl", hash = "sha256:825d5fccef6da42f3c8eccd4281af399f21c02b32d98e113dbc631ea6a6ecbc7"},
     {file = "ruamel.yaml.clib-0.2.6.tar.gz", hash = "sha256:4ff604ce439abb20794f05613c374759ce10e3595d1867764dd1ae675b85acbd"},
@@ -4028,6 +4047,10 @@ secretstorage = [
 send2trash = [
     {file = "Send2Trash-1.8.0-py3-none-any.whl", hash = "sha256:f20eaadfdb517eaca5ce077640cb261c7d2698385a6a0f072a4a5447fd49fa08"},
     {file = "Send2Trash-1.8.0.tar.gz", hash = "sha256:d2c24762fd3759860a0aff155e45871447ea58d2be6bdd39b5c8f966a0c99c2d"},
+]
+setuptools = [
+    {file = "setuptools-59.6.0-py3-none-any.whl", hash = "sha256:4ce92f1e1f8f01233ee9952c04f6b81d1e02939d6e1b488428154974a4d0783e"},
+    {file = "setuptools-59.6.0.tar.gz", hash = "sha256:22c7348c6d2976a52632c67f7ab0cdf40147db7789f9aed18734643fe9cf3373"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
@@ -4294,6 +4317,10 @@ websocket-client = [
 werkzeug = [
     {file = "Werkzeug-2.0.2-py3-none-any.whl", hash = "sha256:63d3dc1cf60e7b7e35e97fa9861f7397283b75d765afcaefd993d6046899de8f"},
     {file = "Werkzeug-2.0.2.tar.gz", hash = "sha256:aa2bb6fc8dee8d6c504c0ac1e7f5f7dc5810a9903e793b6f715a9f015bdadb9a"},
+]
+wheel = [
+    {file = "wheel-0.37.1-py2.py3-none-any.whl", hash = "sha256:4bdcd7d840138086126cd09254dc6195fb4fc6f01c050a1d7236f2630db1d22a"},
+    {file = "wheel-0.37.1.tar.gz", hash = "sha256:e9a504e793efbca1b8e0e9cb979a249cf4a0a7b5b8c9e8b65a5e39d49529c1c4"},
 ]
 widgetsnbextension = [
     {file = "widgetsnbextension-3.5.2-py2.py3-none-any.whl", hash = "sha256:763a9fdc836d141fa080005a886d63f66f73d56dba1fb5961afc239c77708569"},
