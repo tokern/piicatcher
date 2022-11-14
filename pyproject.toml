@@ -12,6 +12,8 @@ classifiers = [
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Database",
         "Topic :: Software Development",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -31,11 +33,11 @@ commonregex = "^1.5"
 dbcat = "^0.12.0"
 typer = "^0.4.0"
 tabulate = "^0.8.9"
-dataclasses = {version = ">=0.6", markers="python_version >= '3.6' and python_version < '3.7'"}
-great-expectations = {version = "^0.13.42", optional = true}
-acryl-datahub = {version = "^0.8.16", optional = true}
-tqdm = "^4.62.3"
-catalogue = "^2.0.6"
+dataclasses = {version = ">=0.7", markers="python_version >= '3.6' and python_version < '3.10'"}
+great-expectations = {version = "^0.14.0", optional = true}
+acryl-datahub = {version = "^0.9.0", optional = true}
+tqdm = "^4.63.0"
+catalogue = "^2.0.7"
 
 [tool.poetry.extras]
 datahub = ["acryl-datahub", "great-expectations"]
@@ -54,14 +56,14 @@ pytest-pylint = "*"
 twine = "*"
 pytest-mock = "*"
 types-PyMySQL = "^1.0.2"
-types-python-dateutil = "^0.1.6"
-types-PyYAML = "^5.4.6"
-pytest-cases = "^3.6.4"
-types-tabulate = "^0.8.3"
+types-python-dateutil = "^2.8.19"
+types-PyYAML = "^6.0.12"
+pytest-cases = "^3.6.12"
+types-tabulate = "^0.9.0"
 pytest-order = "^1.0.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.3.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
