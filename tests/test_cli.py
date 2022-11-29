@@ -61,10 +61,10 @@ def test_include_exclude(mocker, temp_sqlite_path, args):
         incremental=True,
         output_format=OutputFormat.tabular,
         list_all=False,
-        exclude_schema_regex=("eschema",),
-        exclude_table_regex=("etable",),
-        include_schema_regex=("ischema",),
-        include_table_regex=("itable",),
+        exclude_schema_regex=["eschema",],
+        exclude_table_regex=["etable",],
+        include_schema_regex=["ischema",],
+        include_table_regex=["itable",],
         sample_size=SMALL_TABLE_MAX,
     )
     piicatcher.command_line.str_output.assert_called_once()
@@ -109,10 +109,10 @@ def test_multiple_include_exclude(mocker, temp_sqlite_path, args):
         incremental=True,
         output_format=OutputFormat.tabular,
         list_all=False,
-        exclude_schema_regex=("eschema_1", "eschema_2"),
-        exclude_table_regex=("etable_1", "etable_2"),
-        include_schema_regex=("ischema_1", "ischema_2"),
-        include_table_regex=("itable_1", "itable_2"),
+        exclude_schema_regex=["eschema_1", "eschema_2"],
+        exclude_table_regex=["etable_1", "etable_2"],
+        include_schema_regex=["ischema_1", "ischema_2"],
+        include_table_regex=["itable_1", "itable_2"],
         sample_size=SMALL_TABLE_MAX,
     )
     piicatcher.command_line.str_output.assert_called_once()
@@ -143,10 +143,10 @@ def test_sample_size(mocker, temp_sqlite_path, args):
         incremental=True,
         output_format=OutputFormat.tabular,
         list_all=False,
-        exclude_schema_regex=(),
-        exclude_table_regex=(),
-        include_schema_regex=(),
-        include_table_regex=(),
+        exclude_schema_regex=[],
+        exclude_table_regex=[],
+        include_schema_regex=[],
+        include_table_regex=[],
         sample_size=10,
     )
     piicatcher.command_line.str_output.assert_called_once()

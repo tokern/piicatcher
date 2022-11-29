@@ -12,15 +12,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ['3.6', '3.7', '3.8']
+        python-version: ['3.8', '3.9', '3.10']
     name: Python ${{ matrix.python-version }}
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres
+        image: postgres:13
         ports:
           - 5432:5432
         # Provide the password for postgres
@@ -44,12 +45,14 @@ jobs:
           MYSQL_ROOT_PASSWORD: r00tpassw0rd
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install Python Poetry
-      uses: abatilo/actions-poetry@v2.1.4
+      uses: abatilo/actions-poetry@v2
+      with:
+        poetry-version: 1.2.2
     - name: View poetry version
       run: poetry --version
     - name: Install dependencies

@@ -13,6 +13,8 @@ services:
       - MYSQL_PASSWORD=p11secret #optional
     ports:
       - 3306:3306
+    networks:
+      - default
   postgres:
     container_name: postgres
     image: "postgres:13"
@@ -23,3 +25,20 @@ services:
       PGDATA: "/tmp/pg_piicatcher"
     ports:
       - "5432:5432"
+    networks:
+      - default
+
+  python:
+   container_name: python
+   entrypoint: sleep infinity
+   image: "python:3.8.0"
+   volumes:
+    - type: bind
+      source: ../piicatcher
+      target: /data
+   networks:
+    - default
+
+networks:
+  default:
+    name: pynetwork
