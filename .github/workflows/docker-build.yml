@@ -21,12 +21,15 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+      platforms: all
     - name: Build
       id: docker_build
       uses: docker/build-push-action@v3
       with:
         context: .
-        platforms: linux/amd64,linux/arm/v7,linux/arm/v8
+        platforms: all
         push: false
         file: docker/Dockerfile
         tags: tokern/piicatcher:latest
