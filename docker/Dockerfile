@@ -49,8 +49,8 @@ RUN python -m spacy download en_core_web_sm
 # in only our runtime deps that were installed in the 'builder-base'
 FROM python-base as production
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
+RUN apt-get -y update
+RUN apt-get install --no-install-recommends -y \
         libpq5
 
 COPY --from=builder-base $VENV_PATH $VENV_PATH
