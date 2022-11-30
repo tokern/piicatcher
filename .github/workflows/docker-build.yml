@@ -30,7 +30,6 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        platforms: all
         push: false
         file: docker/Dockerfile
         tags: tokern/piicatcher:latest
