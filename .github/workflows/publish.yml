@@ -66,4 +66,4 @@ jobs:
         context: .
         push: true
         file: docker/Dockerfile
-        tags: tokern/piicatcher:latest tokern/piicatcher:${{  github.ref_name }}
+        tags: tokern/piicatcher:latest,tokern/piicatcher:${{  github.ref_name }}
