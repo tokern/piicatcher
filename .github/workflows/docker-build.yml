@@ -23,7 +23,8 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
-      platforms: all
+      with:
+        platforms: all
     - name: Build
       id: docker_build
       uses: docker/build-push-action@v3
