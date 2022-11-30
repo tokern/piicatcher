@@ -25,9 +25,9 @@ RUN apt-get update \
         build-essential libpq-dev musl-dev
 
 # Install Poetry - respects $POETRY_VERSION & $POETRY_HOME
-ENV POETRY_VERSION=1.1.6
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-
+#ENV POETRY_VERSION=1.2.2
+#RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+RUN pip install poetry==1.2.2
 # We copy our Python requirements here to cache them
 # and install only runtime deps using poetry
 WORKDIR $PYSETUP_PATH
@@ -40,6 +40,7 @@ RUN poetry build
 ENV PATH="${VENV_PATH}/bin:$PATH"
 RUN pip install dist/piicatcher-*.whl
 
+RUN pip install spacy==3.4.3
 RUN python -m spacy download en_core_web_sm
 
 
