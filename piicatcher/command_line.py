@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import dbcat.settings
-import sqlalchemy.orm.exc
+from sqlalchemy.orm.exc import NoResultFound
 import typer
 from dbcat.api import init_db, open_catalog
 from dbcat.cli import app as catalog_app
@@ -213,7 +213,7 @@ def detect(
             except NoMatchesError:
                 typer.echo(message=NoMatchesError.message)
                 typer.Exit(1)
-            except sqlalchemy.orm.exc.NoResultFound:
+            except NoResultFound:
                 typer.echo("no catalog with given name exist. Please use catalog command to add catalog.")
                 typer.Exit(1)
 
