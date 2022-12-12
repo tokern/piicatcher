@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import dbcat.settings
+import sqlalchemy.orm.exc
 import typer
 from dbcat.api import init_db, open_catalog
 from dbcat.cli import app as catalog_app
@@ -88,40 +89,40 @@ def version_callback(value: bool):
 # pylint: disable=too-many-arguments
 @app.callback(invoke_without_command=True)
 def cli(
-    log_level: str = typer.Option("WARNING", help="Logging Level"),
-    log_data: bool = typer.Option(False, help="Choose output format type"),
-    log_scan: bool = typer.Option(False, help="Log data that was scanned"),
-    config_path: Path = typer.Option(
-        typer.get_app_dir("tokern"), help="Path to config directory"
-    ),
-    output_format: OutputFormat = typer.Option(
-        OutputFormat.tabular, case_sensitive=False
-    ),
-    catalog_path: Path = typer.Option(
-        None, help="Path to store catalog state. Use if NOT using a database"
-    ),
-    catalog_host: str = typer.Option(
-        None, help="hostname of Postgres database. Use if catalog is a database."
-    ),
-    catalog_port: int = typer.Option(
-        None, help="port of Postgres database. Use if catalog is a database."
-    ),
-    catalog_user: str = typer.Option(
-        None, help="user of Postgres database. Use if catalog is a database."
-    ),
-    catalog_password: str = typer.Option(
-        None, help="password of Postgres database. Use if catalog is a database."
-    ),
-    catalog_database: str = typer.Option(
-        None, help="database of Postgres database. Use if catalog is a database."
-    ),
-    catalog_secret: str = typer.Option(
-        dbcat.settings.DEFAULT_CATALOG_SECRET,
-        help="Secret to encrypt sensitive data like passwords in the catalog.",
-    ),
-    version: Optional[bool] = typer.Option(
-        None, "--version", callback=version_callback, is_eager=True
-    ),
+        log_level: str = typer.Option("WARNING", help="Logging Level"),
+        log_data: bool = typer.Option(False, help="Choose output format type"),
+        log_scan: bool = typer.Option(False, help="Log data that was scanned"),
+        config_path: Path = typer.Option(
+            typer.get_app_dir("tokern"), help="Path to config directory"
+        ),
+        output_format: OutputFormat = typer.Option(
+            OutputFormat.tabular, case_sensitive=False
+        ),
+        catalog_path: Path = typer.Option(
+            None, help="Path to store catalog state. Use if NOT using a database"
+        ),
+        catalog_host: str = typer.Option(
+            None, help="hostname of Postgres database. Use if catalog is a database."
+        ),
+        catalog_port: int = typer.Option(
+            None, help="port of Postgres database. Use if catalog is a database."
+        ),
+        catalog_user: str = typer.Option(
+            None, help="user of Postgres database. Use if catalog is a database."
+        ),
+        catalog_password: str = typer.Option(
+            None, help="password of Postgres database. Use if catalog is a database."
+        ),
+        catalog_database: str = typer.Option(
+            None, help="database of Postgres database. Use if catalog is a database."
+        ),
+        catalog_secret: str = typer.Option(
+            dbcat.settings.DEFAULT_CATALOG_SECRET,
+            help="Secret to encrypt sensitive data like passwords in the catalog.",
+        ),
+        version: Optional[bool] = typer.Option(
+            None, "--version", callback=version_callback, is_eager=True
+        ),
 ):
     logging.config.dictConfig(log_config(log_level=log_level.upper()))
 
@@ -155,29 +156,29 @@ def cli(
 
 @app.command()
 def detect(
-    source_name: str = typer.Option(..., help="Name of database to scan."),
-    scan_type: ScanTypeEnum = typer.Option(
-        ScanTypeEnum.metadata,
-        help="Choose deep(scan data) or shallow(scan column names only)",
-    ),
-    incremental: bool = typer.Option(
-        True, help="Scan columns updated or created since last run",
-    ),
-    list_all: bool = typer.Option(
-        False,
-        help="List all columns. By default only columns with PII information is listed",
-    ),
-    include_schema: Optional[List[str]] = typer.Option(None, help=schema_help_text),
-    exclude_schema: Optional[List[str]] = typer.Option(
-        None, help=exclude_schema_help_text
-    ),
-    include_table: Optional[List[str]] = typer.Option(None, help=table_help_text),
-    exclude_table: Optional[List[str]] = typer.Option(
-        None, help=exclude_table_help_text
-    ),
-    sample_size: int = typer.Option(
-        SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
-    ),
+        source_name: str = typer.Option(..., help="Name of database to scan."),
+        scan_type: ScanTypeEnum = typer.Option(
+            ScanTypeEnum.metadata,
+            help="Choose deep(scan data) or shallow(scan column names only)",
+        ),
+        incremental: bool = typer.Option(
+            True, help="Scan columns updated or created since last run",
+        ),
+        list_all: bool = typer.Option(
+            False,
+            help="List all columns. By default only columns with PII information is listed",
+        ),
+        include_schema: Optional[List[str]] = typer.Option(None, help=schema_help_text),
+        exclude_schema: Optional[List[str]] = typer.Option(
+            None, help=exclude_schema_help_text
+        ),
+        include_table: Optional[List[str]] = typer.Option(None, help=table_help_text),
+        exclude_table: Optional[List[str]] = typer.Option(
+            None, help=exclude_table_help_text
+        ),
+        sample_size: int = typer.Option(
+            SMALL_TABLE_MAX, help="Sample size for large tables when running deep scan."
+        ),
 ):
     catalog = open_catalog(
         app_dir=dbcat.settings.APP_DIR,
@@ -193,8 +194,8 @@ def detect(
     with closing(catalog) as catalog:
         init_db(catalog)
         with catalog.managed_session:
-            source = catalog.get_source(source_name)
             try:
+                source = catalog.get_source(source_name)
                 op = scan_database(
                     catalog=catalog,
                     source=source,
@@ -211,6 +212,9 @@ def detect(
                 typer.echo(message=str_output(op, dbcat.settings.OUTPUT_FORMAT))
             except NoMatchesError:
                 typer.echo(message=NoMatchesError.message)
+                typer.Exit(1)
+            except sqlalchemy.orm.exc.NoResultFound:
+                typer.echo("no catalog with given name exist. Please use catalog command to add catalog.")
                 typer.Exit(1)
 
 
