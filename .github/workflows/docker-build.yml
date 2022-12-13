@@ -11,6 +11,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        platforms: [ 'linux/amd64', 'linux/arm64', 'linux/arm/v7' ]
     name: Docker Build
     steps:
     - uses: actions/checkout@v3
@@ -26,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        platforms: linux/amd64,linux/arm64,linux/arm/v7
+        platforms: ${{ matrix.platforms }}
         push: false
         file: docker/Dockerfile
         tags: tokern/piicatcher:latest
