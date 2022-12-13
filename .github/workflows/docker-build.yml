@@ -43,6 +43,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          file: docker/Dockerfile
           platforms: ${{ matrix.platforms }}
           push: false
           tags: |
