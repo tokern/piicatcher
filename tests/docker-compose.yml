@@ -34,7 +34,7 @@ services:
    image: "python:3.8.0"
    volumes:
     - type: bind
-      source: ../piicatcher
+      source: ../../piicatcher
       target: /data
    networks:
     - default

@@ -66,4 +66,5 @@ jobs:
         context: .
         push: true
         file: docker/Dockerfile
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
         tags: tokern/piicatcher:latest,tokern/piicatcher:${{  github.ref_name }}
