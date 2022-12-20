@@ -23,7 +23,7 @@ repository="https://github.com/tokern/piicatcher/"
 
 
 [tool.poetry.dependencies]
-python = ">=3.8,<=3.10"
+python = ">=3.8,<=3.10.8"
 pyyaml = "*"
 click = "*"
 python-json-logger = "^2.0.2"
