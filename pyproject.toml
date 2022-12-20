@@ -28,7 +28,7 @@ pyyaml = "*"
 click = "*"
 python-json-logger = "^2.0.2"
 commonregex = "1.5.2"
-dbcat = "^0.13.0"
+dbcat = "^0.13.1"
 typer = "^0.4.0"
 tabulate = "^0.8.9"
 dataclasses = {version = ">=0.6", markers="python_version >= '3.8' and python_version <= '3.10'"}
