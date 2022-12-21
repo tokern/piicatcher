@@ -31,10 +31,10 @@ services:
   python:
    container_name: python
    entrypoint: sleep infinity
-   image: "python:3.8.0"
+   image: "python:3.10.9"
    volumes:
     - type: bind
-      source: ../piicatcher
+      source: ../../piicatcher
       target: /data
    networks:
     - default
