@@ -636,7 +636,7 @@ python-versions = "*"
 
 [[package]]
 name = "dbcat"
-version = "0.13.0"
+version = "0.13.1"
 description = "Tokern Data Catalog"
 category = "main"
 optional = false
@@ -2931,7 +2931,7 @@ datahub = ["acryl-datahub", "great-expectations"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<=3.10"
-content-hash = "2175cdc5275be68eeba579130ab3e77d3db6b723ca486debfd0c9cde0d8d54a2"
+content-hash = "f114a5505bf6304569496706ff77af895d22ed055808b1eb80cbf0bbfe659114"
 
 [metadata.files]
 acryl-datahub = [
@@ -3329,8 +3329,8 @@ dataclasses = [
     {file = "dataclasses-0.6.tar.gz", hash = "sha256:6988bd2b895eef432d562370bb707d540f32f7360ab13da45340101bc2307d84"},
 ]
 dbcat = [
-    {file = "dbcat-0.13.0-py3-none-any.whl", hash = "sha256:e59385239948923db61f5756b2a9896338d0300c9b8f0420fa2ebb0f8df31008"},
-    {file = "dbcat-0.13.0.tar.gz", hash = "sha256:010c4f24e2b0ab5fc8a374890d8c1afb4dcbbdfaa386ef8429849a91f0fb2e98"},
+    {file = "dbcat-0.13.1-py3-none-any.whl", hash = "sha256:9d2b7c04f8d8001d24e898bf2c2568697d9df0b87795f17b2e3bfc05a82a9049"},
+    {file = "dbcat-0.13.1.tar.gz", hash = "sha256:817fc2a4ef18c2f652779feedbe9ee3efd04431a9434cbdc9f8c0654946e8c49"},
 ]
 debugpy = [
     {file = "debugpy-1.6.3-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:c4b2bd5c245eeb49824bf7e539f95fb17f9a756186e51c3e513e32999d8846f3"},
