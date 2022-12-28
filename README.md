@@ -60,7 +60,7 @@ Pypi:
 
 ### Command Line Usage
     # add a sqlite source
-    piicatcher catalog add_sqlite --name sqldb --path '/db/sqldb'
+    piicatcher catalog add-sqlite --name sqldb --path '/db/sqldb/test.db'
 
     # run piicatcher on a sqlite db and print report to console
     piicatcher detect --source-name sqldb
@@ -77,6 +77,9 @@ Pypi:
 
 
 ### API Usage
+[example](example/api.py)
+
+Code Snippet: 
 ```python3
 from dbcat.api import open_catalog, add_postgresql_source
 from piicatcher.api import scan_database
@@ -95,14 +98,16 @@ with catalog.managed_session:
 print(output)
 
 # Example Output
-[['public', 'sample', 'gender', 'PiiTypes.GENDER'], 
- ['public', 'sample', 'maiden_name', 'PiiTypes.PERSON'], 
- ['public', 'sample', 'lname', 'PiiTypes.PERSON'], 
- ['public', 'sample', 'fname', 'PiiTypes.PERSON'], 
- ['public', 'sample', 'address', 'PiiTypes.ADDRESS'], 
- ['public', 'sample', 'city', 'PiiTypes.ADDRESS'], 
- ['public', 'sample', 'state', 'PiiTypes.ADDRESS'], 
- ['public', 'sample', 'email', 'PiiTypes.EMAIL']]
+[
+    ['public', 'sample', 'gender', 'PiiTypes.GENDER'],
+    ['public', 'sample', 'maiden_name', 'PiiTypes.PERSON'],
+    ['public', 'sample', 'lname', 'PiiTypes.PERSON'],
+    ['public', 'sample', 'fname', 'PiiTypes.PERSON'],
+    ['public', 'sample', 'address', 'PiiTypes.ADDRESS'],
+    ['public', 'sample', 'city', 'PiiTypes.ADDRESS'],
+    ['public', 'sample', 'state', 'PiiTypes.ADDRESS'], 
+    ['public', 'sample', 'email', 'PiiTypes.EMAIL']
+]
 ```
 
 ## Plugins
