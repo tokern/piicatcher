@@ -77,8 +77,6 @@ Pypi:
 
 
 ### API Usage
-[example](example/api.py)
-
 Code Snippet: 
 ```python3
 from dbcat.api import open_catalog, add_postgresql_source
