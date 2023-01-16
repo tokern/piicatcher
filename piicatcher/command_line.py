@@ -86,6 +86,12 @@ def version_callback(value: bool):
         typer.Exit()
 
 
+def stats_callback(value: bool):
+    if value:
+        print("{}".format(__version__))
+        typer.Exit()
+
+
 # pylint: disable=too-many-arguments
 @app.callback(invoke_without_command=True)
 def cli(
@@ -122,6 +128,9 @@ def cli(
         ),
         version: Optional[bool] = typer.Option(
             None, "--version", callback=version_callback, is_eager=True
+        ),
+        stats_status: Optional[bool] = typer.Option(
+            None, "--disable-stats", callback=stats_callback, is_eager=True
         ),
 ):
     logging.config.dictConfig(log_config(log_level=log_level.upper()))
