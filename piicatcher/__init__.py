@@ -1,5 +1,6 @@
 # flake8: noqa
 __version__ = "0.20.2"
+__google_analytics_tid__ = "UA-148590293-1"
 
 from dbcat.catalog.pii_types import PiiType
 

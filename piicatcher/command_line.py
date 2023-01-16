@@ -20,7 +20,7 @@ from dbcat.generators import NoMatchesError
 from pythonjsonlogger import jsonlogger
 from tabulate import tabulate
 
-from piicatcher import __version__
+from piicatcher import __version__, __google_analytics_tid__
 from piicatcher.api import (
     OutputFormat,
     ScanTypeEnum,
@@ -35,7 +35,7 @@ from goog_stats import Stats
 app = typer.Typer()
 
 LOGGER = logging.getLogger(__name__)
-analytics = Stats("UA-148590293-1")
+analytics = Stats(__google_analytics_tid__)
 
 
 class TyperLoggerHandler(logging.Handler):
