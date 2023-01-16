@@ -30,10 +30,12 @@ from piicatcher.api import (
 )
 from piicatcher.generators import SMALL_TABLE_MAX
 from piicatcher.scanner import data_logger, scan_logger
+from goog_stats import Stats
 
 app = typer.Typer()
 
 LOGGER = logging.getLogger(__name__)
+analytics = Stats("UA-148590293-1")
 
 
 class TyperLoggerHandler(logging.Handler):
@@ -81,6 +83,7 @@ def log_config(log_level: str):
 
 
 def version_callback(value: bool):
+    analytics.record_event("/pip/piicatcher", "version evaluation")
     if value:
         print("{}".format(__version__))
         typer.Exit()
@@ -88,7 +91,13 @@ def version_callback(value: bool):
 
 def stats_callback(value: bool):
     if value:
-        print("{}".format(__version__))
+        analytics.disable_stat()
+        typer.Exit()
+
+
+def enable_stats_callback(value: bool):
+    if value:
+        analytics.enable_stat()
         typer.Exit()
 
 
@@ -132,6 +141,9 @@ def cli(
         stats_status: Optional[bool] = typer.Option(
             None, "--disable-stats", callback=stats_callback, is_eager=True
         ),
+        enable_stats_status: Optional[bool] = typer.Option(
+            None, "--enable-stats", callback=enable_stats_callback, is_eager=True
+        ),
 ):
     logging.config.dictConfig(log_config(log_level=log_level.upper()))
 
@@ -161,6 +173,7 @@ def cli(
     dbcat.settings.CATALOG_SECRET = catalog_secret
     dbcat.settings.APP_DIR = app_dir_path
     dbcat.settings.OUTPUT_FORMAT = output_format
+    analytics.record_event("/pip/piicatcher", "piicatcher initiated")
 
 
 @app.command()
@@ -205,6 +218,7 @@ def detect(
         with catalog.managed_session:
             try:
                 source = catalog.get_source(source_name)
+                analytics.record_event("/pip/piicatcher", "scan initiated for {}".format(source))
                 op = scan_database(
                     catalog=catalog,
                     source=source,

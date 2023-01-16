@@ -11,6 +11,7 @@ from piicatcher.detectors import DatumDetector, MetadataDetector, detector_regis
 from piicatcher.generators import SMALL_TABLE_MAX, column_generator, data_generator
 from piicatcher.output import output_dict, output_tabular
 from piicatcher.scanner import data_scan, metadata_scan
+from goog_stats import Stats
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,17 +27,17 @@ class OutputFormat(str, Enum):
 
 
 def scan_database(
-    catalog: Catalog,
-    source: CatSource,
-    scan_type: ScanTypeEnum = ScanTypeEnum.metadata,
-    incremental: bool = True,
-    output_format: OutputFormat = OutputFormat.tabular,
-    list_all: bool = False,
-    include_schema_regex: List[str] = None,
-    exclude_schema_regex: List[str] = None,
-    include_table_regex: List[str] = None,
-    exclude_table_regex: List[str] = None,
-    sample_size: int = SMALL_TABLE_MAX,
+        catalog: Catalog,
+        source: CatSource,
+        scan_type: ScanTypeEnum = ScanTypeEnum.metadata,
+        incremental: bool = True,
+        output_format: OutputFormat = OutputFormat.tabular,
+        list_all: bool = False,
+        include_schema_regex: List[str] = None,
+        exclude_schema_regex: List[str] = None,
+        include_table_regex: List[str] = None,
+        exclude_table_regex: List[str] = None,
+        sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     message = "Source: {source_name}, scan_type: {scan_type}, include_schema: {include_schema}, \
             exclude_schema: {exclude_schema}, include_table: {include_table}, exclude_schema: {exclude_table}".format(
@@ -60,6 +61,7 @@ def scan_database(
     exit_code = 0
 
     with catalog.managed_session:
+        Stats().record_event("/pip/piicatcher", "scanning source")
         scan_sources(
             catalog=catalog,
             source_names=[source.name],
@@ -89,6 +91,7 @@ def scan_database(
             )
 
             if scan_type == ScanTypeEnum.metadata:
+                Stats().record_event("/pip/piicatcher", "scan_type: {}".format(scan_type))
                 detector_list = [
                     detector()
                     for detector in detectors.detector_registry.get_all().values()
@@ -123,7 +126,7 @@ def scan_database(
                     for detector in detectors.detector_registry.get_all().values()
                     if issubclass(detector, DatumDetector)
                 ]
-
+                Stats().record_event("/pip/piicatcher", "scan_type: {}".format(scan_type))
                 data_scan(
                     catalog=catalog,
                     detectors=detector_list,
@@ -170,6 +173,7 @@ def scan_database(
 
 
 def list_detectors() -> List[str]:
+    Stats().record_event("/pip/piicatcher", "list detectors")
     return list(detector_registry.get_all().keys())
 
 
