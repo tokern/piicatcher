@@ -145,6 +145,19 @@ For advanced usage refer documentation [PIICatcher Documentation](https://tokern
 Please take this [survey](https://forms.gle/Ns6QSNvfj3Pr2s9s6) if you are a user or considering using PIICatcher. 
 The responses will help to prioritize improvements to the project.
 
+## Stats Collection
+We use cookies to a analyse our traffic and features usage.
+We may share information about your use of our product for our social media and marketing purposes.
+These cookies don't collect your sensitive and/or confidential information.
+If you would like to opt out of these cookies, run 
+```bash
+piicatcher --disable-stats
+```
+To Enable:
+```bash
+piicatcher --enable-stats
+```
+
 ## Contributing
 
 For Contribution guidelines, [PIICatcher Developer documentation](https://tokern.io/docs/piicatcher/development). 
