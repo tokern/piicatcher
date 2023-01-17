@@ -27,17 +27,17 @@ class OutputFormat(str, Enum):
 
 
 def scan_database(
-        catalog: Catalog,
-        source: CatSource,
-        scan_type: ScanTypeEnum = ScanTypeEnum.metadata,
-        incremental: bool = True,
-        output_format: OutputFormat = OutputFormat.tabular,
-        list_all: bool = False,
-        include_schema_regex: List[str] = None,
-        exclude_schema_regex: List[str] = None,
-        include_table_regex: List[str] = None,
-        exclude_table_regex: List[str] = None,
-        sample_size: int = SMALL_TABLE_MAX,
+    catalog: Catalog,
+    source: CatSource,
+    scan_type: ScanTypeEnum = ScanTypeEnum.metadata,
+    incremental: bool = True,
+    output_format: OutputFormat = OutputFormat.tabular,
+    list_all: bool = False,
+    include_schema_regex: List[str] = None,
+    exclude_schema_regex: List[str] = None,
+    include_table_regex: List[str] = None,
+    exclude_table_regex: List[str] = None,
+    sample_size: int = SMALL_TABLE_MAX,
 ) -> Union[List[Any], Dict[Any, Any]]:
     message = "Source: {source_name}, scan_type: {scan_type}, include_schema: {include_schema}, \
             exclude_schema: {exclude_schema}, include_table: {include_table}, exclude_schema: {exclude_table}".format(
