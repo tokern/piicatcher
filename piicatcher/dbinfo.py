@@ -82,7 +82,8 @@ class Postgres(DbInfo):
 
 
 class Redshift(Postgres):
-    _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} TABLESAMPLE BERNOULLI (10) LIMIT {num_rows}"
+    # Redshift doesn't have BERNOULLI distribution. RANDOM() is the closest we can get to sample data from tables.
+    _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} ORDER BY RANDOM() LIMIT {num_rows}"
 
 
 class Snowflake(DbInfo):
