@@ -60,4 +60,8 @@ jobs:
         python -m poetry install
     - name: Test with pytest
       run: |
-        python -m poetry run pytest --pg-host localhost --mysql-host localhost --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/
+        python -m poetry run pytest --pg-host localhost --mysql-host localhost --junitxml=junit/test-results.xml --cov=piicatcher --cov-report=xml --cov-report=html tests/  
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
