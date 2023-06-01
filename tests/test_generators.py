@@ -165,7 +165,7 @@ def test_get_sample_query(sqlalchemy_engine):
     [
         (
             "redshift",
-            'SELECT "column" FROM public.table TABLESAMPLE BERNOULLI (10) LIMIT 1',
+            'SELECT "column" FROM public.table ORDER BY RANDOM() LIMIT 1',
         ),
         ("snowflake", "SELECT column FROM public.table TABLESAMPLE BERNOULLI (1 ROWS)"),
         (
