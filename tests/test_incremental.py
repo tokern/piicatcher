@@ -157,7 +157,7 @@ def test_incremental_tabular_output(setup_incremental):
 
         # List all PII columns
         op = output_tabular(catalog=catalog, source=source)
-        assert len(op) == 9
+        assert len(op) == 11
 
         # List all PII columns with include_filter
         op = output_tabular(
