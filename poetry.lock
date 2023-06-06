@@ -878,18 +878,6 @@ files = [
 test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
 
 [[package]]
-name = "commonregex"
-version = "1.5.2"
-description = "Find all dates, times, emails, phone numbers, links, emails, ip addresses, prices, bitcoin address, and street addresses in a string."
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "commonregex-1.5.2.tar.gz", hash = "sha256:09760b06e96dfb682ba49c60cd9f8d180fd6e317565bcac564251cd2dbff382e"},
-    {file = "commonregex-1.5.3.tar.gz", hash = "sha256:3d0389f33e1f61e5412a49f30b157f4c6582452918e72177619b29241e195ef9"},
-]
-
-[[package]]
 name = "commonregex-improved"
 version = "1.0.2"
 description = "An improved version of original commonregex. Find all dates, times, emails, phone numbers, links, emails, ip addresses, prices, bitcoin address, and more in a string."
@@ -5122,4 +5110,4 @@ datahub = ["acryl-datahub", "great-expectations"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<=3.10.8"
-content-hash = "0a560caa2d103b4b3850f864779d13bd67774f0b7b1dd66f6863d25f9c8e70ba"
+content-hash = "5a7eceb6b92abc2d28bbb4ca5cfac469a4b7059312d9b33c15116e03bed3b9d1"

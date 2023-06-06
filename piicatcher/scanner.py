@@ -68,7 +68,11 @@ class ColumnNameRegexDetector(MetadataDetector):
         ),
         UserName: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
         Password: re.compile("^.*pass.*$", re.IGNORECASE),
-        SSN: re.compile("^.*(ssn|social_number|social_security).*$", re.IGNORECASE),
+        SSN: re.compile(
+            "^.*(ssn|social_number|social_security|"
+            "social_security_number|social_security_no).*$",
+            re.IGNORECASE,
+        ),
         PoBox: re.compile("^.*(po_box|pobox).*$", re.IGNORECASE),
     }
 
@@ -127,11 +131,11 @@ class DatumRegexDetector(DatumDetector):
             return CreditCard()
         if CommonRegex.street_addresses(data):  # pylint: disable=no-member
             return Address()
-        if CommonRegex.ssn_numbers(data):
+        if CommonRegex.ssn_numbers(data):  # pylint: disable=no-member
             return SSN()
-        if CommonRegex.zip_codes(data):
+        if CommonRegex.zip_codes(data):  # pylint: disable=no-member
             return ZipCode()
-        if CommonRegex.po_boxes(data):
+        if CommonRegex.po_boxes(data):  # pylint: disable=no-member
             return PoBox()
 
         return None

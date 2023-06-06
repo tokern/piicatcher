@@ -85,12 +85,11 @@ def test_datum_regex_address(text):
     assert detector.detect(column=None, datum=text) == Address()
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     "text",
     [
         "222-06-5960",
-        "518 44 4378",
+        "518-44-4378",
         "653-30-7519",
     ],
 )
@@ -147,7 +146,16 @@ def test_metadata_dob(name):
         assert detector.detect(instance) == BirthDate()
 
 
-@pytest.mark.parametrize("name", ["ssn", "social_number"])
+@pytest.mark.parametrize(
+    "name",
+    [
+        "ssn",
+        "social_number",
+        "social_security_number",
+        "social_security_no",
+        "social_security",
+    ],
+)
 def test_metadata_ssn(name):
     with patch("piicatcher.scanner.CatColumn") as mocked:
         instance = mocked.return_value
