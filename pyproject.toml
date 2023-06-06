@@ -42,7 +42,7 @@ catalogue = "^2.0.6"
 datahub = ["acryl-datahub", "great-expectations"]
 
 [tool.poetry.dev-dependencies]
-black = "==19.10b0"
+black = "23.1.0"
 flake8 = "*"
 isort = "*"
 mypy = "*"

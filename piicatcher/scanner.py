@@ -3,7 +3,7 @@ import logging
 import re
 from typing import Generator, List, Optional, Tuple
 
-from commonregex import CommonRegex
+import crim as CommonRegex
 from dbcat.catalog import Catalog
 from dbcat.catalog.models import CatColumn, CatSchema, CatTable
 from dbcat.catalog.pii_types import PiiType
@@ -110,15 +110,15 @@ class DatumRegexDetector(DatumDetector):
 
     def detect(self, column: CatColumn, datum: str) -> Optional[PiiType]:
         """Scan the text and return an array of PiiTypes that are found"""
-        regex_result = CommonRegex(str(datum))
+        data = str(datum)
 
-        if regex_result.phones:  # pylint: disable=no-member
+        if CommonRegex.phones(data):  # pylint: disable=no-member
             return Phone()
-        if regex_result.emails:  # pylint: disable=no-member
+        if CommonRegex.emails(data):  # pylint: disable=no-member
             return Email()
-        if regex_result.credit_cards:  # pylint: disable=no-member
+        if CommonRegex.credit_cards(data):  # pylint: disable=no-member
             return CreditCard()
-        if regex_result.street_addresses:  # pylint: disable=no-member
+        if CommonRegex.street_addresses(data):  # pylint: disable=no-member
             return Address()
 
         return None
