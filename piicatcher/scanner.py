@@ -68,7 +68,7 @@ class ColumnNameRegexDetector(MetadataDetector):
         ),
         UserName: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
         Password: re.compile("^.*pass.*$", re.IGNORECASE),
-        SSN: re.compile("^.*(ssn|social).*$", re.IGNORECASE),
+        SSN: re.compile("^.*(ssn|social_number).*$", re.IGNORECASE),
         PoBox: re.compile("^.*(po_box|pobox).*$", re.IGNORECASE),
     }
 
