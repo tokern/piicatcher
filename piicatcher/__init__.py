@@ -59,6 +59,20 @@ class SSN(PiiType):
     pass
 
 
+class ZipCode(PiiType, type="zip_code"):  # type: ignore
+    name = "Zip Code"
+    type = "zip_code"
+    pass
+
+
+class PoBox(PiiType, type="po_box"):  # type: ignore
+    name = "PO Box"
+    type = "po_box"
+    pass
+
+
+
+
 class UserName(PiiType, type="user_name"):  # type: ignore
     name = "User Name"
     type = "user_name"
