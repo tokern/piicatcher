@@ -20,7 +20,9 @@ from piicatcher import (
     Password,
     Person,
     Phone,
+    PoBox,
     UserName,
+    ZipCode,
 )
 from piicatcher.detectors import DatumDetector, MetadataDetector, register_detector
 from piicatcher.generators import SMALL_TABLE_MAX, _filter_text_columns
@@ -51,18 +53,23 @@ class ColumnNameRegexDetector(MetadataDetector):
         Email: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
         BirthDate: re.compile(
             "^.*(date_of_birth|dateofbirth|dob|"
-            "birthday|date_of_death|dateofdeath).*$",
+            "birthday|date_of_death|dateofdeath|birthdate).*$",
             re.IGNORECASE,
         ),
         Gender: re.compile("^.*(gender).*$", re.IGNORECASE),
         Nationality: re.compile("^.*(nationality).*$", re.IGNORECASE),
         Address: re.compile(
-            "^.*(address|city|state|county|country|zipcode|postal|zone|borough).*$",
+            "^.*(address|city|state|county|country|zone|borough).*$",
+            re.IGNORECASE,
+        ),
+        ZipCode: re.compile(
+            "^.*(zipcode|zip_code|postal|postal_code|zip).*$",
             re.IGNORECASE,
         ),
         UserName: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
         Password: re.compile("^.*pass.*$", re.IGNORECASE),
         SSN: re.compile("^.*(ssn|social).*$", re.IGNORECASE),
+        PoBox: re.compile("^.*(po_box|pobox).*$", re.IGNORECASE),
     }
 
     name = "ColumnNameRegexDetector"
@@ -120,6 +127,12 @@ class DatumRegexDetector(DatumDetector):
             return CreditCard()
         if CommonRegex.street_addresses(data):  # pylint: disable=no-member
             return Address()
+        if CommonRegex.ssn_numbers(data):
+            return SSN()
+        if CommonRegex.zip_codes(data):
+            return ZipCode()
+        if CommonRegex.po_boxes(data):
+            return PoBox()
 
         return None
 
