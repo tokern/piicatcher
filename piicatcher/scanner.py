@@ -16,6 +16,7 @@ from piicatcher import (
     CreditCard,
     Email,
     Gender,
+    IPAddress,
     Nationality,
     Password,
     Person,
@@ -75,7 +76,8 @@ class ColumnNameRegexDetector(MetadataDetector):
         ),
         PoBox: re.compile("^.*(po_box|pobox).*$", re.IGNORECASE),
         CreditCard: re.compile(
-            "^.*(credit_card|cc_number|cc_num" "credit_card_num|creditcardnumber).*$",
+            "^.*(credit_card|cc_number|cc_num|creditcard"
+            "credit_card_num|creditcardnumber).*$",
             re.IGNORECASE,
         ),
         Phone: re.compile(
@@ -83,6 +85,7 @@ class ColumnNameRegexDetector(MetadataDetector):
             "telephone|telephone_num|telephone_no).*$",
             re.IGNORECASE,
         ),
+        IPAddress: re.compile("^.*(ip_address|ip).*$", re.IGNORECASE),
     }
 
     name = "ColumnNameRegexDetector"

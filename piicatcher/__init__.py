@@ -71,6 +71,12 @@ class PoBox(PiiType, type="po_box"):  # type: ignore
     pass
 
 
+class IPAddress(PiiType, type="ip_address"):  # type: ignore
+    name = "IP Address"
+    type = "ip_address"
+    pass
+
+
 class UserName(PiiType, type="user_name"):  # type: ignore
     name = "User Name"
     type = "user_name"
