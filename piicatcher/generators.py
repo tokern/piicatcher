@@ -23,7 +23,6 @@ def column_generator(
     include_table_regex_str: List[str] = None,
     exclude_table_regex_str: List[str] = None,
 ) -> Generator[Tuple[CatSchema, CatTable, CatColumn], None, None]:
-
     try:
         for schema, table in table_generator(
             catalog=catalog,
@@ -33,7 +32,6 @@ def column_generator(
             include_table_regex_str=include_table_regex_str,
             exclude_table_regex_str=exclude_table_regex_str,
         ):
-
             for column in catalog.get_columns_for_table(
                 table=table, newer_than=last_run
             ):
@@ -44,9 +42,13 @@ def column_generator(
 
 
 def _get_table_count(
-    schema: CatSchema, table: CatTable, dbinfo: Type[DbInfo], connection
+    schema: CatSchema,
+    table: CatTable,
+    dbinfo: Type[DbInfo],
+    connection,
+    source=CatSource,
 ) -> int:
-    count = dbinfo.get_count_query(schema.name, table.name)
+    count = dbinfo.get_count_query(schema.name, table.name, source.project_id)
     logging.debug("Count Query: %s" % count)
 
     result = connection.execute(count)
@@ -61,17 +63,24 @@ def _get_query(
     column_list: List[CatColumn],
     dbinfo: Type[DbInfo],
     connection,
+    source: CatSource,
     sample_size: int = SMALL_TABLE_MAX,
 ) -> str:
-    count = _get_table_count(schema, table, dbinfo, connection)
+    count = _get_table_count(schema, table, dbinfo, connection, source)
     LOGGER.debug("No. of rows in {}.{} is {}".format(schema.name, table.name, count))
     column_name_list: List[str] = [col.name for col in column_list]
-    query = dbinfo.get_select_query(schema.name, table.name, column_name_list)
+    query = dbinfo.get_select_query(
+        schema.name, table.name, column_name_list, source.project_id
+    )
 
     if count > sample_size:
         try:
             query = dbinfo.get_sample_query(
-                schema.name, table.name, column_name_list, sample_size
+                schema.name,
+                table.name,
+                column_name_list,
+                sample_size,
+                source.project_id,
             )
             LOGGER.debug("Choosing a SAMPLE query as table size is big")
         except NotImplementedError:
@@ -115,7 +124,13 @@ def _filter_text_columns(column_list: List[CatColumn]) -> List[CatColumn]:
     matched_set = set()
     for regex in data_type_regex:
         matched_set |= set(
-            list(filter(lambda m: m.data_type is not None and regex.search(m.data_type) is not None, column_list))
+            list(
+                filter(
+                    lambda m: m.data_type is not None
+                    and regex.search(m.data_type) is not None,
+                    column_list,
+                )
+            )
         )
 
     LOGGER.debug(f"{len(matched_set)} text columns found")
@@ -132,7 +147,6 @@ def data_generator(
     exclude_table_regex_str: List[str] = None,
     sample_size=SMALL_TABLE_MAX,
 ) -> Generator[Tuple[CatSchema, CatTable, CatColumn, str], None, None]:
-
     for schema, table in table_generator(
         catalog=catalog,
         source=source,
@@ -141,7 +155,6 @@ def data_generator(
         include_table_regex_str=include_table_regex_str,
         exclude_table_regex_str=exclude_table_regex_str,
     ):
-
         try:
             columns = _filter_text_columns(
                 catalog.get_columns_for_table(table=table, newer_than=last_run)

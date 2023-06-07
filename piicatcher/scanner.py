@@ -93,13 +93,13 @@ def metadata_scan(
     generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],
 ):
     total_columns = len([c for s, t, c in work_generator])
-
     counter = 0
     set_number = 0
     for schema, table, column in tqdm(
         generator, total=total_columns, desc="columns", unit="columns"
     ):
         counter += 1
+        print("column:", column.fqdn)
         LOGGER.debug("Scanning column name %s", column.fqdn)
         for detector in detectors:
             type = detector.detect(column)
@@ -149,6 +149,7 @@ def data_scan(
     sample_size: int = SMALL_TABLE_MAX,
 ):
     total_columns = _filter_text_columns([c for s, t, c in work_generator])
+    print(total_columns)
     total_work = len(total_columns) * sample_size
 
     counter = 0
@@ -158,6 +159,8 @@ def data_scan(
         generator, total=total_work, desc="datum", unit="datum"
     ):
         counter += 1
+        print("counter:", counter)
+        print("column", column.fqdn)
         LOGGER.debug("Scanning column name %s", column.fqdn)
         if val is not None:
             for detector in detectors:
