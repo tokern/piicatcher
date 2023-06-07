@@ -157,7 +157,7 @@ def test_incremental_tabular_output(setup_incremental):
 
         # List all PII columns
         op = output_tabular(catalog=catalog, source=source)
-        assert len(op) == 9
+        assert len(op) == 11
 
         # List all PII columns with include_filter
         op = output_tabular(
@@ -192,6 +192,13 @@ sqlite_all = {
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Address",
                             "sort_order": 0,
+                        },
+                        {
+                            "data_type": "DATE",
+                            "name": "birthdate",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Birth Date",
+                            "sort_order": 1,
                         },
                         {
                             "data_type": "VARCHAR(255)",
@@ -242,6 +249,13 @@ sqlite_all = {
                             "pii_type": "Address",
                             "sort_order": 14,
                         },
+                        {
+                            "data_type": "VARCHAR(255)",
+                            "name": "zip",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Zip Code",
+                            "sort_order": 15,
+                        },
                     ],
                     "name": "sample",
                 },
@@ -277,6 +291,13 @@ pg_all = {
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Gender",
                             "sort_order": 1,
+                        },
+                        {
+                            "data_type": "date",
+                            "name": "birthdate",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Birth Date",
+                            "sort_order": 2,
                         },
                         {
                             "data_type": "varchar",
@@ -322,6 +343,13 @@ pg_all = {
                         },
                         {
                             "data_type": "varchar",
+                            "name": "zip",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Zip Code",
+                            "sort_order": 9,
+                        },
+                        {
+                            "data_type": "varchar",
                             "name": "email",
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Email",
@@ -358,6 +386,13 @@ mysql_all = {
                     "columns": [
                         {
                             "data_type": "varchar",
+                            "name": "zip",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Zip Code",
+                            "sort_order": 1,
+                        },
+                        {
+                            "data_type": "varchar",
                             "name": "email",
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Email",
@@ -369,6 +404,13 @@ mysql_all = {
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Gender",
                             "sort_order": 8,
+                        },
+                        {
+                            "data_type": "date",
+                            "name": "birthdate",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Birth Date",
+                            "sort_order": 9,
                         },
                         {
                             "data_type": "varchar",
@@ -584,4 +626,4 @@ def test_full_scan(setup_incremental):
                 )
             )
 
-        assert updated_cols == 11
+        assert updated_cols == 13

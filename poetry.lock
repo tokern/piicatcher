@@ -878,16 +878,19 @@ files = [
 test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
 
 [[package]]
-name = "commonregex"
-version = "1.5.2"
-description = "Find all dates, times, emails, phone numbers, links, emails, ip addresses, prices, bitcoin address, and street addresses in a string."
+name = "commonregex-improved"
+version = "1.0.2"
+description = "An improved version of original commonregex. Find all dates, times, emails, phone numbers, links, emails, ip addresses, prices, bitcoin address, and more in a string."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7,<4.0"
 files = [
-    {file = "commonregex-1.5.2.tar.gz", hash = "sha256:09760b06e96dfb682ba49c60cd9f8d180fd6e317565bcac564251cd2dbff382e"},
-    {file = "commonregex-1.5.3.tar.gz", hash = "sha256:3d0389f33e1f61e5412a49f30b157f4c6582452918e72177619b29241e195ef9"},
+    {file = "commonregex_improved-1.0.2-py3-none-any.whl", hash = "sha256:d395e542e8add9a87e0a00157a85d150c3fe33d1ddf37182c7528384c156a519"},
+    {file = "commonregex_improved-1.0.2.tar.gz", hash = "sha256:3058fc11006aeab167204514c5f349b2b2102b8a8052b7b51548636d61b2d635"},
 ]
+
+[package.dependencies]
+regex = ">=2022.4.24,<2023.0.0"
 
 [[package]]
 name = "coverage"
@@ -3810,7 +3813,7 @@ md = ["cmarkgfm (>=0.8.0)"]
 name = "regex"
 version = "2022.10.31"
 description = "Alternative regular expression module, to replace re."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -4060,7 +4063,8 @@ files = [
     {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-win32.whl", hash = "sha256:763d65baa3b952479c4e972669f679fe490eee058d5aa85da483ebae2009d231"},
     {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-win_amd64.whl", hash = "sha256:d000f258cf42fec2b1bbf2863c61d7b8918d31ffee905da62dede869254d3b8a"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:045e0626baf1c52e5527bd5db361bc83180faaba2ff586e763d3d5982a876a9e"},
-    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_12_6_arm64.whl", hash = "sha256:721bc4ba4525f53f6a611ec0967bdcee61b31df5a56801281027a3a6d1c2daf5"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:1a6391a7cabb7641c32517539ca42cf84b87b667bad38b78d4d42dd23e957c81"},
+    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:9c7617df90c1365638916b98cdd9be833d31d337dbcd722485597b43c4a215bf"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:41d0f1fa4c6830176eef5b276af04c89320ea616655d01327d5ce65e50575c94"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win32.whl", hash = "sha256:f6d3d39611ac2e4f62c3128a9eed45f19a6608670c5a2f4f07f24e8de3441d38"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-win_amd64.whl", hash = "sha256:da538167284de58a52109a9b89b8f6a53ff8437dd6dc26d33b57bf6699153122"},
@@ -5106,4 +5110,4 @@ datahub = ["acryl-datahub", "great-expectations"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<=3.10.8"
-content-hash = "20605f0f20802d8a5029feea8affde4d9ab42e637c3cff3af658c446ec8b0ca5"
+content-hash = "5a7eceb6b92abc2d28bbb4ca5cfac469a4b7059312d9b33c15116e03bed3b9d1"

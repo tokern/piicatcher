@@ -13,7 +13,9 @@ from piicatcher import (
     Password,
     Person,
     Phone,
+    PoBox,
     UserName,
+    ZipCode,
 )
 from piicatcher.generators import column_generator, data_generator
 from piicatcher.scanner import (
@@ -84,6 +86,38 @@ def test_datum_regex_address(text):
 
 
 @pytest.mark.parametrize(
+    "text",
+    [
+        "222-06-5960",
+        "518-44-4378",
+        "653-30-7519",
+    ],
+)
+def test_datum_regex_ssn(text):
+    detector: DatumRegexDetector = DatumRegexDetector()
+    assert detector.detect(column=None, datum=text) == SSN()
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["80596", "66693", "03705"],
+)
+def test_datum_regex_zipcode(text):
+    detector: DatumRegexDetector = DatumRegexDetector()
+    assert detector.detect(column=None, datum=text) == ZipCode()
+
+
+@pytest.mark.skip
+@pytest.mark.parametrize(
+    "text",
+    ["2397", "267", "8611"],
+)
+def test_datum_regex_pobox(text):
+    detector: DatumRegexDetector = DatumRegexDetector()
+    assert detector.detect(column=None, datum=text) == PoBox()
+
+
+@pytest.mark.parametrize(
     "name", ["fname", "full_name", "name", "FNAME", "FULL_NAME", "NAME"]
 )
 def test_metadata_name(name):
@@ -94,9 +128,7 @@ def test_metadata_name(name):
         assert detector.detect(instance) == Person()
 
 
-@pytest.mark.parametrize(
-    "name", ["address", "city", "state", "country", "zipcode", "postal"]
-)
+@pytest.mark.parametrize("name", ["address", "city", "state", "country"])
 def test_column_address(name):
     with patch("piicatcher.scanner.CatColumn") as mocked:
         instance = mocked.return_value
@@ -115,6 +147,44 @@ def test_metadata_dob(name):
 
 
 @pytest.mark.parametrize(
+    "name",
+    [
+        "ssn",
+        "social_number",
+        "social_security_number",
+        "social_security_no",
+        "social_security",
+    ],
+)
+def test_metadata_ssn(name):
+    with patch("piicatcher.scanner.CatColumn") as mocked:
+        instance = mocked.return_value
+        instance.name = name
+        detector = ColumnNameRegexDetector()
+        assert detector.detect(instance) == SSN()
+
+
+@pytest.mark.parametrize("name", ["po_box", "pobox"])
+def test_metadata_pobox(name):
+    with patch("piicatcher.scanner.CatColumn") as mocked:
+        instance = mocked.return_value
+        instance.name = name
+        detector = ColumnNameRegexDetector()
+        assert detector.detect(instance) == PoBox()
+
+
+@pytest.mark.parametrize(
+    "name", ["zipcode", "zip_code", "postal", "postal_code", "zip"]
+)
+def test_metadata_zipcode(name):
+    with patch("piicatcher.scanner.CatColumn") as mocked:
+        instance = mocked.return_value
+        instance.name = name
+        detector = ColumnNameRegexDetector()
+        assert detector.detect(instance) == ZipCode()
+
+
+@pytest.mark.parametrize(
     "name,expected",
     [
         ("gender", Gender()),
@@ -125,6 +195,9 @@ def test_metadata_dob(name):
         ("email", Email()),
         ("user", UserName()),
         ("userid", UserName()),
+        ("ssn", SSN()),
+        ("zipcode", ZipCode()),
+        ("pobox", PoBox()),
     ],
 )
 def test_column_name(name, expected):

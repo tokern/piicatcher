@@ -3,7 +3,7 @@ import logging
 import re
 from typing import Generator, List, Optional, Tuple
 
-from commonregex import CommonRegex
+import crim as CommonRegex
 from dbcat.catalog import Catalog
 from dbcat.catalog.models import CatColumn, CatSchema, CatTable
 from dbcat.catalog.pii_types import PiiType
@@ -20,7 +20,9 @@ from piicatcher import (
     Password,
     Person,
     Phone,
+    PoBox,
     UserName,
+    ZipCode,
 )
 from piicatcher.detectors import DatumDetector, MetadataDetector, register_detector
 from piicatcher.generators import SMALL_TABLE_MAX, _filter_text_columns
@@ -51,18 +53,27 @@ class ColumnNameRegexDetector(MetadataDetector):
         Email: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
         BirthDate: re.compile(
             "^.*(date_of_birth|dateofbirth|dob|"
-            "birthday|date_of_death|dateofdeath).*$",
+            "birthday|date_of_death|dateofdeath|birthdate).*$",
             re.IGNORECASE,
         ),
         Gender: re.compile("^.*(gender).*$", re.IGNORECASE),
         Nationality: re.compile("^.*(nationality).*$", re.IGNORECASE),
         Address: re.compile(
-            "^.*(address|city|state|county|country|zipcode|postal|zone|borough).*$",
+            "^.*(address|city|state|county|country|zone|borough).*$",
+            re.IGNORECASE,
+        ),
+        ZipCode: re.compile(
+            "^.*(zipcode|zip_code|postal|postal_code|zip).*$",
             re.IGNORECASE,
         ),
         UserName: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
         Password: re.compile("^.*pass.*$", re.IGNORECASE),
-        SSN: re.compile("^.*(ssn|social).*$", re.IGNORECASE),
+        SSN: re.compile(
+            "^.*(ssn|social_number|social_security|"
+            "social_security_number|social_security_no).*$",
+            re.IGNORECASE,
+        ),
+        PoBox: re.compile("^.*(po_box|pobox).*$", re.IGNORECASE),
     }
 
     name = "ColumnNameRegexDetector"
@@ -110,16 +121,22 @@ class DatumRegexDetector(DatumDetector):
 
     def detect(self, column: CatColumn, datum: str) -> Optional[PiiType]:
         """Scan the text and return an array of PiiTypes that are found"""
-        regex_result = CommonRegex(str(datum))
+        data = str(datum)
 
-        if regex_result.phones:  # pylint: disable=no-member
+        if CommonRegex.phones(data):  # pylint: disable=no-member
             return Phone()
-        if regex_result.emails:  # pylint: disable=no-member
+        if CommonRegex.emails(data):  # pylint: disable=no-member
             return Email()
-        if regex_result.credit_cards:  # pylint: disable=no-member
+        if CommonRegex.credit_cards(data):  # pylint: disable=no-member
             return CreditCard()
-        if regex_result.street_addresses:  # pylint: disable=no-member
+        if CommonRegex.street_addresses(data):  # pylint: disable=no-member
             return Address()
+        if CommonRegex.ssn_numbers(data):  # pylint: disable=no-member
+            return SSN()
+        if CommonRegex.zip_codes(data):  # pylint: disable=no-member
+            return ZipCode()
+        if CommonRegex.po_boxes(data):  # pylint: disable=no-member
+            return PoBox()
 
         return None
 
