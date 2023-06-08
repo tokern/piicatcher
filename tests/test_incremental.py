@@ -157,7 +157,7 @@ def test_incremental_tabular_output(setup_incremental):
 
         # List all PII columns
         op = output_tabular(catalog=catalog, source=source)
-        assert len(op) == 11
+        assert len(op) == 13
 
         # List all PII columns with include_filter
         op = output_tabular(
@@ -202,6 +202,13 @@ sqlite_all = {
                         },
                         {
                             "data_type": "VARCHAR(255)",
+                            "name": "cc_number",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Credit Card",
+                            "sort_order": 4,
+                        },
+                        {
+                            "data_type": "VARCHAR(255)",
                             "name": "city",
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Address",
@@ -241,6 +248,13 @@ sqlite_all = {
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Person",
                             "sort_order": 12,
+                        },
+                        {
+                            "data_type": "VARCHAR(255)",
+                            "name": "phone",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Phone",
+                            "sort_order": 13,
                         },
                         {
                             "data_type": "VARCHAR(255)",
@@ -350,10 +364,24 @@ pg_all = {
                         },
                         {
                             "data_type": "varchar",
+                            "name": "phone",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Phone",
+                            "sort_order": 10,
+                        },
+                        {
+                            "data_type": "varchar",
                             "name": "email",
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Email",
                             "sort_order": 11,
+                        },
+                        {
+                            "data_type": "varchar",
+                            "name": "cc_number",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Credit Card",
+                            "sort_order": 13,
                         },
                     ],
                     "name": "sample",
@@ -393,10 +421,24 @@ mysql_all = {
                         },
                         {
                             "data_type": "varchar",
+                            "name": "phone",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Phone",
+                            "sort_order": 2,
+                        },
+                        {
+                            "data_type": "varchar",
                             "name": "email",
                             "pii_plugin": "ColumnNameRegexDetector",
                             "pii_type": "Email",
                             "sort_order": 3,
+                        },
+                        {
+                            "data_type": "varchar",
+                            "name": "cc_number",
+                            "pii_plugin": "ColumnNameRegexDetector",
+                            "pii_type": "Credit Card",
+                            "sort_order": 5,
                         },
                         {
                             "data_type": "varchar",
@@ -626,4 +668,4 @@ def test_full_scan(setup_incremental):
                 )
             )
 
-        assert updated_cols == 13
+        assert updated_cols == 15
