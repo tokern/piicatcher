@@ -16,7 +16,6 @@ from piicatcher import (
     CreditCard,
     Email,
     Gender,
-    IPAddress,
     Nationality,
     Password,
     Person,
@@ -76,16 +75,15 @@ class ColumnNameRegexDetector(MetadataDetector):
         ),
         PoBox: re.compile("^.*(po_box|pobox).*$", re.IGNORECASE),
         CreditCard: re.compile(
-            "^.*(credit_card|cc_number|cc_num|creditcard"
+            "^.*(credit_card|cc_number|cc_num|creditcard|"
             "credit_card_num|creditcardnumber).*$",
             re.IGNORECASE,
         ),
         Phone: re.compile(
-            "^.*(phone|phone_number|phone_no|phone_num"
+            "^.*(phone|phone_number|phone_no|phone_num|"
             "telephone|telephone_num|telephone_no).*$",
             re.IGNORECASE,
         ),
-        IPAddress: re.compile("^.*(ip_address|ip).*$", re.IGNORECASE),
     }
 
     name = "ColumnNameRegexDetector"
@@ -173,6 +171,9 @@ def data_scan(
         LOGGER.debug("Scanning column name %s", column.fqdn)
         if val is not None:
             for detector in detectors:
+                if column.pii_type is not None:
+                    continue
+
                 type = detector.detect(column=column, datum=val)
                 if type is not None:
                     set_number += 1

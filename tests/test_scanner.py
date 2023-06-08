@@ -9,7 +9,6 @@ from piicatcher import (
     CreditCard,
     Email,
     Gender,
-    IPAddress,
     Nationality,
     Password,
     Person,
@@ -221,15 +220,6 @@ def test_metadata_phone(name):
         assert detector.detect(instance) == Phone()
 
 
-@pytest.mark.parametrize("name", ["ip", "ip_address"])
-def test_metadata_ipaddress(name):
-    with patch("piicatcher.scanner.CatColumn") as mocked:
-        instance = mocked.return_value
-        instance.name = name
-        detector = ColumnNameRegexDetector()
-        assert detector.detect(instance) == IPAddress()
-
-
 @pytest.mark.parametrize(
     "name,expected",
     [
@@ -246,7 +236,6 @@ def test_metadata_ipaddress(name):
         ("pobox", PoBox()),
         ("creditcard", CreditCard()),
         ("phone", Phone()),
-        ("ip", IPAddress()),
     ],
 )
 def test_column_name(name, expected):

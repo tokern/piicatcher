@@ -5,13 +5,13 @@ from typing import Any, Dict, List, Optional, Union
 
 from dbcat.api import scan_sources
 from dbcat.catalog import Catalog, CatSource
+from goog_stats import Stats
 
 from piicatcher import detectors
 from piicatcher.detectors import DatumDetector, MetadataDetector, detector_registry
 from piicatcher.generators import SMALL_TABLE_MAX, column_generator, data_generator
 from piicatcher.output import output_dict, output_tabular
 from piicatcher.scanner import data_scan, metadata_scan
-from goog_stats import Stats
 
 LOGGER = logging.getLogger(__name__)
 
@@ -90,43 +90,45 @@ def scan_database(
                 exclude_table_regex=exclude_table_regex,
             )
 
-            if scan_type == ScanTypeEnum.metadata:
-                Stats().record_event("/pip/piicatcher", "scan_type: {}".format(scan_type))
-                detector_list = [
-                    detector()
-                    for detector in detectors.detector_registry.get_all().values()
-                    if issubclass(detector, MetadataDetector)
-                ]
+            # if scan_type == ScanTypeEnum.metadata:
+            Stats().record_event("/pip/piicatcher", "scan_type: {}".format(scan_type))
+            detector_list = [
+                detector()
+                for detector in detectors.detector_registry.get_all().values()
+                if issubclass(detector, MetadataDetector)
+            ]
 
-                metadata_scan(
+            metadata_scan(
+                catalog=catalog,
+                detectors=detector_list,
+                work_generator=column_generator(
                     catalog=catalog,
-                    detectors=detector_list,
-                    work_generator=column_generator(
-                        catalog=catalog,
-                        source=source,
-                        last_run=last_run,
-                        exclude_schema_regex_str=exclude_schema_regex,
-                        include_schema_regex_str=include_schema_regex,
-                        exclude_table_regex_str=exclude_table_regex,
-                        include_table_regex_str=include_table_regex,
-                    ),
-                    generator=column_generator(
-                        catalog=catalog,
-                        source=source,
-                        last_run=last_run,
-                        exclude_schema_regex_str=exclude_schema_regex,
-                        include_schema_regex_str=include_schema_regex,
-                        exclude_table_regex_str=exclude_table_regex,
-                        include_table_regex_str=include_table_regex,
-                    ),
-                )
-            else:
+                    source=source,
+                    last_run=last_run,
+                    exclude_schema_regex_str=exclude_schema_regex,
+                    include_schema_regex_str=include_schema_regex,
+                    exclude_table_regex_str=exclude_table_regex,
+                    include_table_regex_str=include_table_regex,
+                ),
+                generator=column_generator(
+                    catalog=catalog,
+                    source=source,
+                    last_run=last_run,
+                    exclude_schema_regex_str=exclude_schema_regex,
+                    include_schema_regex_str=include_schema_regex,
+                    exclude_table_regex_str=exclude_table_regex,
+                    include_table_regex_str=include_table_regex,
+                ),
+            )
+            if scan_type != ScanTypeEnum.metadata:
                 detector_list = [
                     detector()
                     for detector in detectors.detector_registry.get_all().values()
                     if issubclass(detector, DatumDetector)
                 ]
-                Stats().record_event("/pip/piicatcher", "scan_type: {}".format(scan_type))
+                Stats().record_event(
+                    "/pip/piicatcher", "scan_type: {}".format(scan_type)
+                )
                 data_scan(
                     catalog=catalog,
                     detectors=detector_list,
