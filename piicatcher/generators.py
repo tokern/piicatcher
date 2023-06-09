@@ -81,13 +81,21 @@ def _get_query(
 
     if count > sample_size:
         try:
-            query = dbinfo.get_sample_query(
-                schema.name,
-                table.name,
-                column_name_list,
-                sample_size,
-                source.project_id,
-            )
+            if source.source_type == "bigquery":
+                query = dbinfo.get_sample_query(
+                    schema.name,
+                    table.name,
+                    column_name_list,
+                    sample_size,
+                    source.project_id,
+                )
+            else:
+                query = dbinfo.get_sample_query(
+                    schema.name,
+                    table.name,
+                    column_name_list,
+                    sample_size,
+                )
             LOGGER.debug("Choosing a SAMPLE query as table size is big")
         except NotImplementedError:
             LOGGER.warning(
