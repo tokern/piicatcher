@@ -176,10 +176,6 @@ def test_get_sample_query(sqlalchemy_engine):
             "athena",
             'SELECT "column" FROM public.table TABLESAMPLE BERNOULLI (10) LIMIT 1',
         ),
-        (
-            "bigquery",
-            "SELECT column FROM project.public.table ORDER BY RAND() LIMIT 1",
-        ),
     ],
 )
 def test_get_sample_query_redshift(mocker, source_type, expected_query):
@@ -202,6 +198,15 @@ def test_get_sample_query_redshift(mocker, source_type, expected_query):
     assert query == expected_query
 
 
+@pytest.mark.parametrize(
+    ("source_type", "expected_query"),
+    [
+        (
+            "bigquery",
+            "SELECT column FROM project.public.table ORDER BY RAND() LIMIT 1",
+        )
+    ],
+)
 def test_get_sample_query_bigquery(mocker, source_type, expected_query):
     source = CatSource(name="src", project_id="project", source_type=source_type)
     schema = CatSchema(source=source, name="public")
