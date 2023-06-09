@@ -8,12 +8,8 @@ class DbInfo(ABC):
     _column_escape = '"'
 
     @classmethod
-    def get_count_query(
-        cls, schema_name: str, table_name: str, project_id: Optional[str] = None
-    ) -> str:
-        return cls._count_query.format(
-            schema_name=schema_name, table_name=table_name, project_id=project_id
-        )
+    def get_count_query(cls, schema_name: str, table_name: str) -> str:
+        return cls._count_query.format(schema_name=schema_name, table_name=table_name)
 
     @classmethod
     def get_select_query(
@@ -94,8 +90,33 @@ class Redshift(Postgres):
     _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} ORDER BY RANDOM() LIMIT {num_rows}"
 
 
-class BigQuery(Postgres):
+class BigQuery:
+    _count_query = "select count(*) from {project_id}.{schema_name}.{table_name}"
+    _query_template = (
+        "SELECT {column_list} FROM {project_id}.{schema_name}.{table_name}"
+    )
     _sample_query_template = "SELECT {column_list} FROM {project_id}.{schema_name}.{table_name} ORDER BY RAND() LIMIT {num_rows}"
+
+    @classmethod
+    def get_count_query(cls, schema_name: str, table_name: str, project_id: str) -> str:
+        return cls._count_query.format(
+            project_id=project_id, schema_name=schema_name, table_name=table_name
+        )
+
+    @classmethod
+    def get_select_query(
+        cls,
+        schema_name: str,
+        table_name: str,
+        column_list: List[str],
+        project_id: Optional[str] = None,
+    ) -> str:
+        return cls._query_template.format(
+            column_list=",".join(column_list),
+            schema_name=schema_name,
+            table_name=table_name,
+            project_id=project_id,
+        )
 
     @classmethod
     def get_sample_query(

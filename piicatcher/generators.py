@@ -48,7 +48,10 @@ def _get_table_count(
     connection,
     source=CatSource,
 ) -> int:
-    count = dbinfo.get_count_query(schema.name, table.name, source.project_id)
+    if source.source_type == "bigquery":
+        count = dbinfo.get_count_query(schema.name, table.name, source.project_id)
+    else:
+        count = dbinfo.get_count_query(schema.name, table.name)
     logging.debug("Count Query: %s" % count)
 
     result = connection.execute(count)
@@ -97,7 +100,10 @@ def _row_generator(
     column_list: List[CatColumn],
     sample_size=SMALL_TABLE_MAX,
 ):
-    engine = create_engine(source.conn_string)
+    if source.source_type == "bigquery":
+        engine = create_engine(source.conn_string, credentials_path=source.key_path)
+    else:
+        engine = create_engine(source.conn_string)
     with engine.connect() as conn:
         dbinfo = get_dbinfo(source.source_type)
         query = _get_query(
@@ -106,6 +112,7 @@ def _row_generator(
             column_list=column_list,
             dbinfo=dbinfo,
             connection=conn,
+            source=source,
             sample_size=sample_size,
         )
         LOGGER.debug(query)
@@ -156,9 +163,10 @@ def data_generator(
         exclude_table_regex_str=exclude_table_regex_str,
     ):
         try:
-            columns = _filter_text_columns(
-                catalog.get_columns_for_table(table=table, newer_than=last_run)
-            )
+            columns = catalog.get_columns_for_table(table=table, newer_than=last_run)
+            if source.source_type != "bigquery":
+                columns = _filter_text_columns(columns)
+
             if len(columns) > 0:
                 for row in _row_generator(
                     column_list=columns,
