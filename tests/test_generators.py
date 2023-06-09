@@ -120,14 +120,14 @@ def test_get_query(sqlalchemy_engine):
     table = catalog.get_table(
         source_name=source.name, schema_name=schemata[0].name, table_name="full_pii"
     )
-    query = _get_query(
-        schema=schemata[0],
-        table=table,
-        column_list=catalog.get_columns_for_table(table),
-        dbinfo=get_dbinfo(source.source_type),
-        connection=conn,
-        source=source,
-    )
+    if source.source_type != "bigquery":
+        query = _get_query(
+            schema=schemata[0],
+            table=table,
+            column_list=catalog.get_columns_for_table(table),
+            dbinfo=get_dbinfo(source.source_type),
+            connection=conn,
+        )
 
     if source.source_type == "mysql":
         assert query == """select `name`,`state` from piidb.full_pii"""
@@ -143,15 +143,15 @@ def test_get_sample_query(sqlalchemy_engine):
     table = catalog.get_table(
         source_name=source.name, schema_name=schemata[0].name, table_name="full_pii"
     )
-    query = _get_query(
-        schema=schemata[0],
-        table=table,
-        column_list=catalog.get_columns_for_table(table),
-        dbinfo=get_dbinfo(source.source_type),
-        connection=conn,
-        sample_size=1,
-        source=source,
-    )
+    if source.source_type != "bigquery":
+        query = _get_query(
+            schema=schemata[0],
+            table=table,
+            column_list=catalog.get_columns_for_table(table),
+            dbinfo=get_dbinfo(source.source_type),
+            connection=conn,
+            sample_size=1,
+        )
 
     if source.source_type == "mysql":
         assert query == """select `name`,`state` from piidb.full_pii limit 1"""
@@ -196,6 +196,7 @@ def test_get_sample_query_redshift(mocker, source_type, expected_query):
         dbinfo=get_dbinfo(source_type=source.source_type),
         connection=None,
         sample_size=1,
+        source=source,
     )
 
     assert query == expected_query

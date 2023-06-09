@@ -72,9 +72,12 @@ def _get_query(
     count = _get_table_count(schema, table, dbinfo, connection, source)
     LOGGER.debug("No. of rows in {}.{} is {}".format(schema.name, table.name, count))
     column_name_list: List[str] = [col.name for col in column_list]
-    query = dbinfo.get_select_query(
-        schema.name, table.name, column_name_list, source.project_id
-    )
+    if source.source_type == "bigquery":
+        query = dbinfo.get_select_query(
+            schema.name, table.name, column_name_list, source.project_id
+        )
+    else:
+        query = dbinfo.get_select_query(schema.name, table.name, column_name_list)
 
     if count > sample_size:
         try:
