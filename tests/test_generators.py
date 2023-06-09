@@ -21,7 +21,8 @@ def sqlalchemy_engine(
     catalog, source_id = load_data_and_pull
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
-        engine = create_engine(source.conn_string)
+        if source.source_type != "bigquery":
+            engine = create_engine(source.conn_string)
         with engine.connect() as conn:
             yield catalog, source, conn
 
@@ -107,6 +108,7 @@ def test_get_table_count(sqlalchemy_engine):
         table=table,
         dbinfo=get_dbinfo(source.source_type),
         connection=conn,
+        source=source,
     )
 
     assert table_count == 2
@@ -124,6 +126,7 @@ def test_get_query(sqlalchemy_engine):
         column_list=catalog.get_columns_for_table(table),
         dbinfo=get_dbinfo(source.source_type),
         connection=conn,
+        source=source,
     )
 
     if source.source_type == "mysql":
@@ -147,6 +150,7 @@ def test_get_sample_query(sqlalchemy_engine):
         dbinfo=get_dbinfo(source.source_type),
         connection=conn,
         sample_size=1,
+        source=source,
     )
 
     if source.source_type == "mysql":
@@ -172,6 +176,10 @@ def test_get_sample_query(sqlalchemy_engine):
             "athena",
             'SELECT "column" FROM public.table TABLESAMPLE BERNOULLI (10) LIMIT 1',
         ),
+        (
+            "bigquery",
+            "SELECT column FROM project.public.table ORDER BY RAND() LIMIT 1",
+        ),
     ],
 )
 def test_get_sample_query_redshift(mocker, source_type, expected_query):
@@ -188,6 +196,54 @@ def test_get_sample_query_redshift(mocker, source_type, expected_query):
         dbinfo=get_dbinfo(source_type=source.source_type),
         connection=None,
         sample_size=1,
+    )
+
+    assert query == expected_query
+
+
+def test_get_sample_query_bigquery(mocker, source_type, expected_query):
+    source = CatSource(name="src", project_id="project", source_type=source_type)
+    schema = CatSchema(source=source, name="public")
+    table = CatTable(schema=schema, name="table")
+    column = CatColumn(table=table, name="column")
+
+    mocker.patch("piicatcher.generators._get_table_count", return_value=100)
+    query = _get_query(
+        schema=schema,
+        table=table,
+        column_list=[column],
+        dbinfo=get_dbinfo(source_type=source.source_type),
+        connection=None,
+        sample_size=1,
+        source=source,
+    )
+
+    assert query == expected_query
+
+
+@pytest.mark.parametrize(
+    ("source_type", "expected_query"),
+    [
+        (
+            "bigquery",
+            "SELECT column FROM project.public.table",
+        ),
+    ],
+)
+def test_get_select_query_bigquery(mocker, source_type, expected_query):
+    source = CatSource(name="src", project_id="project", source_type=source_type)
+    schema = CatSchema(source=source, name="public")
+    table = CatTable(schema=schema, name="table")
+    column = CatColumn(table=table, name="column")
+
+    mocker.patch("piicatcher.generators._get_table_count", return_value=100)
+    query = _get_query(
+        schema=schema,
+        table=table,
+        column_list=[column],
+        dbinfo=get_dbinfo(source_type=source.source_type),
+        connection=None,
+        source=source,
     )
 
     assert query == expected_query
