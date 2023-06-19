@@ -90,7 +90,6 @@ def scan_database(
                 exclude_table_regex=exclude_table_regex,
             )
 
-            # if scan_type == ScanTypeEnum.metadata:
             Stats().record_event("/pip/piicatcher", "scan_type: {}".format(scan_type))
             detector_list = [
                 detector()
