@@ -47,7 +47,7 @@ class ColumnNameRegexDetector(MetadataDetector):
         Person: re.compile(
             "^.*(firstname|fname|lastname|lname|"
             "fullname|maidenname|_name|"
-            "nickname|name_suffix|name).*$",
+            "nickname|name_suffix|name|person).*$",
             re.IGNORECASE,
         ),
         Email: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
@@ -74,6 +74,16 @@ class ColumnNameRegexDetector(MetadataDetector):
             re.IGNORECASE,
         ),
         PoBox: re.compile("^.*(po_box|pobox).*$", re.IGNORECASE),
+        CreditCard: re.compile(
+            "^.*(credit_card|cc_number|cc_num|creditcard|"
+            "credit_card_num|creditcardnumber).*$",
+            re.IGNORECASE,
+        ),
+        Phone: re.compile(
+            "^.*(phone|phone_number|phone_no|phone_num|"
+            "telephone|telephone_num|telephone_no).*$",
+            re.IGNORECASE,
+        ),
     }
 
     name = "ColumnNameRegexDetector"
