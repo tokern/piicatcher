@@ -171,9 +171,6 @@ def data_scan(
         LOGGER.debug("Scanning column name %s", column.fqdn)
         if val is not None:
             for detector in detectors:
-                if column.pii_type is not None:
-                    continue
-
                 type = detector.detect(column=column, datum=val)
                 if type is not None:
                     set_number += 1
