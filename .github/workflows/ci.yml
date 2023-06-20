@@ -35,7 +35,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       mariadb:
-        image: mariadb@sha256:b11a86131ac592eaabede175b3547d12d2c96d63c71936af28217ffc3bb3fee2
+        image: mariadb:10.11.4
         ports:
           - 3306:3306
         env:
