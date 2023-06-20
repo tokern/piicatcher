@@ -185,6 +185,42 @@ def test_metadata_zipcode(name):
 
 
 @pytest.mark.parametrize(
+    "name",
+    [
+        "credit_card",
+        "cc_number",
+        "cc_num",
+        "credit_card_num",
+        "creditcardnumber",
+    ],
+)
+def test_metadata_creditcard(name):
+    with patch("piicatcher.scanner.CatColumn") as mocked:
+        instance = mocked.return_value
+        instance.name = name
+        detector = ColumnNameRegexDetector()
+        assert detector.detect(instance) == CreditCard()
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "phone",
+        "phone_number",
+        "phone_no",
+        "telephone_num",
+        "telephone",
+    ],
+)
+def test_metadata_phone(name):
+    with patch("piicatcher.scanner.CatColumn") as mocked:
+        instance = mocked.return_value
+        instance.name = name
+        detector = ColumnNameRegexDetector()
+        assert detector.detect(instance) == Phone()
+
+
+@pytest.mark.parametrize(
     "name,expected",
     [
         ("gender", Gender()),
@@ -198,6 +234,8 @@ def test_metadata_zipcode(name):
         ("ssn", SSN()),
         ("zipcode", ZipCode()),
         ("pobox", PoBox()),
+        ("creditcard", CreditCard()),
+        ("phone", Phone()),
     ],
 )
 def test_column_name(name, expected):
