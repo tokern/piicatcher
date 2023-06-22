@@ -8,16 +8,12 @@ class DbInfo(ABC):
     _column_escape = '"'
 
     @classmethod
-    def get_count_query(cls, schema_name: str, table_name: str) -> str:
+    def get_count_query(cls, schema_name: str, table_name: str, *args, **kwargs) -> str:
         return cls._count_query.format(schema_name=schema_name, table_name=table_name)
 
     @classmethod
     def get_select_query(
-        cls,
-        schema_name: str,
-        table_name: str,
-        column_list: List[str],
-        project_id: Optional[str] = None,
+        cls, schema_name: str, table_name: str, column_list: List[str], *args, **kwargs
     ) -> str:
         return cls._query_template.format(
             column_list="{col_list}".format(
@@ -28,12 +24,13 @@ class DbInfo(ABC):
             ),
             schema_name=schema_name,
             table_name=table_name,
-            project_id=project_id,
         )
 
     @classmethod
     @abstractmethod
-    def get_sample_query(cls, schema_name, table_name, column_list, num_rows) -> str:
+    def get_sample_query(
+        cls, schema_name, table_name, column_list, num_rows, *args, **kwargs
+    ) -> str:
         pass
 
 
@@ -43,7 +40,7 @@ class Sqlite(DbInfo):
 
     @classmethod
     def get_select_query(
-        cls, schema_name: str, table_name: str, column_list: List[str]
+        cls, schema_name: str, table_name: str, column_list: List[str], *args, **kwargs
     ) -> str:
         return cls._query_template.format(
             column_list='"{0}"'.format('","'.join(col for col in column_list)),
@@ -51,7 +48,9 @@ class Sqlite(DbInfo):
         )
 
     @classmethod
-    def get_sample_query(cls, schema_name, table_name, column_list, num_rows) -> str:
+    def get_sample_query(
+        cls, schema_name, table_name, column_list, num_rows, *args, **kwargs
+    ) -> str:
         raise NotImplementedError
 
 
@@ -62,7 +61,9 @@ class MySQL(DbInfo):
     _column_escape = "`"
 
     @classmethod
-    def get_sample_query(cls, schema_name, table_name, column_list, num_rows) -> str:
+    def get_sample_query(
+        cls, schema_name, table_name, column_list, num_rows, *args, **kwargs
+    ) -> str:
         return cls._sample_query_template.format(
             column_list="`{0}`".format("`,`".join(col for col in column_list)),
             schema_name=schema_name,
@@ -76,7 +77,13 @@ class Postgres(DbInfo):
 
     @classmethod
     def get_sample_query(
-        cls, schema_name: str, table_name: str, column_list: List[str], num_rows
+        cls,
+        schema_name: str,
+        table_name: str,
+        column_list: List[str],
+        num_rows,
+        *args,
+        **kwargs
     ) -> str:
         return cls._sample_query_template.format(
             column_list='"{0}"'.format('","'.join(col for col in column_list)),
@@ -90,7 +97,7 @@ class Redshift(Postgres):
     _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} ORDER BY RANDOM() LIMIT {num_rows}"
 
 
-class BigQuery:
+class BigQuery(DbInfo):
     _count_query = "select count(*) from {project_id}.{schema_name}.{table_name}"
     _query_template = (
         "SELECT {column_list} FROM {project_id}.{schema_name}.{table_name}"
@@ -98,7 +105,9 @@ class BigQuery:
     _sample_query_template = "SELECT {column_list} FROM {project_id}.{schema_name}.{table_name} ORDER BY RAND() LIMIT {num_rows}"
 
     @classmethod
-    def get_count_query(cls, schema_name: str, table_name: str, project_id: str) -> str:
+    def get_count_query(
+        cls, schema_name: str, table_name: str, project_id: str, *args, **kwargs
+    ) -> str:
         return cls._count_query.format(
             project_id=project_id, schema_name=schema_name, table_name=table_name
         )
@@ -110,6 +119,8 @@ class BigQuery:
         table_name: str,
         column_list: List[str],
         project_id: Optional[str] = None,
+        *args,
+        **kwargs
     ) -> str:
         return cls._query_template.format(
             column_list=",".join(column_list),
@@ -126,6 +137,8 @@ class BigQuery:
         column_list: List[str],
         num_rows,
         project_id: Optional[str] = None,
+        *args,
+        **kwargs
     ) -> str:
         return cls._sample_query_template.format(
             column_list=",".join(column_list),
@@ -141,7 +154,13 @@ class Snowflake(DbInfo):
 
     @classmethod
     def get_sample_query(
-        cls, schema_name: str, table_name: str, column_list: List[str], num_rows
+        cls,
+        schema_name: str,
+        table_name: str,
+        column_list: List[str],
+        num_rows,
+        *args,
+        **kwargs
     ) -> str:
         return cls._sample_query_template.format(
             column_list=",".join(column_list),
@@ -155,19 +174,19 @@ class Athena(Postgres):
     pass
 
 
-def get_dbinfo(source_type: str) -> Type[DbInfo]:
+def get_dbinfo(source_type: str, *args, **kwargs) -> Type[DbInfo]:
     if source_type == "sqlite":
-        return Sqlite
+        return Sqlite(*args, **kwargs)
     elif source_type == "mysql":
-        return MySQL
+        return MySQL(*args, **kwargs)
     elif source_type == "postgresql":
-        return Postgres
+        return Postgres(*args, **kwargs)
     elif source_type == "redshift":
-        return Redshift
+        return Redshift(*args, **kwargs)
     elif source_type == "snowflake":
-        return Snowflake
+        return Snowflake(*args, **kwargs)
     elif source_type == "athena":
-        return Athena
+        return Athena(*args, **kwargs)
     elif source_type == "bigquery":
-        return BigQuery
+        return BigQuery(*args, **kwargs)
     raise AttributeError

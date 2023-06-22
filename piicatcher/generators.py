@@ -48,10 +48,7 @@ def _get_table_count(
     connection,
     source=CatSource,
 ) -> int:
-    if source.source_type == "bigquery":
-        count = dbinfo.get_count_query(schema.name, table.name, source.project_id)
-    else:
-        count = dbinfo.get_count_query(schema.name, table.name)
+    count = dbinfo.get_count_query(schema.name, table.name, source.project_id)
     logging.debug("Count Query: %s" % count)
 
     result = connection.execute(count)
@@ -72,30 +69,19 @@ def _get_query(
     count = _get_table_count(schema, table, dbinfo, connection, source)
     LOGGER.debug("No. of rows in {}.{} is {}".format(schema.name, table.name, count))
     column_name_list: List[str] = [col.name for col in column_list]
-    if source.source_type == "bigquery":
-        query = dbinfo.get_select_query(
-            schema.name, table.name, column_name_list, source.project_id
-        )
-    else:
-        query = dbinfo.get_select_query(schema.name, table.name, column_name_list)
+    query = dbinfo.get_select_query(
+        schema.name, table.name, column_name_list, source.project_id
+    )
 
     if count > sample_size:
         try:
-            if source.source_type == "bigquery":
-                query = dbinfo.get_sample_query(
-                    schema.name,
-                    table.name,
-                    column_name_list,
-                    sample_size,
-                    source.project_id,
-                )
-            else:
-                query = dbinfo.get_sample_query(
-                    schema.name,
-                    table.name,
-                    column_name_list,
-                    sample_size,
-                )
+            query = dbinfo.get_sample_query(
+                schema.name,
+                table.name,
+                column_name_list,
+                sample_size,
+                source.project_id,
+            )
             LOGGER.debug("Choosing a SAMPLE query as table size is big")
         except NotImplementedError:
             LOGGER.warning(

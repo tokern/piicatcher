@@ -22,6 +22,8 @@ def sqlalchemy_engine(
     with catalog.managed_session:
         source = catalog.get_source_by_id(source_id)
         if source.source_type != "bigquery":
+            engine = create_engine(source.conn_string, credentials_path=source.key_path)
+        else:
             engine = create_engine(source.conn_string)
         with engine.connect() as conn:
             yield catalog, source, conn
