@@ -122,7 +122,7 @@ def _row_generator(
 
 def _filter_text_columns(column_list: List[CatColumn]) -> List[CatColumn]:
     data_type_regex = [
-        re.compile(exp, re.IGNORECASE) for exp in [".*char.*", ".*text.*"]
+        re.compile(exp, re.IGNORECASE) for exp in [".*char.*", ".*text.*", ".*string.*"]
     ]
 
     matched_set = set()
@@ -161,8 +161,7 @@ def data_generator(
     ):
         try:
             columns = catalog.get_columns_for_table(table=table, newer_than=last_run)
-            if source.source_type != "bigquery":
-                columns = _filter_text_columns(columns)
+            columns = _filter_text_columns(columns)
 
             if len(columns) > 0:
                 for row in _row_generator(
