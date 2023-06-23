@@ -90,8 +90,8 @@ class BigQuery(DbInfo):
     )
     _sample_query_template = "SELECT {column_list} FROM {project_id}.{schema_name}.{table_name} ORDER BY RAND() LIMIT {num_rows}"
 
-    def __init__(self, schema_name: str, table_name: str, project_id: str) -> None:
-        super().__init__(schema_name, table_name)
+    def __init__(self, schema: CatSchema, table: CatTable, project_id: str) -> None:
+        super().__init__(schema, table)
         self.project_id = project_id
 
     def get_count_query(self) -> str:
