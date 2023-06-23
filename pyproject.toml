@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "piicatcher"
-version = "0.20.3"
+version = "0.21.0"
 description = "Find PII data in databases"
 authors = ["Tokern <info@tokern.io>"]
 license = "Apache 2.0"
@@ -16,7 +16,7 @@ classifiers = [
         "Topic :: Software Development",
         "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-keywords=["pii","postgres","snowflake","redshift","athena"]
+keywords=["pii","postgres","snowflake","redshift","athena","bigquery"]
 readme="README.md"
 homepage="https://tokern.io/"
 repository="https://github.com/tokern/piicatcher/"
