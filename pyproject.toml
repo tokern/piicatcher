@@ -28,10 +28,12 @@ pyyaml = "*"
 click = "*"
 python-json-logger = "^2.0.2"
 commonregex-improved = "1.0.2"
-dbcat = "^0.13.1"
+dbcat = "0.14.0"
 typer = "^0.4.0"
 goog-stats = "^0.1.2"
 tabulate = "^0.8.9"
+sqlalchemy-bigquery = "1.6.1"
+google-cloud-bigquery-storage = "2.20.0"
 dataclasses = {version = ">=0.6", markers="python_version >= '3.8' and python_version <= '3.10'"}
 great-expectations = {version = "^0.13.42", optional = true}
 acryl-datahub = {version = "^0.8.16", optional = true}

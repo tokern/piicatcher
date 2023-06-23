@@ -103,7 +103,6 @@ def metadata_scan(
     generator: Generator[Tuple[CatSchema, CatTable, CatColumn], None, None],
 ):
     total_columns = len([c for s, t, c in work_generator])
-
     counter = 0
     set_number = 0
     for schema, table, column in tqdm(
