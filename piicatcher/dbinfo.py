@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Type
+from typing import List
 
 from dbcat.catalog import CatSchema, CatTable
 
@@ -146,7 +146,7 @@ class Athena(Postgres):
     pass
 
 
-def get_dbinfo(source_type: str, *args, **kwargs) -> Type[DbInfo]:
+def get_dbinfo(source_type: str, *args, **kwargs) -> DbInfo:
     if source_type == "sqlite":
         return Sqlite(*args, **kwargs)
     elif source_type == "mysql":

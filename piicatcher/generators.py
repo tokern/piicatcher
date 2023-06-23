@@ -1,7 +1,7 @@
 import datetime
 import logging
 import re
-from typing import Generator, List, Optional, Tuple, Type
+from typing import Generator, List, Optional, Tuple
 
 from dbcat.catalog import Catalog, CatColumn, CatSchema, CatSource, CatTable
 from dbcat.generators import NoMatchesError, table_generator
@@ -44,7 +44,7 @@ def column_generator(
 def _get_table_count(
     schema: CatSchema,
     table: CatTable,
-    dbinfo: Type[DbInfo],
+    dbinfo: DbInfo,
     connection,
     source=CatSource,
 ) -> int:
@@ -61,7 +61,7 @@ def _get_query(
     schema: CatSchema,
     table: CatTable,
     column_list: List[CatColumn],
-    dbinfo: Type[DbInfo],
+    dbinfo: DbInfo,
     connection,
     source: CatSource,
     sample_size: int = SMALL_TABLE_MAX,
