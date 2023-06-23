@@ -26,7 +26,7 @@ scheduling of scans. It also provides powerful options to include or exclude sch
 There are ingestion functions for both [Datahub](https://datahubproject.io) and [Amundsen](https://amundsen.io) which will tag columns 
 and tables with PII and the type of PII tags.
 
-![PIIcatcher Screencast](https://user-images.githubusercontent.com/1638298/143765818-87c7059a-f971-447b-83ca-e21182e28051.gif)
+![PIIcatcher Screencast](https://tokern.io/static/piicatcher-2023-96c7c0d73e20427528633b4f0a0e25f4.gif)
 
 
 ## Resources
@@ -135,6 +135,7 @@ PIICatcher supports the following databases:
 4. **AWS Redshift**
 5. **AWS Athena**
 6. **Snowflake**
+7. **BigQuery**
 
 ## Documentation
 
