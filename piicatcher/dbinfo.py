@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Type
+from typing import List, Type
+
+from dbcat.catalog import CatSchema, CatTable
 
 
 class DbInfo(ABC):
@@ -7,30 +9,32 @@ class DbInfo(ABC):
     _count_query = "select count(*) from {schema_name}.{table_name}"
     _column_escape = '"'
 
-    @classmethod
-    def get_count_query(cls, schema_name: str, table_name: str, *args, **kwargs) -> str:
-        return cls._count_query.format(schema_name=schema_name, table_name=table_name)
+    def __init__(self, schema: CatSchema, table: CatTable) -> None:
+        super().__init__()
+        self.schema_name = schema.name
+        self.table_name = table.name
 
-    @classmethod
-    def get_select_query(
-        cls, schema_name: str, table_name: str, column_list: List[str], *args, **kwargs
-    ) -> str:
-        return cls._query_template.format(
+    def get_count_query(self) -> str:
+        return self._count_query.format(
+            schema_name=self.schema_name, table_name=self.table_name
+        )
+
+    def get_select_query(self, column_list: List[str]) -> str:
+        return self._query_template.format(
             column_list="{col_list}".format(
                 col_list=",".join(
-                    "{escape}{name}{escape}".format(name=col, escape=cls._column_escape)
+                    "{escape}{name}{escape}".format(
+                        name=col, escape=self._column_escape
+                    )
                     for col in column_list
                 ),
             ),
-            schema_name=schema_name,
-            table_name=table_name,
+            schema_name=self.schema_name,
+            table_name=self.table_name,
         )
 
-    @classmethod
     @abstractmethod
-    def get_sample_query(
-        cls, schema_name, table_name, column_list, num_rows, *args, **kwargs
-    ) -> str:
+    def get_sample_query(self, column_list, num_rows) -> str:
         pass
 
 
@@ -38,19 +42,13 @@ class Sqlite(DbInfo):
     _query_template = "select {column_list} from {table_name}"
     _count_query = "select count(*) from {table_name}"
 
-    @classmethod
-    def get_select_query(
-        cls, schema_name: str, table_name: str, column_list: List[str], *args, **kwargs
-    ) -> str:
-        return cls._query_template.format(
+    def get_select_query(self, column_list: List[str]) -> str:
+        return self._query_template.format(
             column_list='"{0}"'.format('","'.join(col for col in column_list)),
-            table_name=table_name,
+            table_name=self.table_name,
         )
 
-    @classmethod
-    def get_sample_query(
-        cls, schema_name, table_name, column_list, num_rows, *args, **kwargs
-    ) -> str:
+    def get_sample_query(self, column_list, num_rows) -> str:
         raise NotImplementedError
 
 
@@ -60,14 +58,11 @@ class MySQL(DbInfo):
     )
     _column_escape = "`"
 
-    @classmethod
-    def get_sample_query(
-        cls, schema_name, table_name, column_list, num_rows, *args, **kwargs
-    ) -> str:
-        return cls._sample_query_template.format(
+    def get_sample_query(self, column_list, num_rows) -> str:
+        return self._sample_query_template.format(
             column_list="`{0}`".format("`,`".join(col for col in column_list)),
-            schema_name=schema_name,
-            table_name=table_name,
+            schema_name=self.schema_name,
+            table_name=self.table_name,
             num_rows=num_rows,
         )
 
@@ -75,20 +70,11 @@ class MySQL(DbInfo):
 class Postgres(DbInfo):
     _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} TABLESAMPLE BERNOULLI (10) LIMIT {num_rows}"
 
-    @classmethod
-    def get_sample_query(
-        cls,
-        schema_name: str,
-        table_name: str,
-        column_list: List[str],
-        num_rows,
-        *args,
-        **kwargs
-    ) -> str:
-        return cls._sample_query_template.format(
+    def get_sample_query(self, column_list: List[str], num_rows) -> str:
+        return self._sample_query_template.format(
             column_list='"{0}"'.format('","'.join(col for col in column_list)),
-            schema_name=schema_name,
-            table_name=table_name,
+            schema_name=self.schema_name,
+            table_name=self.table_name,
             num_rows=num_rows,
         )
 
@@ -104,68 +90,54 @@ class BigQuery(DbInfo):
     )
     _sample_query_template = "SELECT {column_list} FROM {project_id}.{schema_name}.{table_name} ORDER BY RAND() LIMIT {num_rows}"
 
-    @classmethod
-    def get_count_query(
-        cls, schema_name: str, table_name: str, project_id: str, *args, **kwargs
-    ) -> str:
-        return cls._count_query.format(
-            project_id=project_id, schema_name=schema_name, table_name=table_name
+    def __init__(self, schema_name: str, table_name: str, project_id: str) -> None:
+        super().__init__(schema_name, table_name)
+        self.project_id = project_id
+
+    def get_count_query(self) -> str:
+        return self._count_query.format(
+            project_id=self.project_id,
+            schema_name=self.schema_name,
+            table_name=self.table_name,
         )
 
-    @classmethod
     def get_select_query(
-        cls,
-        schema_name: str,
-        table_name: str,
+        self,
         column_list: List[str],
-        project_id: Optional[str] = None,
-        *args,
-        **kwargs
     ) -> str:
-        return cls._query_template.format(
+        return self._query_template.format(
             column_list=",".join(column_list),
-            schema_name=schema_name,
-            table_name=table_name,
-            project_id=project_id,
+            schema_name=self.schema_name,
+            table_name=self.table_name,
+            project_id=self.project_id,
         )
 
-    @classmethod
     def get_sample_query(
-        cls,
-        schema_name: str,
-        table_name: str,
+        self,
         column_list: List[str],
-        num_rows,
-        project_id: Optional[str] = None,
-        *args,
-        **kwargs
+        num_rows: int,
     ) -> str:
-        return cls._sample_query_template.format(
+        return self._sample_query_template.format(
             column_list=",".join(column_list),
-            schema_name=schema_name,
-            table_name=table_name,
+            schema_name=self.schema_name,
+            table_name=self.table_name,
             num_rows=num_rows,
-            project_id=project_id,
+            project_id=self.project_id,
         )
 
 
 class Snowflake(DbInfo):
     _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} TABLESAMPLE BERNOULLI ({num_rows} ROWS)"
 
-    @classmethod
     def get_sample_query(
-        cls,
-        schema_name: str,
-        table_name: str,
+        self,
         column_list: List[str],
-        num_rows,
-        *args,
-        **kwargs
+        num_rows: int,
     ) -> str:
-        return cls._sample_query_template.format(
+        return self._sample_query_template.format(
             column_list=",".join(column_list),
-            schema_name=schema_name,
-            table_name=table_name,
+            schema_name=self.schema_name,
+            table_name=self.table_name,
             num_rows=num_rows,
         )
 

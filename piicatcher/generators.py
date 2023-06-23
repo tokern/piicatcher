@@ -48,7 +48,7 @@ def _get_table_count(
     connection,
     source=CatSource,
 ) -> int:
-    count = dbinfo.get_count_query(schema.name, table.name, source.project_id)
+    count = dbinfo.get_count_query()
     logging.debug("Count Query: %s" % count)
 
     result = connection.execute(count)
@@ -69,18 +69,13 @@ def _get_query(
     count = _get_table_count(schema, table, dbinfo, connection, source)
     LOGGER.debug("No. of rows in {}.{} is {}".format(schema.name, table.name, count))
     column_name_list: List[str] = [col.name for col in column_list]
-    query = dbinfo.get_select_query(
-        schema.name, table.name, column_name_list, source.project_id
-    )
+    query = dbinfo.get_select_query(column_name_list)
 
     if count > sample_size:
         try:
             query = dbinfo.get_sample_query(
-                schema.name,
-                table.name,
                 column_name_list,
                 sample_size,
-                source.project_id,
             )
             LOGGER.debug("Choosing a SAMPLE query as table size is big")
         except NotImplementedError:
@@ -102,7 +97,10 @@ def _row_generator(
     else:
         engine = create_engine(source.conn_string)
     with engine.connect() as conn:
-        dbinfo = get_dbinfo(source.source_type)
+        if source.source_type == "bigquery":
+            dbinfo = get_dbinfo(source.source_type, schema, table, source.project_id)
+        else:
+            dbinfo = get_dbinfo(source.source_type, schema, table)
         query = _get_query(
             schema=schema,
             table=table,

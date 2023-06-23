@@ -108,7 +108,7 @@ def test_get_table_count(sqlalchemy_engine):
     table_count = _get_table_count(
         schema=table.schema,
         table=table,
-        dbinfo=get_dbinfo(source.source_type),
+        dbinfo=get_dbinfo(source.source_type, table.schema, table),
         connection=conn,
         source=source,
     )
@@ -126,7 +126,7 @@ def test_get_query(sqlalchemy_engine):
         schema=schemata[0],
         table=table,
         column_list=catalog.get_columns_for_table(table),
-        dbinfo=get_dbinfo(source.source_type),
+        dbinfo=get_dbinfo(source.source_type, schemata[0], table),
         connection=conn,
         source=source,
     )
@@ -191,7 +191,7 @@ def test_get_sample_query_redshift(mocker, source_type, expected_query):
         schema=schema,
         table=table,
         column_list=[column],
-        dbinfo=get_dbinfo(source_type=source.source_type),
+        dbinfo=get_dbinfo(source.source_type, schema, table),
         connection=None,
         sample_size=1,
         source=source,
@@ -220,7 +220,7 @@ def test_get_sample_query_bigquery(mocker, source_type, expected_query):
         schema=schema,
         table=table,
         column_list=[column],
-        dbinfo=get_dbinfo(source_type=source.source_type),
+        dbinfo=get_dbinfo(source.source_type, schema, table),
         connection=None,
         sample_size=1,
         source=source,
@@ -249,7 +249,7 @@ def test_get_select_query_bigquery(mocker, source_type, expected_query):
         schema=schema,
         table=table,
         column_list=[column],
-        dbinfo=get_dbinfo(source_type=source.source_type),
+        dbinfo=get_dbinfo(source.source_type, schema, table),
         connection=None,
         source=source,
     )
