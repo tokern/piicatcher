@@ -1019,15 +1019,14 @@ files = [
 
 [[package]]
 name = "dbcat"
-version = "0.14.0"
+version = "0.14.1"
 description = "Tokern Data Catalog"
 category = "main"
 optional = false
 python-versions = ">=3.8,<=3.10.8"
 files = [
-    {file = "dbcat-0.14.0-1-py3-none-any.whl", hash = "sha256:811e4c1b15ed2d18b4665261f1775f259c7dcef6741f85fd4b8793c8d698078e"},
-    {file = "dbcat-0.14.0-py3-none-any.whl", hash = "sha256:de9775b0a767d50619f2df42b548a011ce3974b19bd1ebc875a61c42647ebee5"},
-    {file = "dbcat-0.14.0.tar.gz", hash = "sha256:d6a171ddabc9eed689e796a9d80c885bc5ddf089486b1f364365fe1a726f0b04"},
+    {file = "dbcat-0.14.1-py3-none-any.whl", hash = "sha256:c2afc7ebea77bf9adcef0439f501ba2b581f74ad4991e869ff4916a95316bf40"},
+    {file = "dbcat-0.14.1.tar.gz", hash = "sha256:f6a9f85525b004be0cdde93edd2a09a64548b961f969bebf30febd96d85cd839"},
 ]
 
 [package.dependencies]
@@ -5451,4 +5450,4 @@ datahub = ["acryl-datahub", "great-expectations"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<=3.10.8"
-content-hash = "f149ccb35eb166d2b644a1dbea0c18bd3c7e8a42544d3c386e2030fd0367d04f"
+content-hash = "0bcd39b1ddaa1848f81cfac3eda3e42e24912a3841bc1051f15549af7b5ba6d3"
