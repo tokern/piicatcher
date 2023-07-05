@@ -143,7 +143,7 @@ class Snowflake(DbInfo):
 
 
 class Athena(Postgres):
-    pass
+    _sample_query_template = "SELECT {column_list} FROM {schema_name}.{table_name} ORDER BY RAND() LIMIT {num_rows}"
 
 
 def get_dbinfo(source_type: str, *args, **kwargs) -> DbInfo:

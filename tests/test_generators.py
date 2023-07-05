@@ -174,10 +174,6 @@ def test_get_sample_query(sqlalchemy_engine):
             'SELECT "column" FROM public.table ORDER BY RANDOM() LIMIT 1',
         ),
         ("snowflake", "SELECT column FROM public.table TABLESAMPLE BERNOULLI (1 ROWS)"),
-        (
-            "athena",
-            'SELECT "column" FROM public.table TABLESAMPLE BERNOULLI (10) LIMIT 1',
-        ),
     ],
 )
 def test_get_sample_query_redshift(mocker, source_type, expected_query):
@@ -251,6 +247,35 @@ def test_get_select_query_bigquery(mocker, source_type, expected_query):
         column_list=[column],
         dbinfo=get_dbinfo(source.source_type, schema, table, source.project_id),
         connection=None,
+        source=source,
+    )
+
+    assert query == expected_query
+
+
+@pytest.mark.parametrize(
+    ("source_type", "expected_query"),
+    [
+        (
+            "athena",
+            'SELECT "column" FROM public.table ORDER BY RAND() LIMIT 1',
+        ),
+    ],
+)
+def test_get_sample_query_athena(mocker, source_type, expected_query):
+    source = CatSource(name="src", source_type=source_type)
+    schema = CatSchema(source=source, name="public")
+    table = CatTable(schema=schema, name="table")
+    column = CatColumn(table=table, name="column")
+
+    mocker.patch("piicatcher.generators._get_table_count", return_value=100)
+    query = _get_query(
+        schema=schema,
+        table=table,
+        column_list=[column],
+        dbinfo=get_dbinfo(source.source_type, schema, table),
+        connection=None,
+        sample_size=1,
         source=source,
     )
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "piicatcher"
-version = "0.21.1"
+version = "0.21.2"
 description = "Find PII data in databases"
 authors = ["Tokern <info@tokern.io>"]
 license = "Apache 2.0"
@@ -28,7 +28,7 @@ pyyaml = "*"
 click = "*"
 python-json-logger = "^2.0.2"
 commonregex-improved = "1.0.2"
-dbcat = "0.14.1"
+dbcat = "0.14.2"
 typer = "^0.4.0"
 goog-stats = "^0.1.2"
 tabulate = "^0.8.9"
